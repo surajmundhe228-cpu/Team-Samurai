@@ -1,12 +1,52 @@
-
 import json
+from pathlib import Path
+from typing import Optional
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
-from shelter_allocator import allocate_shelters
 
-app = FastAPI(title="RELOC8 Engine")
+from backend.shelter_allocator import allocate_shelters
+
+
+# --------------------------------------------------
+# PATHS
+# --------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "datab"
+FRONTEND_DATA_DIR = BASE_DIR.parent / "src" / "data"
+
+
+# --------------------------------------------------
+# LOAD DATA
+# --------------------------------------------------
+
+with open(DATA_DIR / "villages.json", "r", encoding="utf-8") as f:
+    villages_data = json.load(f)
+
+with open(DATA_DIR / "shelters.json", "r", encoding="utf-8") as f:
+    shelters_data = json.load(f)
+
+# Animals currently exists in src/data
+with open(FRONTEND_DATA_DIR / "animals.json", "r", encoding="utf-8") as f:
+    animals_data = json.load(f)
+
+
+# --------------------------------------------------
+# APP
+# --------------------------------------------------
+
+app = FastAPI(
+    title="RELOC8 API",
+    description="Backend for the RELOC8 disaster risk and relocation system",
+    version="1.0.0"
+)
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,52 +56,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("data/villages.json", "r") as f:
-    villages_data = json.load(f)
 
-with open("data/shelters.json", "r") as f:
-    shelters_data = json.load(f)
+# --------------------------------------------------
+# TEMPORARY REPORT DATABASE
+# --------------------------------------------------
 
 reports_db = []
+
+
+# --------------------------------------------------
+# REPORT MODEL
+# --------------------------------------------------
 
 class IncidentReport(BaseModel):
     type: str
     village: str
-    affectedCount: str
+    affectedCount: int
     description: Optional[str] = ""
 
-@app.get("/villages")
-def get_villages():
-    return villages_data
 
-@app.get("/shelters")
-def get_shelters():
-    return shelters_data
-
-@app.post("/api/reports")
-def submit_report(report: IncidentReport):
-    report_dict = report.dict()
-    report_dict["id"] = len(reports_db) + 1
-    reports_db.append(report_dict)
-    return {"status": "success", "data": report_dict}
-
-@app.get("/api/reports")
-def get_reports():
-    return reports_db
-
-@app.get("/api/relocation-plan")
-def get_relocation_plan():
-    plan = allocate_shelters(villages_data, shelters_data)
-    return {"status": "success", "plan": plan}
-
-from fastapi import FastAPI
-
-app = FastAPI(
-    title="RELOC8 API",
-    description="Backend for the RELOC8 disaster risk and relocation system",
-    version="1.0.0"
-)
-
+# --------------------------------------------------
+# HOME
+# --------------------------------------------------
 
 @app.get("/")
 def home():
@@ -70,104 +86,129 @@ def home():
     }
 
 
+# --------------------------------------------------
+# VILLAGES
+# --------------------------------------------------
+
 @app.get("/villages")
 def get_villages():
     return {
-        "villages": [
-            {
-                "id": 1,
-                "name": "Village A",
-                "population": 500,
-                "latitude": 18.5204,
-                "longitude": 73.8567
-            },
-            {
-                "id": 2,
-                "name": "Village B",
-                "population": 800,
-                "latitude": 18.5304,
-                "longitude": 73.8667
-            },
-            {
-                "id": 3,
-                "name": "Village C",
-                "population": 250,
-                "latitude": 18.5104,
-                "longitude": 73.8467
-            }
-        ]
+        "villages": villages_data
     }
-    
-@app.get("/hazards")
-def get_hazards():
-    return {
-        "hazards": [
-            {
-                "id": 1,
-                "type": "flood",
-                "severity": "high",
-                "risk_score": 82
-            },
-            {
-                "id": 2,
-                "type": "flood",
-                "severity": "medium",
-                "risk_score": 55
-            }
-        ]
-    }
-    
+
+
+# --------------------------------------------------
+# SHELTERS
+# --------------------------------------------------
+
 @app.get("/shelters")
 def get_shelters():
     return {
-        "shelters": [
-            {
-                "id": 1,
-                "name": "Shelter A",
-                "capacity": 500,
-                "occupied": 400,
-                "available": 100,
-                "latitude": 18.5404,
-                "longitude": 73.8767
-            },
-            {
-                "id": 2,
-                "name": "Shelter B",
-                "capacity": 800,
-                "occupied": 200,
-                "available": 600,
-                "latitude": 18.5504,
-                "longitude": 73.8867
-            }
-        ]
+        "shelters": shelters_data
     }
-    
+
+
+# --------------------------------------------------
+# ANIMALS
+# --------------------------------------------------
+
 @app.get("/animals")
 def get_animals():
     return {
-        "animals": [
-            {
-                "id": 1,
-                "type": "cattle",
-                "count": 50
-            },
-            {
-                "id": 2,
-                "type": "goat",
-                "count": 30
-            },
-            {
-                "id": 3,
-                "type": "dog",
-                "count": 20
-            }
-        ]
+        "animals": animals_data
     }
-    
+
+
+# --------------------------------------------------
+# HAZARDS
+# --------------------------------------------------
+
+@app.get("/hazards")
+def get_hazards():
+    hazards = []
+
+    for village in villages_data:
+        hazards.append({
+            "village": village.get("village"),
+            "district": village.get("district"),
+            "hazard_score": village.get("hazard_score"),
+            "flood_history": village.get("flood_history"),
+            "risk_level": village.get("risk_level")
+        })
+
+    return {
+        "hazards": hazards
+    }
+
+
+# --------------------------------------------------
+# RISK
+# --------------------------------------------------
+
 @app.get("/risk")
 def get_risk():
+    if not villages_data:
+        return {
+            "risk_level": "UNKNOWN",
+            "risk_score": 0,
+            "affected_population": 0
+        }
+
+    highest_risk_village = max(
+        villages_data,
+        key=lambda village: village.get("risk_score", 0)
+    )
+
     return {
-        "risk_level": "HIGH",
-        "risk_score": 82,
-        "affected_population": 500
+        "risk_level": highest_risk_village.get("risk_level"),
+        "risk_score": highest_risk_village.get("risk_score"),
+        "affected_population": highest_risk_village.get("population"),
+        "village": highest_risk_village.get("village")
+    }
+
+
+# --------------------------------------------------
+# SUBMIT INCIDENT REPORT
+# --------------------------------------------------
+
+@app.post("/api/reports")
+def submit_report(report: IncidentReport):
+    report_dict = report.model_dump()
+
+    report_dict["id"] = len(reports_db) + 1
+
+    reports_db.append(report_dict)
+
+    return {
+        "status": "success",
+        "data": report_dict
+    }
+
+
+# --------------------------------------------------
+# GET INCIDENT REPORTS
+# --------------------------------------------------
+
+@app.get("/api/reports")
+def get_reports():
+    return {
+        "reports": reports_db
+    }
+
+
+# --------------------------------------------------
+# RELOCATION PLAN
+# --------------------------------------------------
+
+@app.get("/api/relocation-plan")
+def get_relocation_plan():
+
+    plan = allocate_shelters(
+        villages_data,
+        shelters_data
+    )
+
+    return {
+        "status": "success",
+        "plan": plan
     }
