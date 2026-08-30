@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  height: 75px;
+  padding: 10px 25px;
+  background: #1b4332;
+  color: white;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 4px 0;
+}
+
+main {
+  flex: 1;
+}

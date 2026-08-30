@@ -1,0 +1,305 @@
+import { useState } from "react";
+import { 
+  MapContainer, 
+  TileLayer, 
+  CircleMarker, 
+  Polyline,
+  Tooltip
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+import villagesData from "../data/villages.json";
+import sheltersData from "../data/shelters.json";
+import animalsData from "../data/animals.json";
+import VillageDetailCard from "./VillageDetailCard";
+
+function Map() {
+  const [selectedVillage, setSelectedVillage] = useState(null);
+  const [activeRoute, setActiveRoute] = useState(null);
+
+  // Filters State
+  const [selectedDistrict, setSelectedDistrict] = useState("All");
+  const [showVillages, setShowVillages] = useState(true);
+  const [showShelters, setShowShelters] = useState(true);
+  const [showAnimals, setShowAnimals] = useState(true);
+
+  const handleVillageClick = (village) => {
+    setSelectedVillage(village);
+  };
+
+  const handleAllocateShelter = () => {
+    if (!selectedVillage) return;
+
+    const suitableShelters = sheltersData.filter(
+      (s) => s.available_capacity >= (selectedVillage.population_numeric_for_calc || selectedVillage.population || 0)
+    );
+
+    const matchedShelter = suitableShelters.length > 0 
+      ? suitableShelters[0] 
+      : sheltersData.reduce((prev, curr) => 
+          prev.available_capacity > curr.available_capacity ? prev : curr
+        );
+
+    if (matchedShelter.latitude == null || matchedShelter.longitude == null || 
+        selectedVillage.latitude == null || selectedVillage.longitude == null) {
+      alert("Invalid coordinate data for routing.");
+      return;
+    }
+
+    setActiveRoute({
+      fromVillage: selectedVillage.village,
+      toShelter: matchedShelter.shelter_name,
+      coords: [
+        [selectedVillage.latitude, selectedVillage.longitude],
+        [matchedShelter.latitude, matchedShelter.longitude]
+      ]
+    });
+  };
+
+  // Filtered data based on District dropdown
+  const filteredVillages = villagesData.filter(
+    (v) => selectedDistrict === "All" || v.district === selectedDistrict
+  );
+  const filteredShelters = sheltersData.filter(
+    (s) => selectedDistrict === "All" || s.shelter_name.includes(selectedDistrict) || selectedDistrict === "All"
+  );
+  const filteredAnimals = animalsData.filter(
+    (a) => {
+      if (selectedDistrict === "All") return true;
+      const matchedVill = villagesData.find((v) => v.village === a.village);
+      return matchedVill ? matchedVill.district === selectedDistrict : true;
+    }
+  );
+
+  return (
+    <div style={{ height: "calc(100vh - 75px)", width: "100%", position: "relative" }}>
+      
+      {/* Floating Filter Panel (Screen 4 Layout) */}
+      <div style={{
+        position: "absolute",
+        top: "16px",
+        left: "60px",
+        zIndex: 1000,
+        background: "rgba(255, 255, 255, 0.95)",
+        padding: "12px 16px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+        fontFamily: "system-ui, sans-serif",
+        fontSize: "13px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        minWidth: "170px"
+      }}>
+        <div>
+          <label style={{ fontWeight: "bold", fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>
+            District Filter
+          </label>
+          <select 
+            value={selectedDistrict} 
+            onChange={(e) => setSelectedDistrict(e.target.value)}
+            style={{
+              width: "100%",
+              marginTop: "4px",
+              padding: "4px 8px",
+              borderRadius: "6px",
+              border: "1px solid #cbd5e1",
+              fontSize: "12px"
+            }}
+          >
+            <option value="All">All Districts</option>
+            <option value="Supaul">Supaul</option>
+            <option value="Madhepura">Madhepura</option>
+          </select>
+        </div>
+
+        <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "6px", display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+            <input 
+              type="checkbox" 
+              checked={showVillages} 
+              onChange={(e) => setShowVillages(e.target.checked)} 
+            />
+            Habitations ({filteredVillages.length})
+          </label>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+            <input 
+              type="checkbox" 
+              checked={showShelters} 
+              onChange={(e) => setShowShelters(e.target.checked)} 
+            />
+            Safe Shelters ({filteredShelters.length})
+          </label>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+            <input 
+              type="checkbox" 
+              checked={showAnimals} 
+              onChange={(e) => setShowAnimals(e.target.checked)} 
+            />
+            Animal Reports 🐾 ({filteredAnimals.length})
+          </label>
+        </div>
+      </div>
+
+      {/* Village Details Side Panel */}
+      {selectedVillage && (
+        <VillageDetailCard 
+          village={selectedVillage} 
+          onClose={() => setSelectedVillage(null)}
+          onRouteClick={handleAllocateShelter}
+        />
+      )}
+
+      {/* Map Legend */}
+      <div style={{
+        position: "absolute",
+        bottom: "24px",
+        right: "16px",
+        zIndex: 1000,
+        background: "rgba(255, 255, 255, 0.95)",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+        fontSize: "12px",
+        lineHeight: "1.6",
+        color: "#1e293b",
+        fontFamily: "system-ui, sans-serif"
+      }}>
+        <strong style={{ display: "block", marginBottom: "4px" }}>Map Indicators</strong>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#dc2626" }}></span>
+          Critical Habitation
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ea580c" }}></span>
+          High Risk Habitation
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#16a34a" }}></span>
+          Shelter (Available Space)
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#fbbf24" }}></span>
+          Animal Rescue Report
+        </div>
+      </div>
+
+      {/* Route Badge */}
+      {activeRoute && (
+        <div style={{
+          position: "absolute",
+          bottom: "24px",
+          left: "20px",
+          zIndex: 1000,
+          background: "#0f172a",
+          color: "#fff",
+          padding: "10px 14px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          fontSize: "13px",
+          fontFamily: "system-ui, sans-serif"
+        }}>
+          <strong>Recommended Evacuation Corridor:</strong><br />
+          {activeRoute.fromVillage} &rarr; <span style={{ color: "#4ade80" }}>{activeRoute.toShelter}</span>
+          <button 
+            onClick={() => setActiveRoute(null)}
+            style={{ marginLeft: "12px", padding: "2px 8px", fontSize: "11px", cursor: "pointer" }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      <MapContainer
+        center={[26.05, 86.70]}
+        zoom={10}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+
+        {activeRoute && activeRoute.coords && (
+          <Polyline 
+            positions={activeRoute.coords} 
+            pathOptions={{ color: "#2563eb", weight: 4, dashArray: "6, 8" }} 
+          />
+        )}
+
+        {/* Shelters Layer */}
+        {showShelters && filteredShelters.map((s, i) => {
+          if (s.latitude == null || s.longitude == null || isNaN(s.latitude) || isNaN(s.longitude)) {
+            return null;
+          }
+
+          const isCrowded = s.available_capacity < 50;
+          const markerColor = isCrowded ? "#9333ea" : "#16a34a";
+
+          return (
+            <CircleMarker
+              key={`s-${i}`}
+              center={[s.latitude, s.longitude]}
+              pathOptions={{ color: "#fff", fillColor: markerColor, fillOpacity: 0.8, weight: 2 }}
+              radius={10}
+            >
+              <Tooltip direction="top" offset={[0, -8]} opacity={0.9}>
+                <span>🏠 {s.shelter_name} (Space: {s.available_capacity})</span>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+
+        {/* Animals Layer */}
+        {showAnimals && filteredAnimals.map((a, i) => {
+          if (a.latitude == null || a.longitude == null || isNaN(a.latitude) || isNaN(a.longitude)) {
+            return null;
+          }
+
+          return (
+            <CircleMarker
+              key={`a-${i}`}
+              center={[a.latitude, a.longitude]}
+              pathOptions={{ color: "#78350f", fillColor: "#fbbf24", fillOpacity: 0.9, weight: 1.5 }}
+              radius={7}
+            >
+              <Tooltip direction="top" offset={[0, -6]} opacity={0.9}>
+                <span>🐾 {a.animal_type} ({a.estimated_affected || a.count})</span>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+
+        {/* Habitations Layer (Rendered last so they appear on top) */}
+        {showVillages && filteredVillages.map((v, i) => {
+          if (v.latitude == null || v.longitude == null || isNaN(v.latitude) || isNaN(v.longitude)) {
+            return null;
+          }
+
+          const risk = (v.risk_level || "").toUpperCase();
+          const isCritical = risk === "CRITICAL";
+          const markerColor = isCritical ? "#dc2626" : "#ea580c";
+
+          return (
+            <CircleMarker
+              key={`v-${i}`}
+              center={[v.latitude, v.longitude]}
+              pathOptions={{ color: "#ffffff", fillColor: markerColor, fillOpacity: 0.95, weight: 2.5 }}
+              radius={11}
+              eventHandlers={{
+                click: () => handleVillageClick(v)
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
+                <span>📍 {v.village} ({v.risk_level}) - Pop: {v.population_range || v.population}</span>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+
+      </MapContainer>
+    </div>
+  );
+}
+
+export default Map;

@@ -1,0 +1,92 @@
+[
+  {
+    "village": "Rampur",
+    "animal_type": "Cattle",
+    "estimated_affected": "~30 - 40",
+    "latitude": 26.177,
+    "longitude": 86.713,
+    "location": "Near eastern embankment, waterlogged field",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Bishanpur",
+    "animal_type": "Buffalo",
+    "estimated_affected": "~10 - 15",
+    "latitude": 26.208,
+    "longitude": 86.673,
+    "location": "Rooftop of pucca house",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Pipra",
+    "animal_type": "Cattle + Buffalo",
+    "estimated_affected": "~25 - 30",
+    "latitude": 26.242,
+    "longitude": 86.563,
+    "location": "Raised mound near village pond",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Gopalpur",
+    "animal_type": "Poultry",
+    "estimated_affected": "~50 - 60",
+    "latitude": 26.312,
+    "longitude": 86.492,
+    "location": "Flooded poultry shed",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Jorgama",
+    "animal_type": "Goats",
+    "estimated_affected": "~40 - 50",
+    "latitude": 25.892,
+    "longitude": 86.912,
+    "location": "High ground near school",
+    "status": "In Progress"
+  },
+  {
+    "village": "Bhatkhora",
+    "animal_type": "Cattle",
+    "estimated_affected": "~5 - 10",
+    "latitude": 26.145,
+    "longitude": 86.655,
+    "location": "Embankment road",
+    "status": "Rescued"
+  },
+  {
+    "village": "Aurahi",
+    "animal_type": "Buffalo",
+    "estimated_affected": "~12 - 15",
+    "latitude": 25.862,
+    "longitude": 86.723,
+    "location": "Low-lying colony outskirts",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Belari",
+    "animal_type": "Goats + Sheep",
+    "estimated_affected": "~35 - 40",
+    "latitude": 25.977,
+    "longitude": 86.812,
+    "location": "Near Singheshwar temple approach",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Gamharia",
+    "animal_type": "Cattle",
+    "estimated_affected": "~10",
+    "latitude": 25.918,
+    "longitude": 86.968,
+    "location": "Village outskirts, injured animals",
+    "status": "Needs Rescue"
+  },
+  {
+    "village": "Puraini",
+    "animal_type": "Cattle + Goats",
+    "estimated_affected": "~30 - 35",
+    "latitude": 25.878,
+    "longitude": 86.763,
+    "location": "Mixed group on higher ground",
+    "status": "In Progress"
+  }
+]
