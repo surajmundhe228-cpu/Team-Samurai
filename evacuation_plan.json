@@ -1,0 +1,210 @@
+[
+    {
+        "village": "Rampur",
+        "risk_score": 90.1,
+        "priority": "Critical",
+        "population": 500,
+        "total_evacuated": 500,
+        "unassigned": 0,
+        "evacuation_percentage": 100.0,
+        "status": "Fully Evacuated",
+        "routes": [
+            {
+                "shelter": "Camp A",
+                "distance_km": 1.14,
+                "ranking_score": 0.2284,
+                "available_space_ratio_before": 0.6,
+                "evacuated": 300,
+                "remaining_capacity": 0,
+                "available_space_ratio_after": 0.0,
+                "start_coordinates": [
+                    26.175,
+                    86.71
+                ],
+                "shelter_coordinates": [
+                    26.18,
+                    86.72
+                ],
+                "route_coordinates": [
+                    [
+                        26.175,
+                        86.71
+                    ],
+                    [
+                        26.176,
+                        86.712
+                    ],
+                    [
+                        26.177,
+                        86.714
+                    ],
+                    [
+                        26.178,
+                        86.716
+                    ],
+                    [
+                        26.179,
+                        86.718
+                    ],
+                    [
+                        26.18,
+                        86.72
+                    ]
+                ]
+            },
+            {
+                "shelter": "Camp C",
+                "distance_km": 2.95,
+                "ranking_score": 0.297,
+                "available_space_ratio_before": 0.7,
+                "evacuated": 200,
+                "remaining_capacity": 150,
+                "available_space_ratio_after": 0.3,
+                "start_coordinates": [
+                    26.175,
+                    86.71
+                ],
+                "shelter_coordinates": [
+                    26.15,
+                    86.7
+                ],
+                "route_coordinates": [
+                    [
+                        26.175,
+                        86.71
+                    ],
+                    [
+                        26.17,
+                        86.708
+                    ],
+                    [
+                        26.165,
+                        86.706
+                    ],
+                    [
+                        26.16,
+                        86.704
+                    ],
+                    [
+                        26.155,
+                        86.702
+                    ],
+                    [
+                        26.15,
+                        86.7
+                    ]
+                ]
+            }
+        ]
+    },
+    {
+        "village": "Shivapur",
+        "risk_score": 68.5,
+        "priority": "High",
+        "population": 400,
+        "total_evacuated": 400,
+        "unassigned": 0,
+        "evacuation_percentage": 100.0,
+        "status": "Fully Evacuated",
+        "routes": [
+            {
+                "shelter": "Camp B",
+                "distance_km": 7.07,
+                "ranking_score": 0.5575,
+                "available_space_ratio_before": 0.667,
+                "evacuated": 400,
+                "remaining_capacity": 0,
+                "available_space_ratio_after": 0.0,
+                "start_coordinates": [
+                    26.2,
+                    86.75
+                ],
+                "shelter_coordinates": [
+                    26.21,
+                    86.68
+                ],
+                "route_coordinates": [
+                    [
+                        26.2,
+                        86.75
+                    ],
+                    [
+                        26.202,
+                        86.736
+                    ],
+                    [
+                        26.204,
+                        86.722
+                    ],
+                    [
+                        26.206,
+                        86.708
+                    ],
+                    [
+                        26.208,
+                        86.694
+                    ],
+                    [
+                        26.21,
+                        86.68
+                    ]
+                ]
+            }
+        ]
+    },
+    {
+        "village": "Lakshmipur",
+        "risk_score": 42.0,
+        "priority": "Medium",
+        "population": 250,
+        "total_evacuated": 150,
+        "unassigned": 100,
+        "evacuation_percentage": 60.0,
+        "status": "Partially Evacuated",
+        "routes": [
+            {
+                "shelter": "Camp C",
+                "distance_km": 1.49,
+                "ranking_score": 0.3694,
+                "available_space_ratio_before": 0.3,
+                "evacuated": 150,
+                "remaining_capacity": 0,
+                "available_space_ratio_after": 0.0,
+                "start_coordinates": [
+                    26.16,
+                    86.69
+                ],
+                "shelter_coordinates": [
+                    26.15,
+                    86.7
+                ],
+                "route_coordinates": [
+                    [
+                        26.16,
+                        86.69
+                    ],
+                    [
+                        26.158,
+                        86.692
+                    ],
+                    [
+                        26.156,
+                        86.694
+                    ],
+                    [
+                        26.154,
+                        86.696
+                    ],
+                    [
+                        26.152,
+                        86.698
+                    ],
+                    [
+                        26.15,
+                        86.7
+                    ]
+                ]
+            }
+        ]
+    }
+]
