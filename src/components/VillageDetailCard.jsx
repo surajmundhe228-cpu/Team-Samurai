@@ -6,14 +6,17 @@ function VillageDetailCard({ village, onClose, onRouteClick }) {
   return (
     <div style={{
       position: "absolute",
-      top: "16px",
-      right: "16px",
+      top: "70px",
+      right: "24px",
       zIndex: 1000,
       background: "#ffffff",
       padding: "20px",
       borderRadius: "12px",
       boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
       width: "320px",
+      maxWidth: "calc(100vw - 48px)",
+      maxHeight: "calc(100vh - 100px)",
+      overflowY: "auto",
       fontFamily: "system-ui, sans-serif"
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
