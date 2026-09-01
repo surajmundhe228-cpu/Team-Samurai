@@ -4,7 +4,6 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
 from backend.shelter_allocator import allocate_shelters
 
 # --------------------------------------------------
@@ -30,14 +29,17 @@ app.add_middleware(
 )
 
 # --------------------------------------------------
-# PATHS & DATA LOADING
+# PATHS & DIRECTORIES
 # --------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "datab"
 FRONTEND_DATA_DIR = BASE_DIR.parent / "src" / "data"
 
-# Load Villages safely
+# --------------------------------------------------
+# DATA LOADING WITH ERROR HANDLING
+# --------------------------------------------------
+
 try:
     with open(DATA_DIR / "villages.json", "r", encoding="utf-8") as f:
         villages_data = json.load(f)
@@ -46,7 +48,6 @@ except Exception as e:
     print(f"Warning: Could not load villages.json: {e}")
     villages_data = []
 
-# Load Shelters safely
 try:
     with open(DATA_DIR / "shelters.json", "r", encoding="utf-8") as f:
         shelters_data = json.load(f)
@@ -55,7 +56,6 @@ except Exception as e:
     print(f"Warning: Could not load shelters.json: {e}")
     shelters_data = []
 
-# Load Animals safely
 try:
     with open(FRONTEND_DATA_DIR / "animals.json", "r", encoding="utf-8") as f:
         animals_data = json.load(f)
@@ -64,10 +64,11 @@ except Exception as e:
     print(f"Warning: Could not load animals.json: {e}")
     animals_data = []
 
+# In-memory database for incident reports
 reports_db = []
 
 # --------------------------------------------------
-# REPORT MODEL
+# PYDANTIC MODELS
 # --------------------------------------------------
 
 class IncidentReport(BaseModel):
@@ -77,7 +78,7 @@ class IncidentReport(BaseModel):
     description: Optional[str] = ""
 
 # --------------------------------------------------
-# API ENDPOINTS
+# ENDPOINTS: SYSTEM & CORE DATA
 # --------------------------------------------------
 
 @app.get("/")
@@ -88,20 +89,29 @@ def home():
 
 @app.get("/villages")
 def get_villages():
-    return villages_data
+    return {
+        "villages": villages_data
+    }
 
 @app.get("/shelters")
 def get_shelters():
-    return shelters_data
+    return {
+        "shelters": shelters_data
+    }
 
 @app.get("/animals")
 def get_animals():
-    return animals_data
+    return {
+        "animals": animals_data
+    }
+
+# --------------------------------------------------
+# ENDPOINTS: HAZARDS & RISK ANALYSIS
+# --------------------------------------------------
 
 @app.get("/hazards")
 def get_hazards():
     hazards = []
-    # Handle both list and wrapped dict formats safely
     v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
     
     for village in v_list:
@@ -112,6 +122,7 @@ def get_hazards():
             "flood_history": village.get("flood_history"),
             "risk_level": village.get("risk_level")
         })
+
     return {
         "hazards": hazards
     }
@@ -119,6 +130,7 @@ def get_hazards():
 @app.get("/risk")
 def get_risk():
     v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
+    
     if not v_list:
         return {
             "risk_level": "UNKNOWN",
@@ -138,11 +150,16 @@ def get_risk():
         "village": highest_risk_village.get("village")
     }
 
+# --------------------------------------------------
+# ENDPOINTS: INCIDENT REPORTS
+# --------------------------------------------------
+
 @app.post("/api/reports")
 def submit_report(report: IncidentReport):
-    report_dict = report.model_dump()
+    report_dict = report.model_dump() if hasattr(report, "model_dump") else report.dict()
     report_dict["id"] = len(reports_db) + 1
     reports_db.append(report_dict)
+
     return {
         "status": "success",
         "data": report_dict
@@ -154,10 +171,50 @@ def get_reports():
         "reports": reports_db
     }
 
+# --------------------------------------------------
+# ENDPOINTS: ALLOCATION & NOTIFICATIONS
+# --------------------------------------------------
+
 @app.get("/api/relocation-plan")
 def get_relocation_plan():
-    plan = allocate_shelters(villages_data, shelters_data)
+    plan = allocate_shelters(
+        villages_data,
+        shelters_data
+    )
+
     return {
         "status": "success",
         "plan": plan
     }
+
+@app.get("/api/notifications")
+def get_notifications():
+    return [
+        {
+            "id": 1,
+            "title": "Critical Flood Alert",
+            "message": "Water levels rising rapidly near the Kosi embankment.",
+            "type": "critical",
+            "category": "alert",
+            "is_read": False,
+            "time": "10 mins ago"
+        },
+        {
+            "id": 2,
+            "title": "Shelter Capacity Warning",
+            "message": "Nirmali Temporary Camp is approaching maximum occupancy.",
+            "type": "warning",
+            "category": "alert",
+            "is_read": False,
+            "time": "25 mins ago"
+        },
+        {
+            "id": 3,
+            "title": "Route Clear Verified",
+            "message": "Evacuation corridor from Rampur to Kishanganj verified clear.",
+            "type": "info",
+            "category": "general",
+            "is_read": True,
+            "time": "1 hour ago"
+        }
+    ]
