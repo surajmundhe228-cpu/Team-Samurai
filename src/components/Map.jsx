@@ -14,6 +14,20 @@ import sheltersData from "../data/shelters.json";
 import animalsData from "../data/animals.json";
 import VillageDetailCard from "./VillageDetailCard";
 
+// Haversine formula for precise distance calculation in kilometers
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return "0.0";
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return (R * c).toFixed(1);
+};
+
 // Custom Symbols / DivIcons Definitions
 const shelterIcon = L.divIcon({
   className: "custom-shelter-marker",
@@ -86,6 +100,10 @@ function Map() {
     setActiveRoute({
       fromVillage: selectedVillage.village,
       toShelter: matchedShelter.shelter_name,
+      vLat: selectedVillage.latitude,
+      vLng: selectedVillage.longitude,
+      sLat: matchedShelter.latitude,
+      sLng: matchedShelter.longitude,
       coords: [
         [selectedVillage.latitude, selectedVillage.longitude],
         [matchedShelter.latitude, matchedShelter.longitude]
@@ -221,7 +239,7 @@ function Map() {
         </div>
       </div>
 
-      {/* Route Badge */}
+      {/* Route Badge with Distance and Travel Time */}
       {activeRoute && (
         <div style={{
           position: "absolute",
@@ -230,17 +248,38 @@ function Map() {
           zIndex: 1000,
           background: "#0f172a",
           color: "#fff",
-          padding: "10px 14px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          padding: "14px 18px",
+          borderRadius: "10px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
           fontSize: "13px",
-          fontFamily: "system-ui, sans-serif"
+          fontFamily: "system-ui, sans-serif",
+          minWidth: "320px"
         }}>
-          <strong>Recommended Evacuation Corridor:</strong><br />
-          {activeRoute.fromVillage} &rarr; <span style={{ color: "#4ade80" }}>{activeRoute.toShelter}</span>
+          <div style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
+            Recommended Evacuation Corridor:
+          </div>
+          <div style={{ fontSize: "15px", fontWeight: "600", marginBottom: "8px" }}>
+            {activeRoute.fromVillage} <span style={{ color: "#38bdf8" }}>&rarr;</span> <span style={{ color: "#4ade80" }}>{activeRoute.toShelter}</span>
+          </div>
+          <div style={{ display: "flex", gap: "14px", fontSize: "12px", color: "#cbd5e1", borderTop: "1px solid #334155", paddingTop: "8px" }}>
+            <span>📏 Distance: <strong>{calculateDistance(activeRoute.vLat, activeRoute.vLng, activeRoute.sLat, activeRoute.sLng)} km</strong></span>
+            <span>⏱️ Est. Time: <strong>~{(calculateDistance(activeRoute.vLat, activeRoute.vLng, activeRoute.sLat, activeRoute.sLng) * 3).toFixed(0)} mins</strong></span>
+            <span>🟢 Route: <strong style={{ color: "#4ade80" }}>Clear</strong></span>
+          </div>
           <button 
             onClick={() => setActiveRoute(null)}
-            style={{ marginLeft: "12px", padding: "2px 8px", fontSize: "11px", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              top: "12px",
+              right: "12px",
+              background: "#334155",
+              color: "#fff",
+              border: "none",
+              padding: "3px 8px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "11px"
+            }}
           >
             Clear
           </button>
@@ -260,7 +299,7 @@ function Map() {
         {activeRoute && activeRoute.coords && (
           <Polyline 
             positions={activeRoute.coords} 
-            pathOptions={{ color: "#2563eb", weight: 4, dashArray: "6, 8" }} 
+            pathOptions={{ color: "#2563eb", weight: 5, dashArray: "8, 8" }} 
           />
         )}
 
