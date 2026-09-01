@@ -1,0 +1,25 @@
+{
+  "villages": [
+    {
+      "id": 1,
+      "name": "Village A",
+      "population": 500,
+      "latitude": 18.5204,
+      "longitude": 73.8567
+    },
+    {
+      "id": 2,
+      "name": "Village B",
+      "population": 800,
+      "latitude": 18.5304,
+      "longitude": 73.8667
+    },
+    {
+      "id": 3,
+      "name": "Village C",
+      "population": 300,
+      "latitude": 18.5104,
+      "longitude": 73.8467
+    }
+  ]
+}

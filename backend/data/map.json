@@ -1,0 +1,29 @@
+{
+  "map": {
+    "center": {
+      "latitude": 18.5304,
+      "longitude": 73.8667
+    },
+    "zoom": 12,
+    "villages": [
+      {
+        "id": 1,
+        "name": "Village A",
+        "latitude": 18.5204,
+        "longitude": 73.8567
+      },
+      {
+        "id": 2,
+        "name": "Village B",
+        "latitude": 18.5304,
+        "longitude": 73.8667
+      },
+      {
+        "id": 3,
+        "name": "Village C",
+        "latitude": 18.5104,
+        "longitude": 73.8467
+      }
+    ]
+  }
+}
