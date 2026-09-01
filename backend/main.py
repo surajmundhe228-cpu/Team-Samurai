@@ -1,12 +1,16 @@
-
 import json
+from pathlib import Path
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
 from shelter_allocator import allocate_shelters
 
-app = FastAPI(title="RELOC8 Engine")
+app = FastAPI(
+    title="RELOC8 Engine",
+    description="Backend for the RELOC8 disaster risk and relocation system",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,11 +20,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("data/villages.json", "r") as f:
-    villages_data = json.load(f)
+# Resolve path safely using pathlib to match your 'datab' directory structure
+BASE_DIR = Path(__file__).resolve().parent
 
-with open("data/shelters.json", "r") as f:
-    shelters_data = json.load(f)
+try:
+    with open(BASE_DIR / "datab" / "villages.json", "r", encoding="utf-8") as f:
+        villages_data = json.load(f)
+    print("Successfully loaded villages.json")
+except Exception as e:
+    print(f"Warning: Could not load villages.json: {e}")
+    villages_data = {"villages": []}
+
+try:
+    with open(BASE_DIR / "datab" / "shelters.json", "r", encoding="utf-8") as f:
+        shelters_data = json.load(f)
+    print("Successfully loaded shelters.json")
+except Exception as e:
+    print(f"Warning: Could not load shelters.json: {e}")
+    shelters_data = {"shelters": []}
 
 reports_db = []
 
@@ -30,6 +47,12 @@ class IncidentReport(BaseModel):
     affectedCount: str
     description: Optional[str] = ""
 
+@app.get("/")
+def home():
+    return {
+        "message": "RELOC8 Backend is running"
+    }
+
 @app.get("/villages")
 def get_villages():
     return villages_data
@@ -37,6 +60,33 @@ def get_villages():
 @app.get("/shelters")
 def get_shelters():
     return shelters_data
+
+@app.get("/hazards")
+def get_hazards():
+    return {
+        "hazards": [
+            {"id": 1, "type": "flood", "severity": "high", "risk_score": 82},
+            {"id": 2, "type": "flood", "severity": "medium", "risk_score": 55}
+        ]
+    }
+
+@app.get("/animals")
+def get_animals():
+    return {
+        "animals": [
+            {"id": 1, "type": "cattle", "count": 50},
+            {"id": 2, "type": "goat", "count": 30},
+            {"id": 3, "type": "dog", "count": 20}
+        ]
+    }
+
+@app.get("/risk")
+def get_risk():
+    return {
+        "risk_level": "HIGH",
+        "risk_score": 82,
+        "affected_population": 500
+    }
 
 @app.post("/api/reports")
 def submit_report(report: IncidentReport):
@@ -53,121 +103,3 @@ def get_reports():
 def get_relocation_plan():
     plan = allocate_shelters(villages_data, shelters_data)
     return {"status": "success", "plan": plan}
-
-from fastapi import FastAPI
-
-app = FastAPI(
-    title="RELOC8 API",
-    description="Backend for the RELOC8 disaster risk and relocation system",
-    version="1.0.0"
-)
-
-
-@app.get("/")
-def home():
-    return {
-        "message": "RELOC8 Backend is running"
-    }
-
-
-@app.get("/villages")
-def get_villages():
-    return {
-        "villages": [
-            {
-                "id": 1,
-                "name": "Village A",
-                "population": 500,
-                "latitude": 18.5204,
-                "longitude": 73.8567
-            },
-            {
-                "id": 2,
-                "name": "Village B",
-                "population": 800,
-                "latitude": 18.5304,
-                "longitude": 73.8667
-            },
-            {
-                "id": 3,
-                "name": "Village C",
-                "population": 250,
-                "latitude": 18.5104,
-                "longitude": 73.8467
-            }
-        ]
-    }
-    
-@app.get("/hazards")
-def get_hazards():
-    return {
-        "hazards": [
-            {
-                "id": 1,
-                "type": "flood",
-                "severity": "high",
-                "risk_score": 82
-            },
-            {
-                "id": 2,
-                "type": "flood",
-                "severity": "medium",
-                "risk_score": 55
-            }
-        ]
-    }
-    
-@app.get("/shelters")
-def get_shelters():
-    return {
-        "shelters": [
-            {
-                "id": 1,
-                "name": "Shelter A",
-                "capacity": 500,
-                "occupied": 400,
-                "available": 100,
-                "latitude": 18.5404,
-                "longitude": 73.8767
-            },
-            {
-                "id": 2,
-                "name": "Shelter B",
-                "capacity": 800,
-                "occupied": 200,
-                "available": 600,
-                "latitude": 18.5504,
-                "longitude": 73.8867
-            }
-        ]
-    }
-    
-@app.get("/animals")
-def get_animals():
-    return {
-        "animals": [
-            {
-                "id": 1,
-                "type": "cattle",
-                "count": 50
-            },
-            {
-                "id": 2,
-                "type": "goat",
-                "count": 30
-            },
-            {
-                "id": 3,
-                "type": "dog",
-                "count": 20
-            }
-        ]
-    }
-    
-@app.get("/risk")
-def get_risk():
-    return {
-        "risk_level": "HIGH",
-        "risk_score": 82,
-        "affected_population": 500
-    }

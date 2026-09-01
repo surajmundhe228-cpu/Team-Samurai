@@ -2,16 +2,53 @@ import { useState } from "react";
 import { 
   MapContainer, 
   TileLayer, 
-  CircleMarker, 
+  Marker, 
   Polyline,
   Tooltip
 } from "react-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import villagesData from "../data/villages.json";
 import sheltersData from "../data/shelters.json";
 import animalsData from "../data/animals.json";
 import VillageDetailCard from "./VillageDetailCard";
+
+// Custom Symbols / DivIcons Definitions
+const shelterIcon = L.divIcon({
+  className: "custom-shelter-marker",
+  html: '<div style="background: #16a34a; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+});
+
+const crowdedShelterIcon = L.divIcon({
+  className: "custom-shelter-marker",
+  html: '<div style="background: #9333ea; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+});
+
+const animalIcon = L.divIcon({
+  className: "custom-animal-marker",
+  html: '<div style="background: #fbbf24; color: #78350f; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 12px; border: 1.5px solid #78350f; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🐾</div>',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
+const criticalVillageIcon = L.divIcon({
+  className: "custom-village-marker",
+  html: '<div style="background: #dc2626; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2.5px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">📍</div>',
+  iconSize: [30, 30],
+  iconAnchor: [15, 15],
+});
+
+const highVillageIcon = L.divIcon({
+  className: "custom-village-marker",
+  html: '<div style="background: #ea580c; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2.5px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">📍</div>',
+  iconSize: [30, 30],
+  iconAnchor: [15, 15],
+});
 
 function Map() {
   const [selectedVillage, setSelectedVillage] = useState(null);
@@ -168,19 +205,19 @@ function Map() {
         <strong style={{ display: "block", marginBottom: "4px" }}>Map Indicators</strong>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#dc2626" }}></span>
-          Critical Habitation
+          Critical Habitation (📍)
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ea580c" }}></span>
-          High Risk Habitation
+          High Risk Habitation (📍)
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#16a34a" }}></span>
-          Shelter (Available Space)
+          Shelter (🏠)
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#fbbf24" }}></span>
-          Animal Rescue Report
+          Animal Rescue Report (🐾)
         </div>
       </div>
 
@@ -227,50 +264,48 @@ function Map() {
           />
         )}
 
-        {/* Shelters Layer */}
+        {/* Shelters Layer with 🏠 symbol */}
         {showShelters && filteredShelters.map((s, i) => {
           if (s.latitude == null || s.longitude == null || isNaN(s.latitude) || isNaN(s.longitude)) {
             return null;
           }
 
           const isCrowded = s.available_capacity < 50;
-          const markerColor = isCrowded ? "#9333ea" : "#16a34a";
+          const chosenIcon = isCrowded ? crowdedShelterIcon : shelterIcon;
 
           return (
-            <CircleMarker
+            <Marker
               key={`s-${i}`}
-              center={[s.latitude, s.longitude]}
-              pathOptions={{ color: "#fff", fillColor: markerColor, fillOpacity: 0.8, weight: 2 }}
-              radius={10}
+              position={[s.latitude, s.longitude]}
+              icon={chosenIcon}
             >
               <Tooltip direction="top" offset={[0, -8]} opacity={0.9}>
                 <span>🏠 {s.shelter_name} (Space: {s.available_capacity})</span>
               </Tooltip>
-            </CircleMarker>
+            </Marker>
           );
         })}
 
-        {/* Animals Layer */}
+        {/* Animals Layer with 🐾 symbol */}
         {showAnimals && filteredAnimals.map((a, i) => {
           if (a.latitude == null || a.longitude == null || isNaN(a.latitude) || isNaN(a.longitude)) {
             return null;
           }
 
           return (
-            <CircleMarker
+            <Marker
               key={`a-${i}`}
-              center={[a.latitude, a.longitude]}
-              pathOptions={{ color: "#78350f", fillColor: "#fbbf24", fillOpacity: 0.9, weight: 1.5 }}
-              radius={7}
+              position={[a.latitude, a.longitude]}
+              icon={animalIcon}
             >
               <Tooltip direction="top" offset={[0, -6]} opacity={0.9}>
                 <span>🐾 {a.animal_type} ({a.estimated_affected || a.count})</span>
               </Tooltip>
-            </CircleMarker>
+            </Marker>
           );
         })}
 
-        {/* Habitations Layer (Rendered last so they appear on top) */}
+        {/* Habitations Layer with 📍 symbol */}
         {showVillages && filteredVillages.map((v, i) => {
           if (v.latitude == null || v.longitude == null || isNaN(v.latitude) || isNaN(v.longitude)) {
             return null;
@@ -278,14 +313,13 @@ function Map() {
 
           const risk = (v.risk_level || "").toUpperCase();
           const isCritical = risk === "CRITICAL";
-          const markerColor = isCritical ? "#dc2626" : "#ea580c";
+          const chosenIcon = isCritical ? criticalVillageIcon : highVillageIcon;
 
           return (
-            <CircleMarker
+            <Marker
               key={`v-${i}`}
-              center={[v.latitude, v.longitude]}
-              pathOptions={{ color: "#ffffff", fillColor: markerColor, fillOpacity: 0.95, weight: 2.5 }}
-              radius={11}
+              position={[v.latitude, v.longitude]}
+              icon={chosenIcon}
               eventHandlers={{
                 click: () => handleVillageClick(v)
               }}
@@ -293,7 +327,7 @@ function Map() {
               <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
                 <span>📍 {v.village} ({v.risk_level}) - Pop: {v.population_range || v.population}</span>
               </Tooltip>
-            </CircleMarker>
+            </Marker>
           );
         })}
 
