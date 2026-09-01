@@ -63,6 +63,14 @@ try:
 except Exception as e:
     print(f"Warning: Could not load animals.json: {e}")
     animals_data = []
+    
+try:
+    with open(DATA_DIR / "alerts_data.json", "r", encoding="utf-8") as f:
+        notifications_data = json.load(f)
+    print("Successfully loaded alerts_data.json")
+except Exception as e:
+    print(f"Warning: Could not load alerts_data.json: {e}")
+    notifications_data = []
 
 # In-memory database for incident reports
 reports_db = []
@@ -189,32 +197,4 @@ def get_relocation_plan():
 
 @app.get("/api/notifications")
 def get_notifications():
-    return [
-        {
-            "id": 1,
-            "title": "Critical Flood Alert",
-            "message": "Water levels rising rapidly near the Kosi embankment.",
-            "type": "critical",
-            "category": "alert",
-            "is_read": False,
-            "time": "10 mins ago"
-        },
-        {
-            "id": 2,
-            "title": "Shelter Capacity Warning",
-            "message": "Nirmali Temporary Camp is approaching maximum occupancy.",
-            "type": "warning",
-            "category": "alert",
-            "is_read": False,
-            "time": "25 mins ago"
-        },
-        {
-            "id": 3,
-            "title": "Route Clear Verified",
-            "message": "Evacuation corridor from Rampur to Kishanganj verified clear.",
-            "type": "info",
-            "category": "general",
-            "is_read": True,
-            "time": "1 hour ago"
-        }
-    ]
+    return notifications_data
