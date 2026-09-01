@@ -4,13 +4,22 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from shelter_allocator import allocate_shelters
+
+from backend.shelter_allocator import allocate_shelters
+
+# --------------------------------------------------
+# APP INITIALIZATION
+# --------------------------------------------------
 
 app = FastAPI(
-    title="RELOC8 Engine",
+    title="RELOC8 API",
     description="Backend for the RELOC8 disaster risk and relocation system",
     version="1.0.0"
 )
+
+# --------------------------------------------------
+# CORS CONFIGURATION
+# --------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,32 +29,56 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Resolve path safely using pathlib to match your 'datab' directory structure
-BASE_DIR = Path(__file__).resolve().parent
+# --------------------------------------------------
+# PATHS & DATA LOADING
+# --------------------------------------------------
 
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "datab"
+FRONTEND_DATA_DIR = BASE_DIR.parent / "src" / "data"
+
+# Load Villages safely
 try:
-    with open(BASE_DIR / "datab" / "villages.json", "r", encoding="utf-8") as f:
+    with open(DATA_DIR / "villages.json", "r", encoding="utf-8") as f:
         villages_data = json.load(f)
     print("Successfully loaded villages.json")
 except Exception as e:
     print(f"Warning: Could not load villages.json: {e}")
-    villages_data = {"villages": []}
+    villages_data = []
 
+# Load Shelters safely
 try:
-    with open(BASE_DIR / "datab" / "shelters.json", "r", encoding="utf-8") as f:
+    with open(DATA_DIR / "shelters.json", "r", encoding="utf-8") as f:
         shelters_data = json.load(f)
     print("Successfully loaded shelters.json")
 except Exception as e:
     print(f"Warning: Could not load shelters.json: {e}")
-    shelters_data = {"shelters": []}
+    shelters_data = []
+
+# Load Animals safely
+try:
+    with open(FRONTEND_DATA_DIR / "animals.json", "r", encoding="utf-8") as f:
+        animals_data = json.load(f)
+    print("Successfully loaded animals.json")
+except Exception as e:
+    print(f"Warning: Could not load animals.json: {e}")
+    animals_data = []
 
 reports_db = []
+
+# --------------------------------------------------
+# REPORT MODEL
+# --------------------------------------------------
 
 class IncidentReport(BaseModel):
     type: str
     village: str
-    affectedCount: str
+    affectedCount: int
     description: Optional[str] = ""
+
+# --------------------------------------------------
+# API ENDPOINTS
+# --------------------------------------------------
 
 @app.get("/")
 def home():
@@ -61,45 +94,70 @@ def get_villages():
 def get_shelters():
     return shelters_data
 
-@app.get("/hazards")
-def get_hazards():
-    return {
-        "hazards": [
-            {"id": 1, "type": "flood", "severity": "high", "risk_score": 82},
-            {"id": 2, "type": "flood", "severity": "medium", "risk_score": 55}
-        ]
-    }
-
 @app.get("/animals")
 def get_animals():
+    return animals_data
+
+@app.get("/hazards")
+def get_hazards():
+    hazards = []
+    # Handle both list and wrapped dict formats safely
+    v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
+    
+    for village in v_list:
+        hazards.append({
+            "village": village.get("village"),
+            "district": village.get("district"),
+            "hazard_score": village.get("hazard_score"),
+            "flood_history": village.get("flood_history"),
+            "risk_level": village.get("risk_level")
+        })
     return {
-        "animals": [
-            {"id": 1, "type": "cattle", "count": 50},
-            {"id": 2, "type": "goat", "count": 30},
-            {"id": 3, "type": "dog", "count": 20}
-        ]
+        "hazards": hazards
     }
 
 @app.get("/risk")
 def get_risk():
+    v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
+    if not v_list:
+        return {
+            "risk_level": "UNKNOWN",
+            "risk_score": 0,
+            "affected_population": 0
+        }
+
+    highest_risk_village = max(
+        v_list,
+        key=lambda village: village.get("risk_score", 0)
+    )
+
     return {
-        "risk_level": "HIGH",
-        "risk_score": 82,
-        "affected_population": 500
+        "risk_level": highest_risk_village.get("risk_level"),
+        "risk_score": highest_risk_village.get("risk_score"),
+        "affected_population": highest_risk_village.get("population"),
+        "village": highest_risk_village.get("village")
     }
 
 @app.post("/api/reports")
 def submit_report(report: IncidentReport):
-    report_dict = report.dict()
+    report_dict = report.model_dump()
     report_dict["id"] = len(reports_db) + 1
     reports_db.append(report_dict)
-    return {"status": "success", "data": report_dict}
+    return {
+        "status": "success",
+        "data": report_dict
+    }
 
 @app.get("/api/reports")
 def get_reports():
-    return reports_db
+    return {
+        "reports": reports_db
+    }
 
 @app.get("/api/relocation-plan")
 def get_relocation_plan():
     plan = allocate_shelters(villages_data, shelters_data)
-    return {"status": "success", "plan": plan}
+    return {
+        "status": "success",
+        "plan": plan
+    }

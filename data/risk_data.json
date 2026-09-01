@@ -1,0 +1,29 @@
+[
+  {
+    "village": "Village A",
+    "population": 2500,
+    "hazard_score": 84,
+    "vulnerability_score": 75,
+    "exposure_score": 84,
+    "risk_score": 81,
+    "risk_level": "CRITICAL"
+  },
+  {
+    "village": "Village B",
+    "population": 1800,
+    "hazard_score": 59,
+    "vulnerability_score": 50,
+    "exposure_score": 60,
+    "risk_score": 57,
+    "risk_level": "MEDIUM"
+  },
+  {
+    "village": "Village C",
+    "population": 900,
+    "hazard_score": 29,
+    "vulnerability_score": 30,
+    "exposure_score": 28,
+    "risk_score": 29,
+    "risk_level": "LOW"
+  }
+]
