@@ -2,13 +2,10 @@ import json
 import os
 from pathlib import Path
 from typing import Optional
-<<<<<<< HEAD
 from fastapi import FastAPI, HTTPException
-=======
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
->>>>>>> a3eb85dca2255c83390e5dc2607f142eea8b223e
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
