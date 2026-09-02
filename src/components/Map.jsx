@@ -205,11 +205,11 @@ function Map() {
         />
       )}
 
-      {/* Map Legend */}
+      {/* Map Legend - Positioned safely on the left side below filters */}
       <div style={{
         position: "absolute",
-        bottom: "24px",
-        right: "16px",
+        top: "215px",
+        left: "60px",
         zIndex: 1000,
         background: "rgba(255, 255, 255, 0.95)",
         padding: "10px 14px",
@@ -218,7 +218,8 @@ function Map() {
         fontSize: "12px",
         lineHeight: "1.6",
         color: "#1e293b",
-        fontFamily: "system-ui, sans-serif"
+        fontFamily: "system-ui, sans-serif",
+        minWidth: "170px"
       }}>
         <strong style={{ display: "block", marginBottom: "4px" }}>Map Indicators</strong>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
