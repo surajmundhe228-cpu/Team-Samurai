@@ -12,7 +12,7 @@ function App() {
       display: "flex", 
       flexDirection: "column", 
       height: "100vh", 
-      width: "100vw", 
+      width: "100%", 
       overflow: "hidden",
       backgroundColor: "#0f172a",
       fontFamily: "system-ui, -apple-system, sans-serif"
