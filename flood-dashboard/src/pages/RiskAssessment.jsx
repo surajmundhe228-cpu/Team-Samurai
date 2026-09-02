@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import villages from "../data/village";
-import RiskTable from "../components/RiskTable";
+import Risktable from "../components/Risktable";
 import { calculateRisk } from "../services/api";
 
 function RiskAssessment() {

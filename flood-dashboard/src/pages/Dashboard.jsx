@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import shelters from "../data/shelter";
 
 import StatCard from "../components/StatCard";
-import RiskCard from "../components/RiskCard";
+import Riskcard from "../components/Riskcard";
 import MapView from "../components/MapView";
 import WeatherCard from "../components/WeatherCard";
 
