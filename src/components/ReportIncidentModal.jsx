@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const BACKEND_URL = "http://127.0.0.1:8000";
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 export default function ReportIncidentModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -15,13 +15,11 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // 1. Console me log karo
+
     console.log("Submitting Field Report Payload:", formData);
-    
+
     setSubmitting(true);
     try {
-      // 2. Member 6 ke POST endpoint ko call karo
       const response = await fetch(`${BACKEND_URL}/api/reports`, {
         method: "POST",
         headers: {
@@ -36,7 +34,7 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
       const result = await response.json();
       console.log("Backend Response Success:", result);
-      
+
       alert("Incident successfully reported to command center!");
       onClose();
     } catch (err) {
@@ -70,8 +68,8 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div>
             <label style={{ fontSize: "12px", fontWeight: "600", color: "#475569" }}>Incident Category</label>
-            <select 
-              value={formData.type} 
+            <select
+              value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
               style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", marginTop: "4px" }}
             >
@@ -83,8 +81,8 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
           <div>
             <label style={{ fontSize: "12px", fontWeight: "600", color: "#475569" }}>Village / Location</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               placeholder="e.g., Bishanpur"
               value={formData.village}
@@ -95,8 +93,8 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
           <div>
             <label style={{ fontSize: "12px", fontWeight: "600", color: "#475569" }}>Approx Affected Count</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="e.g., ~20-25"
               value={formData.affectedCount}
               onChange={(e) => setFormData({ ...formData, affectedCount: e.target.value })}
@@ -106,7 +104,7 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
           <div>
             <label style={{ fontSize: "12px", fontWeight: "600", color: "#475569" }}>Landmark Details</label>
-            <textarea 
+            <textarea
               rows={3}
               placeholder="Near bridge / school embankment..."
               value={formData.description}
@@ -115,8 +113,8 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={submitting}
             style={{
               padding: "10px",

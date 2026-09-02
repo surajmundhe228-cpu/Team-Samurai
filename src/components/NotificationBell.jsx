@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const BACKEND_URL = import.meta.env.VITE_API_URL;
+
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -7,7 +9,7 @@ const NotificationBell = () => {
 
   useEffect(() => {
     // Fetch notifications from FastAPI backend
-    fetch('http://127.0.0.1:8000/api/notifications')
+    fetch(`${BACKEND_URL}/api/notifications`)
       .then((res) => res.json())
       .then((data) => {
         setNotifications(data);
