@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-const API_URL = "http://127.0.0.1:8000";
+import { getWeather } from "../services/api";
 
 function WeatherCard() {
   const [weather, setWeather] = useState(null);
@@ -13,20 +12,17 @@ function WeatherCard() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API_URL}/api/weather`);
-
-        if (!response.ok) {
-          throw new Error(`Weather API failed: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await getWeather();
 
         console.log("Weather data from backend:", data);
 
         setWeather(data);
       } catch (err) {
         console.error("Weather API error:", err);
-        setError("Weather information unavailable");
+
+        setError(
+          err?.message || "Weather information unavailable"
+        );
       } finally {
         setLoading(false);
       }
@@ -75,11 +71,11 @@ function WeatherCard() {
 
             <div>
               <h1>
-                {weather.temperature}°C
+                {weather.temperature ?? "--"}°C
               </h1>
 
               <p>
-                {weather.condition}
+                {weather.condition || "Unknown"}
               </p>
             </div>
 
@@ -96,7 +92,7 @@ function WeatherCard() {
                 <p>Humidity</p>
 
                 <strong>
-                  {weather.humidity}%
+                  {weather.humidity ?? "--"}%
                 </strong>
               </div>
             </div>
@@ -109,7 +105,7 @@ function WeatherCard() {
                 <p>Wind</p>
 
                 <strong>
-                  {weather.windSpeed} km/h
+                  {weather.windSpeed ?? "--"} km/h
                 </strong>
               </div>
             </div>
@@ -122,7 +118,7 @@ function WeatherCard() {
                 <p>Rain</p>
 
                 <strong>
-                  {weather.rainfall} mm
+                  {weather.rainfall ?? "--"} mm
                 </strong>
               </div>
             </div>
@@ -135,7 +131,7 @@ function WeatherCard() {
                 <p>Location</p>
 
                 <strong>
-                  {weather.location}
+                  {weather.location || "Supaul, Bihar"}
                 </strong>
               </div>
             </div>
