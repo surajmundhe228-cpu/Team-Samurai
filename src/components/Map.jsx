@@ -129,7 +129,7 @@ function Map() {
   return (
     <div style={{ height: "calc(100vh - 75px)", width: "100%", position: "relative" }}>
       
-      {/* Floating Filter Panel (Screen 4 Layout) */}
+      {/* Floating Filter Panel */}
       <div style={{
         position: "absolute",
         top: "16px",
@@ -303,7 +303,7 @@ function Map() {
           />
         )}
 
-        {/* Shelters Layer with 🏠 symbol */}
+        {/* Shelters Layer */}
         {showShelters && filteredShelters.map((s, i) => {
           if (s.latitude == null || s.longitude == null || isNaN(s.latitude) || isNaN(s.longitude)) {
             return null;
@@ -325,7 +325,7 @@ function Map() {
           );
         })}
 
-        {/* Animals Layer with 🐾 symbol */}
+        {/* Animals Layer */}
         {showAnimals && filteredAnimals.map((a, i) => {
           if (a.latitude == null || a.longitude == null || isNaN(a.latitude) || isNaN(a.longitude)) {
             return null;
@@ -344,7 +344,7 @@ function Map() {
           );
         })}
 
-        {/* Habitations Layer with 📍 symbol */}
+        {/* Habitations Layer */}
         {showVillages && filteredVillages.map((v, i) => {
           if (v.latitude == null || v.longitude == null || isNaN(v.latitude) || isNaN(v.longitude)) {
             return null;
