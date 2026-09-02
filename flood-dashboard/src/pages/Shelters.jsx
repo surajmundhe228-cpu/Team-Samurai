@@ -1,7 +1,7 @@
 import React from "react";
 
 import shelters from "../data/shelter";
-import ShelterCard from "../components/ShelterCard";
+import Sheltercard from "../components/Sheltercard";
 
 function Shelters() {
 
@@ -51,7 +51,7 @@ function Shelters() {
 
         {shelters.map(shelter => (
 
-          <ShelterCard
+          <Sheltercard
             key={shelter.shelter_name}
             shelter={shelter}
           />

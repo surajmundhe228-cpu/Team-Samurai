@@ -1,6 +1,6 @@
 import React from "react";
 
-function ShelterCard({ shelter }) {
+function Sheltercard({ shelter }) {
 
   const occupancy =
     (shelter.current_occupancy / shelter.capacity) * 100;
@@ -66,4 +66,4 @@ function ShelterCard({ shelter }) {
   );
 }
 
-export default ShelterCard;
+export default Sheltercard;
