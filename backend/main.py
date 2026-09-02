@@ -1,10 +1,31 @@
 import json
+import os
 from pathlib import Path
 from typing import Optional
+<<<<<<< HEAD
 from fastapi import FastAPI, HTTPException
+=======
+
+from dotenv import load_dotenv
+from fastapi import FastAPI
+>>>>>>> a3eb85dca2255c83390e5dc2607f142eea8b223e
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 from backend.shelter_allocator import allocate_shelters
+
+
+# --------------------------------------------------
+# ENVIRONMENT CONFIGURATION
+# --------------------------------------------------
+
+load_dotenv()
+
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
+    "http://localhost:5173"
+)
+
 
 # --------------------------------------------------
 # APP INITIALIZATION
@@ -16,17 +37,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
 # --------------------------------------------------
 # CORS CONFIGURATION
 # --------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # --------------------------------------------------
 # PATHS & DIRECTORIES
@@ -35,6 +58,7 @@ app.add_middleware(
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "datab"
 FRONTEND_DATA_DIR = BASE_DIR.parent / "src" / "data"
+
 
 # --------------------------------------------------
 # DATA LOADING WITH ERROR HANDLING
@@ -48,6 +72,7 @@ except Exception as e:
     print(f"Warning: Could not load villages.json: {e}")
     villages_data = []
 
+
 try:
     with open(DATA_DIR / "shelters.json", "r", encoding="utf-8") as f:
         shelters_data = json.load(f)
@@ -55,6 +80,7 @@ try:
 except Exception as e:
     print(f"Warning: Could not load shelters.json: {e}")
     shelters_data = []
+
 
 try:
     with open(FRONTEND_DATA_DIR / "animals.json", "r", encoding="utf-8") as f:
@@ -72,8 +98,10 @@ except Exception as e:
     print(f"Warning: Could not load alerts_data.json: {e}")
     notifications_data = []
 
+
 # In-memory database for incident reports
 reports_db = []
+
 
 # --------------------------------------------------
 # PYDANTIC MODELS
@@ -85,6 +113,7 @@ class IncidentReport(BaseModel):
     affectedCount: int
     description: Optional[str] = ""
 
+
 # --------------------------------------------------
 # ENDPOINTS: SYSTEM & CORE DATA
 # --------------------------------------------------
@@ -95,11 +124,13 @@ def home():
         "message": "RELOC8 Backend is running"
     }
 
+
 @app.get("/villages")
 def get_villages():
     return {
         "villages": villages_data
     }
+
 
 @app.get("/shelters")
 def get_shelters():
@@ -107,11 +138,13 @@ def get_shelters():
         "shelters": shelters_data
     }
 
+
 @app.get("/animals")
 def get_animals():
     return {
         "animals": animals_data
     }
+
 
 # --------------------------------------------------
 # ENDPOINTS: HAZARDS & RISK ANALYSIS
@@ -120,8 +153,13 @@ def get_animals():
 @app.get("/hazards")
 def get_hazards():
     hazards = []
-    v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
-    
+
+    v_list = (
+        villages_data.get("villages", villages_data)
+        if isinstance(villages_data, dict)
+        else villages_data
+    )
+
     for village in v_list:
         hazards.append({
             "village": village.get("village"),
@@ -135,10 +173,15 @@ def get_hazards():
         "hazards": hazards
     }
 
+
 @app.get("/risk")
 def get_risk():
-    v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
-    
+    v_list = (
+        villages_data.get("villages", villages_data)
+        if isinstance(villages_data, dict)
+        else villages_data
+    )
+
     if not v_list:
         return {
             "risk_level": "UNKNOWN",
@@ -157,6 +200,7 @@ def get_risk():
         "affected_population": highest_risk_village.get("population"),
         "village": highest_risk_village.get("village")
     }
+
 
 # --------------------------------------------------
 # ENDPOINTS: XAI RISK ANALYSIS (NEW)
@@ -218,7 +262,12 @@ def get_xai_risk(village_name: str):
 
 @app.post("/api/reports")
 def submit_report(report: IncidentReport):
-    report_dict = report.model_dump() if hasattr(report, "model_dump") else report.dict()
+    report_dict = (
+        report.model_dump()
+        if hasattr(report, "model_dump")
+        else report.dict()
+    )
+
     report_dict["id"] = len(reports_db) + 1
     reports_db.append(report_dict)
 
@@ -227,11 +276,13 @@ def submit_report(report: IncidentReport):
         "data": report_dict
     }
 
+
 @app.get("/api/reports")
 def get_reports():
     return {
         "reports": reports_db
     }
+
 
 # --------------------------------------------------
 # ENDPOINTS: ALLOCATION & NOTIFICATIONS
@@ -248,6 +299,7 @@ def get_relocation_plan():
         "status": "success",
         "plan": plan
     }
+
 
 @app.get("/api/notifications")
 def get_notifications():
