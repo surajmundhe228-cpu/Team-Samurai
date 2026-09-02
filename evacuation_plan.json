@@ -1,0 +1,757 @@
+{
+  "status": "success",
+  "message": "Flood risk assessment and evacuation plan generated successfully",
+
+  "generated_at": "2026-09-02",
+
+  "total_villages": 3,
+  "total_shelters": 18,
+
+  "summary": {
+    "total_population": 1700,
+    "total_population_at_risk": 1450,
+    "total_evacuated": 1050,
+    "total_unassigned": 650,
+
+    "critical_villages": 1,
+    "high_risk_villages": 1,
+    "medium_risk_villages": 0,
+    "low_risk_villages": 1,
+
+    "total_shelter_capacity": 7970,
+    "total_shelter_occupancy": 4810,
+    "total_available_capacity": 3160,
+
+    "evacuation_completion_percentage": 61.76
+  },
+
+  "risk_assessment": [
+    {
+      "village": "Rampur",
+      "district": "Supaul",
+
+      "latitude": 26.12,
+      "longitude": 86.62,
+
+      "population": 850,
+
+      "rainfall_mm": 320,
+      "elevation_m": 45,
+      "distance_from_river_km": 1.2,
+      "flood_history": 5,
+
+      "hazard_score": 95,
+      "vulnerability_score": 88,
+      "exposure_score": 87,
+
+      "risk_score": 90.1,
+
+      "risk_level": "Very High Flood Risk",
+      "priority": "Critical",
+
+      "risk_description": "Very high flood risk requiring immediate evacuation priority.",
+
+      "reasons": [
+        "Very high rainfall",
+        "Low elevation",
+        "Close proximity to river",
+        "High population exposure",
+        "Significant flood history"
+      ],
+
+      "recommended_action": "Immediate evacuation",
+
+      "evacuation_required": true
+    },
+
+    {
+      "village": "Shivapur",
+      "district": "Supaul",
+
+      "latitude": 26.18,
+      "longitude": 86.72,
+
+      "population": 600,
+
+      "rainfall_mm": 250,
+      "elevation_m": 52,
+      "distance_from_river_km": 2.8,
+      "flood_history": 3,
+
+      "hazard_score": 72,
+      "vulnerability_score": 63,
+      "exposure_score": 58,
+
+      "risk_score": 64.1,
+
+      "risk_level": "High Flood Risk",
+      "priority": "High",
+
+      "risk_description": "High flood risk requiring prioritized evacuation and monitoring.",
+
+      "reasons": [
+        "High rainfall",
+        "Moderate elevation",
+        "Relatively close to river",
+        "High population exposure",
+        "Previous flood events"
+      ],
+
+      "recommended_action": "Priority evacuation",
+
+      "evacuation_required": true
+    },
+
+    {
+      "village": "Lakshmipur",
+      "district": "Supaul",
+
+      "latitude": 26.21,
+      "longitude": 86.68,
+
+      "population": 250,
+
+      "rainfall_mm": 150,
+      "elevation_m": 68,
+      "distance_from_river_km": 6.5,
+      "flood_history": 1,
+
+      "hazard_score": 35,
+      "vulnerability_score": 30,
+      "exposure_score": 20,
+
+      "risk_score": 28.3,
+
+      "risk_level": "Low Flood Risk",
+      "priority": "Low",
+
+      "risk_description": "Low flood risk; evacuation is not currently required.",
+
+      "reasons": [
+        "Lower rainfall",
+        "Higher elevation",
+        "Greater distance from river",
+        "Lower population exposure",
+        "Limited flood history"
+      ],
+
+      "recommended_action": "Monitor situation",
+
+      "evacuation_required": false
+    }
+  ],
+
+  "shelters": [
+    {
+      "shelter_name": "Supaul College Relief Camp",
+      "latitude": 26.115,
+      "longitude": 86.595,
+      "capacity": 800,
+      "current_occupancy": 620,
+      "available_capacity": 180,
+      "type": "School/College",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Food Distribution"
+      ]
+    },
+
+    {
+      "shelter_name": "Triveniganj High School Camp",
+      "latitude": 26.18,
+      "longitude": 86.72,
+      "capacity": 450,
+      "current_occupancy": 410,
+      "available_capacity": 40,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Chhatapur Block Relief Centre",
+      "latitude": 26.21,
+      "longitude": 86.68,
+      "capacity": 600,
+      "current_occupancy": 280,
+      "available_capacity": 320,
+      "type": "Community Hall",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Kitchen"
+      ]
+    },
+
+    {
+      "shelter_name": "Raghopur Primary School",
+      "latitude": 26.25,
+      "longitude": 86.55,
+      "capacity": 300,
+      "current_occupancy": 295,
+      "available_capacity": 5,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Basantpur Relief Camp",
+      "latitude": 26.32,
+      "longitude": 86.48,
+      "capacity": 500,
+      "current_occupancy": 150,
+      "available_capacity": 350,
+      "type": "Temporary Camp",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Food Distribution",
+        "Tents"
+      ]
+    },
+
+    {
+      "shelter_name": "Madhepura Stadium Camp",
+      "latitude": 25.92,
+      "longitude": 86.79,
+      "capacity": 1200,
+      "current_occupancy": 950,
+      "available_capacity": 250,
+      "type": "Stadium/Ground",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Food Distribution",
+        "Electricity"
+      ]
+    },
+
+    {
+      "shelter_name": "Murliganj High School",
+      "latitude": 25.88,
+      "longitude": 86.92,
+      "capacity": 400,
+      "current_occupancy": 380,
+      "available_capacity": 20,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Kumarkhand Community Centre",
+      "latitude": 25.95,
+      "longitude": 86.85,
+      "capacity": 350,
+      "current_occupancy": 120,
+      "available_capacity": 230,
+      "type": "Community Hall",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Kitchen"
+      ]
+    },
+
+    {
+      "shelter_name": "Alamnagar Relief Shelter",
+      "latitude": 25.85,
+      "longitude": 86.7,
+      "capacity": 280,
+      "current_occupancy": 260,
+      "available_capacity": 20,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Singheshwar Temple Complex",
+      "latitude": 25.98,
+      "longitude": 86.8,
+      "capacity": 450,
+      "current_occupancy": 200,
+      "available_capacity": 250,
+      "type": "Religious Complex",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Food Distribution"
+      ]
+    },
+
+    {
+      "shelter_name": "Bihariganj Block Office Camp",
+      "latitude": 25.9,
+      "longitude": 87.0,
+      "capacity": 320,
+      "current_occupancy": 80,
+      "available_capacity": 240,
+      "type": "Govt Building",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Electricity"
+      ]
+    },
+
+    {
+      "shelter_name": "Gwalpara School Camp",
+      "latitude": 25.87,
+      "longitude": 86.75,
+      "capacity": 250,
+      "current_occupancy": 240,
+      "available_capacity": 10,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Pratapganj High School Camp",
+      "latitude": 26.28,
+      "longitude": 86.62,
+      "capacity": 380,
+      "current_occupancy": 210,
+      "available_capacity": 170,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Food Distribution"
+      ]
+    },
+
+    {
+      "shelter_name": "Nirmali Relief Centre",
+      "latitude": 26.3,
+      "longitude": 86.58,
+      "capacity": 420,
+      "current_occupancy": 180,
+      "available_capacity": 240,
+      "type": "Community Hall",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Kitchen"
+      ]
+    },
+
+    {
+      "shelter_name": "Udakishunganj Block Camp",
+      "latitude": 25.83,
+      "longitude": 86.95,
+      "capacity": 550,
+      "current_occupancy": 300,
+      "available_capacity": 250,
+      "type": "Govt Building",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk",
+        "Electricity",
+        "Food Distribution"
+      ]
+    },
+
+    {
+      "shelter_name": "Shankarpur Primary School",
+      "latitude": 25.91,
+      "longitude": 86.88,
+      "capacity": 220,
+      "current_occupancy": 195,
+      "available_capacity": 25,
+      "type": "School",
+      "facilities": [
+        "Toilets",
+        "Drinking Water"
+      ]
+    },
+
+    {
+      "shelter_name": "Kishanganj Road Temporary Camp",
+      "latitude": 26.05,
+      "longitude": 86.65,
+      "capacity": 600,
+      "current_occupancy": 140,
+      "available_capacity": 460,
+      "type": "Temporary Camp",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Tents",
+        "Food Distribution"
+      ]
+    },
+
+    {
+      "shelter_name": "Gamharia Community Hall",
+      "latitude": 25.915,
+      "longitude": 86.97,
+      "capacity": 300,
+      "current_occupancy": 90,
+      "available_capacity": 210,
+      "type": "Community Hall",
+      "facilities": [
+        "Toilets",
+        "Drinking Water",
+        "Medical Desk"
+      ]
+    }
+  ],
+
+  "evacuation_plan": [
+    {
+      "village": "Rampur",
+      "district": "Supaul",
+
+      "latitude": 26.12,
+      "longitude": 86.62,
+
+      "population": 850,
+      "priority": "Critical",
+      "risk_score": 90.1,
+
+      "evacuated_population": 850,
+      "unassigned_population": 0,
+
+      "evacuation_status": "Fully Evacuated",
+
+      "shelter_assignments": [
+        {
+          "shelter_name": "Triveniganj High School Camp",
+          "assigned_population": 40,
+          "available_capacity_before": 40,
+          "available_capacity_after": 0
+        },
+        {
+          "shelter_name": "Chhatapur Block Relief Centre",
+          "assigned_population": 320,
+          "available_capacity_before": 320,
+          "available_capacity_after": 0
+        },
+        {
+          "shelter_name": "Kishanganj Road Temporary Camp",
+          "assigned_population": 460,
+          "available_capacity_before": 460,
+          "available_capacity_after": 0
+        },
+        {
+          "shelter_name": "Basantpur Relief Camp",
+          "assigned_population": 30,
+          "available_capacity_before": 350,
+          "available_capacity_after": 320
+        }
+      ],
+
+      "routes": [
+        {
+          "shelter_name": "Triveniganj High School Camp",
+          "distance_km": 10.34,
+          "route_type": "Approximate straight-line route",
+          "start": {
+            "latitude": 26.12,
+            "longitude": 86.62
+          },
+          "end": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "route_coordinates": [
+            [26.12, 86.62],
+            [26.135, 86.645],
+            [26.15, 86.67],
+            [26.165, 86.695],
+            [26.18, 86.72]
+          ]
+        },
+        {
+          "shelter_name": "Chhatapur Block Relief Centre",
+          "distance_km": 10.18,
+          "route_type": "Approximate straight-line route",
+          "start": {
+            "latitude": 26.12,
+            "longitude": 86.62
+          },
+          "end": {
+            "latitude": 26.21,
+            "longitude": 86.68
+          },
+          "route_coordinates": [
+            [26.12, 86.62],
+            [26.1425, 86.635],
+            [26.165, 86.65],
+            [26.1875, 86.665],
+            [26.21, 86.68]
+          ]
+        },
+        {
+          "shelter_name": "Kishanganj Road Temporary Camp",
+          "distance_km": 8.15,
+          "route_type": "Approximate straight-line route",
+          "start": {
+            "latitude": 26.12,
+            "longitude": 86.62
+          },
+          "end": {
+            "latitude": 26.05,
+            "longitude": 86.65
+          },
+          "route_coordinates": [
+            [26.12, 86.62],
+            [26.1025, 86.6275],
+            [26.085, 86.635],
+            [26.0675, 86.6425],
+            [26.05, 86.65]
+          ]
+        },
+        {
+          "shelter_name": "Basantpur Relief Camp",
+          "distance_km": 24.14,
+          "route_type": "Long-distance route",
+          "start": {
+            "latitude": 26.12,
+            "longitude": 86.62
+          },
+          "end": {
+            "latitude": 26.32,
+            "longitude": 86.48
+          },
+          "route_coordinates": [
+            [26.12, 86.62],
+            [26.17, 86.585],
+            [26.22, 86.55],
+            [26.27, 86.515],
+            [26.32, 86.48]
+          ]
+        }
+      ]
+    },
+
+    {
+      "village": "Shivapur",
+      "district": "Supaul",
+
+      "latitude": 26.18,
+      "longitude": 86.72,
+
+      "population": 600,
+      "priority": "High",
+      "risk_score": 64.1,
+
+      "evacuated_population": 200,
+      "unassigned_population": 400,
+
+      "evacuation_status": "Partially Evacuated",
+
+      "shelter_assignments": [
+        {
+          "shelter_name": "Triveniganj High School Camp",
+          "assigned_population": 0,
+          "available_capacity_before": 40,
+          "available_capacity_after": 40
+        },
+        {
+          "shelter_name": "Chhatapur Block Relief Centre",
+          "assigned_population": 0,
+          "available_capacity_before": 320,
+          "available_capacity_after": 320
+        },
+        {
+          "shelter_name": "Kishanganj Road Temporary Camp",
+          "assigned_population": 200,
+          "available_capacity_before": 460,
+          "available_capacity_after": 260
+        }
+      ],
+
+      "routes": [
+        {
+          "shelter_name": "Triveniganj High School Camp",
+          "distance_km": 0.0,
+          "route_type": "Nearest shelter",
+          "start": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "end": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "route_coordinates": [
+            [26.18, 86.72]
+          ]
+        },
+        {
+          "shelter_name": "Chhatapur Block Relief Centre",
+          "distance_km": 3.42,
+          "route_type": "Approximate straight-line route",
+          "start": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "end": {
+            "latitude": 26.21,
+            "longitude": 86.68
+          },
+          "route_coordinates": [
+            [26.18, 86.72],
+            [26.1875, 86.71],
+            [26.195, 86.70],
+            [26.2025, 86.69],
+            [26.21, 86.68]
+          ]
+        },
+        {
+          "shelter_name": "Kishanganj Road Temporary Camp",
+          "distance_km": 14.99,
+          "route_type": "Outside preferred distance",
+          "start": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "end": {
+            "latitude": 26.05,
+            "longitude": 86.65
+          },
+          "route_coordinates": [
+            [26.18, 86.72],
+            [26.1475, 86.7025],
+            [26.115, 86.685],
+            [26.0825, 86.6675],
+            [26.05, 86.65]
+          ]
+        }
+      ]
+    },
+
+    {
+      "village": "Lakshmipur",
+      "district": "Supaul",
+
+      "latitude": 26.21,
+      "longitude": 86.68,
+
+      "population": 250,
+      "priority": "Low",
+      "risk_score": 28.3,
+
+      "evacuated_population": 0,
+      "unassigned_population": 250,
+
+      "evacuation_status": "Evacuation Not Required",
+
+      "shelter_assignments": [],
+
+      "routes": [
+        {
+          "shelter_name": "Chhatapur Block Relief Centre",
+          "distance_km": 0.0,
+          "route_type": "Nearest shelter",
+          "start": {
+            "latitude": 26.21,
+            "longitude": 86.68
+          },
+          "end": {
+            "latitude": 26.21,
+            "longitude": 86.68
+          },
+          "route_coordinates": [
+            [26.21, 86.68]
+          ]
+        },
+        {
+          "shelter_name": "Triveniganj High School Camp",
+          "distance_km": 5.1,
+          "route_type": "Alternative shelter",
+          "start": {
+            "latitude": 26.21,
+            "longitude": 86.68
+          },
+          "end": {
+            "latitude": 26.18,
+            "longitude": 86.72
+          },
+          "route_coordinates": [
+            [26.21, 86.68],
+            [26.2025, 86.69],
+            [26.195, 86.70],
+            [26.1875, 86.71],
+            [26.18, 86.72]
+          ]
+        }
+      ]
+    }
+  ],
+
+  "priority_order": [
+    {
+      "rank": 1,
+      "village": "Rampur",
+      "priority": "Critical",
+      "risk_score": 90.1,
+      "action": "Immediate evacuation"
+    },
+    {
+      "rank": 2,
+      "village": "Shivapur",
+      "priority": "High",
+      "risk_score": 64.1,
+      "action": "Priority evacuation"
+    },
+    {
+      "rank": 3,
+      "village": "Lakshmipur",
+      "priority": "Low",
+      "risk_score": 28.3,
+      "action": "Monitor situation"
+    }
+  ],
+
+  "alerts": [
+    {
+      "severity": "CRITICAL",
+      "village": "Rampur",
+      "message": "Immediate evacuation is recommended due to very high flood risk."
+    },
+    {
+      "severity": "HIGH",
+      "village": "Shivapur",
+      "message": "Priority evacuation should be prepared due to high flood risk."
+    },
+    {
+      "severity": "LOW",
+      "village": "Lakshmipur",
+      "message": "No immediate evacuation required. Continue monitoring."
+    }
+  ],
+
+  "recommendations": [
+    "Prioritize evacuation of Critical-risk villages first.",
+    "Use shelters with sufficient available capacity.",
+    "Monitor shelter occupancy continuously.",
+    "Keep medical and food distribution facilities operational.",
+    "Update evacuation routes when road or flood conditions change.",
+    "Recalculate risk when rainfall or river conditions change.",
+    "Keep low-risk villages under continuous monitoring."
+  ]
+}

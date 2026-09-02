@@ -1,0 +1,290 @@
+import React, { useEffect, useState } from "react";
+import villages from "../data/village";
+import RiskTable from "../components/RiskTable";
+import { calculateRisk } from "../services/api";
+
+function RiskAssessment() {
+  const [filter, setFilter] = useState("ALL");
+  const [riskVillages, setRiskVillages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // ============================================================
+  // LOAD RISK DATA
+  // ============================================================
+
+  useEffect(() => {
+    async function loadRiskData() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await calculateRisk(villages);
+
+        console.log("Risk data from backend:", data);
+
+        if (data?.status === "error") {
+          throw new Error(
+            data.message || "Risk calculation failed."
+          );
+        }
+
+        setRiskVillages(
+          data?.risk_assessment || []
+        );
+
+      } catch (err) {
+        console.error("Risk API error:", err);
+
+        setError(
+          err?.message ||
+          "Unable to calculate flood risk."
+        );
+
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRiskData();
+  }, []);
+
+  // ============================================================
+  // FILTER
+  // ============================================================
+
+  const filteredVillages =
+    filter === "ALL"
+      ? riskVillages
+      : riskVillages.filter(
+          (village) =>
+            String(
+              village.risk_level || ""
+            ).toUpperCase() === filter
+        );
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
+  if (loading) {
+    return (
+      <div className="risk-assessment-page">
+
+        <div className="page-heading">
+          <h1>Risk Assessment</h1>
+
+          <p>
+            Calculating flood risk...
+          </p>
+        </div>
+
+        <div className="generate-loading">
+
+          <div className="loading-spinner"></div>
+
+          <h2>
+            Analyzing Village Risk
+          </h2>
+
+          <p>
+            Calculating hazard, vulnerability
+            and exposure levels...
+          </p>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  // ============================================================
+  // ERROR
+  // ============================================================
+
+  if (error) {
+    return (
+      <div className="risk-assessment-page">
+
+        <div className="page-heading">
+          <h1>Risk Assessment</h1>
+
+          <p>
+            Analyze flood risk across villages
+          </p>
+        </div>
+
+        <div className="evacuation-error">
+
+          <strong>
+            Unable to calculate risk
+          </strong>
+
+          <span>
+            {error}
+          </span>
+
+        </div>
+
+        <button
+          className="generate-main-btn"
+          onClick={() => window.location.reload()}
+        >
+          🔄 Retry
+        </button>
+
+      </div>
+    );
+  }
+
+  // ============================================================
+  // MAIN UI
+  // ============================================================
+
+  return (
+    <div className="risk-assessment-page">
+
+      {/* ======================================================
+          HEADER
+      ====================================================== */}
+
+      <div className="page-heading">
+
+        <h1>
+          Risk Assessment
+        </h1>
+
+        <p>
+          Analyze flood risk across villages
+        </p>
+
+      </div>
+
+
+      {/* ======================================================
+          FILTER BAR
+      ====================================================== */}
+
+      <div className="filter-bar">
+
+        <button
+          className={
+            filter === "ALL"
+              ? "active"
+              : ""
+          }
+          onClick={() => setFilter("ALL")}
+        >
+          All
+        </button>
+
+        <button
+          className={
+            filter === "CRITICAL"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setFilter("CRITICAL")
+          }
+        >
+          Critical
+        </button>
+
+        <button
+          className={
+            filter === "HIGH"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setFilter("HIGH")
+          }
+        >
+          High
+        </button>
+
+        <button
+          className={
+            filter === "MEDIUM"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setFilter("MEDIUM")
+          }
+        >
+          Medium
+        </button>
+
+        <button
+          className={
+            filter === "LOW"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setFilter("LOW")
+          }
+        >
+          Low
+        </button>
+
+      </div>
+
+
+      {/* ======================================================
+          RESULT COUNT
+      ====================================================== */}
+
+      <div
+        style={{
+          marginBottom: "15px",
+          color: "#6b7280",
+          fontSize: "14px"
+        }}
+      >
+        Showing{" "}
+        <strong>
+          {filteredVillages.length}
+        </strong>{" "}
+        of{" "}
+        <strong>
+          {riskVillages.length}
+        </strong>{" "}
+        villages
+      </div>
+
+
+      {/* ======================================================
+          RISK TABLE
+      ====================================================== */}
+
+      {filteredVillages.length === 0 ? (
+
+        <div className="empty-state">
+
+          <h3>
+            No villages found
+          </h3>
+
+          <p>
+            There are no villages matching
+            the selected risk level.
+          </p>
+
+        </div>
+
+      ) : (
+
+        <RiskTable
+          villages={filteredVillages}
+        />
+
+      )}
+
+    </div>
+  );
+}
+
+export default RiskAssessment;
