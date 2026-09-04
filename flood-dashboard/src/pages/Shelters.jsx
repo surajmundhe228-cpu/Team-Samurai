@@ -3,24 +3,58 @@ import React from "react";
 import shelters from "../data/shelter";
 import Sheltercard from "../components/Sheltercard";
 
+
 function Shelters() {
 
-  const totalCapacity = shelters.reduce(
-    (sum, shelter) => sum + shelter.capacity,
+  // ============================================================
+  // SAFE SHELTER DATA
+  // ============================================================
+
+  const shelterData = Array.isArray(shelters)
+    ? shelters
+    : [];
+
+
+  // ============================================================
+  // TOTAL CAPACITY
+  // ============================================================
+
+  const totalCapacity = shelterData.reduce(
+    (sum, shelter) =>
+      sum + Number(shelter?.capacity || 0),
     0
   );
 
-  const available = shelters.reduce(
-    (sum, shelter) => sum + shelter.available_capacity,
+
+  // ============================================================
+  // AVAILABLE SPACES
+  // ============================================================
+
+  const available = shelterData.reduce(
+    (sum, shelter) =>
+      sum + Number(
+        shelter?.available_capacity || 0
+      ),
     0
   );
+
+
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <div>
 
+      {/* ======================================================
+          PAGE HEADING
+      ====================================================== */}
+
       <div className="page-heading">
 
-        <h1>Relief Shelters</h1>
+        <h1>
+          Relief Shelters
+        </h1>
 
         <p>
           Monitor shelter capacity and facilities
@@ -28,40 +62,99 @@ function Shelters() {
 
       </div>
 
+
+      {/* ======================================================
+          SHELTER SUMMARY
+      ====================================================== */}
+
       <div className="shelter-summary">
 
         <div>
-          <span>Total Shelters</span>
-          <strong>{shelters.length}</strong>
+
+          <span>
+            Total Shelters
+          </span>
+
+          <strong>
+            {shelterData.length}
+          </strong>
+
         </div>
 
-        <div>
-          <span>Total Capacity</span>
-          <strong>{totalCapacity}</strong>
-        </div>
 
         <div>
-          <span>Available Spaces</span>
-          <strong>{available}</strong>
+
+          <span>
+            Total Capacity
+          </span>
+
+          <strong>
+            {totalCapacity.toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Available Spaces
+          </span>
+
+          <strong>
+            {available.toLocaleString()}
+          </strong>
+
         </div>
 
       </div>
 
-      <div className="shelter-grid">
 
-        {shelters.map(shelter => (
+      {/* ======================================================
+          SHELTER CARDS
+      ====================================================== */}
 
-          <Sheltercard
-            key={shelter.shelter_name}
-            shelter={shelter}
-          />
+      {shelterData.length === 0 ? (
 
-        ))}
+        <div className="empty-state">
 
-      </div>
+          <h3>
+            No shelters available
+          </h3>
+
+          <p>
+            No shelter information is currently available.
+          </p>
+
+        </div>
+
+      ) : (
+
+        <div className="shelter-grid">
+
+          {shelterData.map(
+            (shelter, index) => (
+
+              <Sheltercard
+                key={
+                  shelter?.shelter_name ||
+                  shelter?.name ||
+                  shelter?.id ||
+                  index
+                }
+                shelter={shelter}
+              />
+
+            )
+          )}
+
+        </div>
+
+      )}
 
     </div>
   );
 }
+
 
 export default Shelters;

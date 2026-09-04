@@ -7,10 +7,21 @@
 //
 // Render production:
 // Set VITE_API_URL in Render Environment Variables
+
 const API_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 console.log("API URL:", API_URL);
+
+
+// ================================
+// OFFLINE STORAGE
+// ================================
+
+import {
+  saveOfflineData,
+  getOfflineData,
+} from "./offline";
 
 
 // ================================
@@ -44,8 +55,38 @@ async function handleResponse(response) {
 // ================================
 
 export async function getDashboardData() {
-  const response = await fetch(`${API_URL}/api/dashboard`);
-  return await handleResponse(response);
+  try {
+    const response = await fetch(
+      `${API_URL}/api/dashboard`
+    );
+
+    const data = await handleResponse(response);
+
+    // Save latest successful data
+    saveOfflineData(
+      "reloc8_dashboard",
+      data
+    );
+
+    return data;
+
+  } catch (error) {
+
+    console.warn(
+      "Backend unavailable. Using offline dashboard data."
+    );
+
+    // Get saved dashboard data
+    const cached =
+      getOfflineData("reloc8_dashboard");
+
+    if (cached) {
+      return cached;
+    }
+
+    // No cached data available
+    throw error;
+  }
 }
 
 
@@ -54,8 +95,21 @@ export async function getDashboardData() {
 // ================================
 
 export async function getHealth() {
-  const response = await fetch(`${API_URL}/health`);
-  return await handleResponse(response);
+  try {
+    const response = await fetch(
+      `${API_URL}/health`
+    );
+
+    return await handleResponse(response);
+
+  } catch (error) {
+
+    console.warn(
+      "Backend health check failed."
+    );
+
+    throw error;
+  }
 }
 
 
@@ -64,8 +118,37 @@ export async function getHealth() {
 // ================================
 
 export async function getWeather() {
-  const response = await fetch(`${API_URL}/api/weather`);
-  return await handleResponse(response);
+  try {
+    const response = await fetch(
+      `${API_URL}/api/weather`
+    );
+
+    const data =
+      await handleResponse(response);
+
+    // Save latest successful weather
+    saveOfflineData(
+      "reloc8_weather",
+      data
+    );
+
+    return data;
+
+  } catch (error) {
+
+    console.warn(
+      "Weather unavailable. Using cached weather."
+    );
+
+    const cached =
+      getOfflineData("reloc8_weather");
+
+    if (cached) {
+      return cached;
+    }
+
+    throw error;
+  }
 }
 
 
@@ -74,8 +157,37 @@ export async function getWeather() {
 // ================================
 
 export async function getShelters() {
-  const response = await fetch(`${API_URL}/api/shelters`);
-  return await handleResponse(response);
+  try {
+    const response = await fetch(
+      `${API_URL}/api/shelters`
+    );
+
+    const data =
+      await handleResponse(response);
+
+    // Save latest successful shelter data
+    saveOfflineData(
+      "reloc8_shelters",
+      data
+    );
+
+    return data;
+
+  } catch (error) {
+
+    console.warn(
+      "Shelters unavailable. Using cached shelter data."
+    );
+
+    const cached =
+      getOfflineData("reloc8_shelters");
+
+    if (cached) {
+      return cached;
+    }
+
+    throw error;
+  }
 }
 
 
@@ -84,21 +196,56 @@ export async function getShelters() {
 // ================================
 
 export async function calculateRisk(villages) {
+
   if (!Array.isArray(villages)) {
-    throw new Error("Risk calculation requires a village array.");
+    throw new Error(
+      "Risk calculation requires a village array."
+    );
   }
 
-  const response = await fetch(`${API_URL}/risk`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      villages: villages,
-    }),
-  });
+  try {
 
-  return await handleResponse(response);
+    const response = await fetch(
+      `${API_URL}/risk`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          villages: villages,
+        }),
+      }
+    );
+
+    const data =
+      await handleResponse(response);
+
+    // Save latest successful risk data
+    saveOfflineData(
+      "reloc8_risk",
+      data
+    );
+
+    return data;
+
+  } catch (error) {
+
+    console.warn(
+      "Risk API unavailable. Using cached risk data."
+    );
+
+    const cached =
+      getOfflineData("reloc8_risk");
+
+    if (cached) {
+      return cached;
+    }
+
+    throw error;
+  }
 }
 
 
@@ -106,27 +253,69 @@ export async function calculateRisk(villages) {
 // EVACUATION PLAN
 // ================================
 
-export async function createEvacuationPlan(villages, shelters) {
+export async function createEvacuationPlan(
+  villages,
+  shelters
+) {
+
   if (!Array.isArray(villages)) {
-    throw new Error("Evacuation plan requires a village array.");
+    throw new Error(
+      "Evacuation plan requires a village array."
+    );
   }
 
   if (!Array.isArray(shelters)) {
-    throw new Error("Evacuation plan requires a shelter array.");
+    throw new Error(
+      "Evacuation plan requires a shelter array."
+    );
   }
 
-  const response = await fetch(`${API_URL}/evacuation-plan`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      villages: villages,
-      shelters: shelters,
-    }),
-  });
+  try {
 
-  return await handleResponse(response);
+    const response = await fetch(
+      `${API_URL}/evacuation-plan`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          villages: villages,
+          shelters: shelters,
+        }),
+      }
+    );
+
+    const data =
+      await handleResponse(response);
+
+    // Save latest successful evacuation plan
+    saveOfflineData(
+      "reloc8_evacuation_plan",
+      data
+    );
+
+    return data;
+
+  } catch (error) {
+
+    console.warn(
+      "Evacuation API unavailable. Using cached plan."
+    );
+
+    const cached =
+      getOfflineData(
+        "reloc8_evacuation_plan"
+      );
+
+    if (cached) {
+      return cached;
+    }
+
+    throw error;
+  }
 }
 
 

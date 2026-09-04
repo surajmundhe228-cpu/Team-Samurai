@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
+
 import villages from "../data/village";
 import Risktable from "../components/Risktable";
+
 import { calculateRisk } from "../services/api";
+import { getOfflineData } from "../services/offline";
+
 
 function RiskAssessment() {
   const [filter, setFilter] = useState("ALL");
@@ -9,48 +13,211 @@ function RiskAssessment() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
   // ============================================================
   // LOAD RISK DATA
   // ============================================================
 
   useEffect(() => {
+
     async function loadRiskData() {
+
       try {
+
         setLoading(true);
         setError("");
 
-        const data = await calculateRisk(villages);
 
-        console.log("Risk data from backend:", data);
+        // ------------------------------------------------------
+        // TRY BACKEND / API
+        // ------------------------------------------------------
 
-        if (data?.status === "error") {
-          throw new Error(
-            data.message || "Risk calculation failed."
+        let data;
+
+        try {
+
+          data = await calculateRisk(villages);
+
+          console.log(
+            "Risk data from backend:",
+            data
           );
+
+        } catch (apiError) {
+
+          console.warn(
+            "Risk API unavailable. Trying offline data..."
+          );
+
+          // ----------------------------------------------------
+          // OFFLINE FALLBACK
+          // ----------------------------------------------------
+
+          const cachedData =
+            getOfflineData("reloc8_risk");
+
+          if (cachedData) {
+
+            console.log(
+              "Using cached offline risk data:",
+              cachedData
+            );
+
+            data = cachedData;
+
+          } else {
+
+            throw apiError;
+
+          }
+
         }
 
-        setRiskVillages(
-          data?.risk_assessment || []
+
+        // ------------------------------------------------------
+        // CHECK BACKEND ERROR
+        // ------------------------------------------------------
+
+        if (
+          !Array.isArray(data) &&
+          data?.status === "error"
+        ) {
+
+          throw new Error(
+            data.message ||
+            "Risk calculation failed."
+          );
+
+        }
+
+
+        // ------------------------------------------------------
+        // EXTRACT RISK DATA
+        // ------------------------------------------------------
+
+        let riskData = [];
+
+
+        // Backend returned array directly
+        if (Array.isArray(data)) {
+
+          riskData = data;
+
+        }
+
+
+        // Backend returned risk_assessment
+        else if (
+          Array.isArray(
+            data?.risk_assessment
+          )
+        ) {
+
+          riskData =
+            data.risk_assessment;
+
+        }
+
+
+        // Alternative property
+        else if (
+          Array.isArray(
+            data?.results
+          )
+        ) {
+
+          riskData =
+            data.results;
+
+        }
+
+
+        // Alternative property
+        else if (
+          Array.isArray(
+            data?.villages
+          )
+        ) {
+
+          riskData =
+            data.villages;
+
+        }
+
+
+        // ------------------------------------------------------
+        // NORMALIZE RISK DATA
+        // ------------------------------------------------------
+
+        const normalizedRiskData =
+          riskData.map(
+            (village, index) => ({
+
+              ...village,
+
+              risk_level:
+                String(
+                  village?.risk_level ||
+                  village?.priority ||
+                  village?.risk ||
+                  "LOW"
+                ).toUpperCase(),
+
+              village:
+                village?.village ||
+                village?.village_name ||
+                village?.name ||
+                `Village ${index + 1}`,
+
+            })
+          );
+
+
+        console.log(
+          "Normalized risk data:",
+          normalizedRiskData
         );
 
+
+        // ------------------------------------------------------
+        // SAVE TO STATE
+        // ------------------------------------------------------
+
+        setRiskVillages(
+          normalizedRiskData
+        );
+
+
       } catch (err) {
-        console.error("Risk API error:", err);
+
+        console.error(
+          "Risk API error:",
+          err
+        );
 
         setError(
           err?.message ||
           "Unable to calculate flood risk."
         );
 
+        setRiskVillages([]);
+
       } finally {
+
         setLoading(false);
+
       }
+
     }
 
+
     loadRiskData();
+
   }, []);
 
+
   // ============================================================
-  // FILTER
+  // FILTER VILLAGES
   // ============================================================
 
   const filteredVillages =
@@ -59,25 +226,34 @@ function RiskAssessment() {
       : riskVillages.filter(
           (village) =>
             String(
-              village.risk_level || ""
+              village?.risk_level ||
+              ""
             ).toUpperCase() === filter
         );
+
 
   // ============================================================
   // LOADING
   // ============================================================
 
   if (loading) {
+
     return (
+
       <div className="risk-assessment-page">
 
         <div className="page-heading">
-          <h1>Risk Assessment</h1>
+
+          <h1>
+            Risk Assessment
+          </h1>
 
           <p>
             Calculating flood risk...
           </p>
+
         </div>
+
 
         <div className="generate-loading">
 
@@ -95,24 +271,34 @@ function RiskAssessment() {
         </div>
 
       </div>
+
     );
+
   }
+
 
   // ============================================================
   // ERROR
   // ============================================================
 
   if (error) {
+
     return (
+
       <div className="risk-assessment-page">
 
         <div className="page-heading">
-          <h1>Risk Assessment</h1>
+
+          <h1>
+            Risk Assessment
+          </h1>
 
           <p>
             Analyze flood risk across villages
           </p>
+
         </div>
+
 
         <div className="evacuation-error">
 
@@ -126,23 +312,31 @@ function RiskAssessment() {
 
         </div>
 
+
         <button
           className="generate-main-btn"
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            window.location.reload();
+          }}
         >
           🔄 Retry
         </button>
 
       </div>
+
     );
+
   }
+
 
   // ============================================================
   // MAIN UI
   // ============================================================
 
   return (
+
     <div className="risk-assessment-page">
+
 
       {/* ======================================================
           HEADER
@@ -173,10 +367,13 @@ function RiskAssessment() {
               ? "active"
               : ""
           }
-          onClick={() => setFilter("ALL")}
+          onClick={() =>
+            setFilter("ALL")
+          }
         >
           All
         </button>
+
 
         <button
           className={
@@ -191,6 +388,7 @@ function RiskAssessment() {
           Critical
         </button>
 
+
         <button
           className={
             filter === "HIGH"
@@ -204,6 +402,7 @@ function RiskAssessment() {
           High
         </button>
 
+
         <button
           className={
             filter === "MEDIUM"
@@ -216,6 +415,7 @@ function RiskAssessment() {
         >
           Medium
         </button>
+
 
         <button
           className={
@@ -241,18 +441,24 @@ function RiskAssessment() {
         style={{
           marginBottom: "15px",
           color: "#6b7280",
-          fontSize: "14px"
+          fontSize: "14px",
         }}
       >
+
         Showing{" "}
+
         <strong>
           {filteredVillages.length}
         </strong>{" "}
+
         of{" "}
+
         <strong>
           {riskVillages.length}
         </strong>{" "}
+
         villages
+
       </div>
 
 
@@ -277,14 +483,17 @@ function RiskAssessment() {
 
       ) : (
 
-        <RiskTable
+        <Risktable
           villages={filteredVillages}
         />
 
       )}
 
     </div>
+
   );
+
 }
+
 
 export default RiskAssessment;

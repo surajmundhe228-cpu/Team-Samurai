@@ -6,70 +6,75 @@ import StatCard from "../components/StatCard";
 import Riskcard from "../components/Riskcard";
 import MapView from "../components/MapView";
 import WeatherCard from "../components/WeatherCard";
+import ConnectionStatus from "../components/ConnectionStatus";
 
 import { getDashboardData } from "../services/api";
 
 
 function Dashboard() {
-
-  // Backend dashboard data
   const [dashboardData, setDashboardData] = useState(null);
-
-  // Loading state
   const [loading, setLoading] = useState(true);
-
-  // Error state
   const [error, setError] = useState("");
 
 
-  // ============================================================
-  // GET DATA FROM FASTAPI
-  // ============================================================
+  // ========================================
+  // LOAD DASHBOARD DATA
+  // ========================================
 
   useEffect(() => {
-
     async function loadDashboard() {
-
       try {
+        setLoading(true);
+        setError("");
 
         const data = await getDashboardData();
 
-        console.log("Dashboard data from backend:", data);
+        console.log("Dashboard data:", data);
+
+        if (data?.status === "error") {
+          throw new Error(
+            data.message || "Unable to load dashboard data."
+          );
+        }
 
         setDashboardData(data);
 
       } catch (err) {
-
         console.error("Dashboard API error:", err);
 
-        setError(err.message);
+        setError(
+          err?.message ||
+          "Unable to load dashboard data."
+        );
 
       } finally {
-
         setLoading(false);
-
       }
     }
 
     loadDashboard();
-
   }, []);
 
 
-  // ============================================================
+  // ========================================
   // LOADING
-  // ============================================================
+  // ========================================
 
   if (loading) {
     return (
-      <div className="dashboard">
+      <div className="dashboard-page">
 
         <div className="page-heading">
           <h1>Reloc8 Dashboard</h1>
-
           <p>
-            Loading flood risk and evacuation data...
+            Real-time flood risk and evacuation monitoring
           </p>
+        </div>
+
+        <ConnectionStatus />
+
+        <div className="loading-state">
+          Loading dashboard data...
         </div>
 
       </div>
@@ -77,25 +82,25 @@ function Dashboard() {
   }
 
 
-  // ============================================================
+  // ========================================
   // ERROR
-  // ============================================================
+  // ========================================
 
-  if (error) {
+  if (error && !dashboardData) {
     return (
-      <div className="dashboard">
+      <div className="dashboard-page">
 
         <div className="page-heading">
           <h1>Reloc8 Dashboard</h1>
-
           <p>
-            Unable to connect to the backend.
+            Real-time flood risk and evacuation monitoring
           </p>
+        </div>
 
-          <p style={{ color: "red" }}>
-            {error}
-          </p>
+        <ConnectionStatus />
 
+        <div className="error-state">
+          {error}
         </div>
 
       </div>
@@ -103,238 +108,261 @@ function Dashboard() {
   }
 
 
-  // ============================================================
-  // BACKEND VILLAGE DATA
-  // ============================================================
+  // ========================================
+  // SAFE DATA
+  // ========================================
 
-  const villages = dashboardData?.risk_assessment || [];
-
-
-  // ============================================================
-  // NORMALIZE BACKEND DATA
-  // ============================================================
-  //
-  // Your JSON uses:
-  // priority: "Critical"
-  // priority: "High"
-  // priority: "Low"
-  //
-  // Your existing React components use:
-  // risk_level: "CRITICAL"
-  //
-  // So we convert it here.
-  // ============================================================
-
-  const normalizedVillages = villages.map((village) => ({
-    ...village,
-
-    risk_level:
-      village.priority?.toUpperCase() ||
-      village.risk_level?.toUpperCase() ||
-      "LOW",
-  }));
+  const riskAssessment =
+    Array.isArray(
+      dashboardData?.risk_assessment
+    )
+      ? dashboardData.risk_assessment
+      : [];
 
 
-  // ============================================================
-  // COUNT CRITICAL VILLAGES
-  // ============================================================
+  // ========================================
+  // NORMALIZE RISK DATA
+  // ========================================
 
-  const critical = normalizedVillages.filter(
-    (v) => v.risk_level === "CRITICAL"
-  ).length;
+  const normalizedRisk =
+    riskAssessment.map((village) => ({
+      ...village,
 
-
-  // ============================================================
-  // COUNT HIGH-RISK VILLAGES
-  // ============================================================
-
-  const high = normalizedVillages.filter(
-    (v) => v.risk_level === "HIGH"
-  ).length;
+      risk_level:
+        village.risk_level?.toUpperCase() ||
+        village.priority?.toUpperCase() ||
+        "LOW",
+    }));
 
 
-  // ============================================================
-  // TOTAL POPULATION
-  // ============================================================
+  // ========================================
+  // STATISTICS
+  // ========================================
 
-  const totalPopulation = normalizedVillages.reduce(
-    (sum, v) => sum + Number(v.population || 0),
-    0
-  );
-
-
-  // ============================================================
-  // SHELTER DATA
-  // ============================================================
-  //
-  // Temporary:
-  // shelter.js is still being used because the current
-  // evacuation_plan.json does not contain complete shelter data.
-  // ============================================================
-
-  const totalCapacity = shelters.reduce(
-    (sum, s) => sum + Number(s.capacity || 0),
-    0
-  );
+  const totalVillages =
+    dashboardData?.total_villages ??
+    normalizedRisk.length;
 
 
-  const occupied = shelters.reduce(
-    (sum, s) => sum + Number(s.current_occupancy || 0),
-    0
-  );
+  const criticalVillages =
+    normalizedRisk.filter(
+      (village) =>
+        village.risk_level === "CRITICAL"
+    );
 
 
-  const available = shelters.reduce(
-    (sum, s) => sum + Number(s.available_capacity || 0),
-    0
-  );
+  const highVillages =
+    normalizedRisk.filter(
+      (village) =>
+        village.risk_level === "HIGH"
+    );
 
 
-  // ============================================================
-  // CRITICAL VILLAGES
-  // ============================================================
+  const totalPopulation =
+    normalizedRisk.reduce(
+      (sum, village) =>
+        sum +
+        Number(
+          village.population || 0
+        ),
+      0
+    );
 
-  const criticalVillages = normalizedVillages.filter(
-    (village) => village.risk_level === "CRITICAL"
-  );
+
+  // ========================================
+  // SHELTER STATISTICS
+  // ========================================
+
+  const totalShelters =
+    shelters.length;
 
 
-  // ============================================================
-  // DASHBOARD
-  // ============================================================
+  const totalShelterCapacity =
+    shelters.reduce(
+      (sum, shelter) =>
+        sum +
+        Number(
+          shelter.capacity || 0
+        ),
+      0
+    );
+
+
+  const availableShelterCapacity =
+    shelters.reduce(
+      (sum, shelter) =>
+        sum +
+        Number(
+          shelter.available_capacity || 0
+        ),
+      0
+    );
+
+
+  const occupiedShelterCapacity =
+    totalShelterCapacity -
+    availableShelterCapacity;
+
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
 
-      {/* Page Heading */}
+      {/* ==================================
+          PAGE HEADING
+      ================================== */}
 
       <div className="page-heading">
 
-        <h1>Reloc8 Dashboard</h1>
+        <h1>
+          Reloc8 Dashboard
+        </h1>
 
         <p>
-          Real-time flood risk and evacuation monitoring
+          Real-time flood risk and
+          evacuation monitoring
         </p>
 
       </div>
 
 
-      {/* ======================================================
-          STATISTICS
-      ====================================================== */}
+      {/* ==================================
+          CONNECTION STATUS
+      ================================== */}
+
+      <ConnectionStatus />
+
+
+      {/* ==================================
+          ERROR MESSAGE
+      ================================== */}
+
+      {error && (
+        <div className="error-state">
+          {error}
+        </div>
+      )}
+
+
+      {/* ==================================
+          STAT CARDS
+      ================================== */}
 
       <div className="stats-grid">
 
         <StatCard
-          title="Total Villages"
-          value={normalizedVillages.length}
-          subtitle="Monitored locations"
           icon="🏘️"
+          title="Total Villages"
+          value={totalVillages}
+          subtitle="Monitored locations"
         />
 
 
         <StatCard
-          title="Critical Risk"
-          value={critical}
-          subtitle="Immediate attention"
           icon="🚨"
-          type="critical"
+          title="Critical Risk"
+          value={criticalVillages.length}
+          subtitle="Immediate attention"
         />
 
 
         <StatCard
-          title="High Risk"
-          value={high}
-          subtitle="Require monitoring"
           icon="⚠️"
-          type="warning"
+          title="High Risk"
+          value={highVillages.length}
+          subtitle="Require monitoring"
         />
 
 
         <StatCard
+          icon="👥"
           title="Population"
           value={totalPopulation.toLocaleString()}
           subtitle="People in monitored areas"
-          icon="👥"
         />
 
 
         <StatCard
-          title="Shelters"
-          value={dashboardData?.total_shelters ?? shelters.length}
-          subtitle={`${available} spaces available`}
           icon="🏠"
-          type="green"
+          title="Shelters"
+          value={totalShelters}
+          subtitle={`${availableShelterCapacity.toLocaleString()} spaces available`}
         />
 
 
         <StatCard
-          title="Occupied"
-          value={occupied.toLocaleString()}
-          subtitle={`of ${totalCapacity.toLocaleString()} capacity`}
           icon="🛏️"
+          title="Occupied"
+          value={occupiedShelterCapacity.toLocaleString()}
+          subtitle={`of ${totalShelterCapacity.toLocaleString()} capacity`}
         />
 
       </div>
 
 
-      {/* ======================================================
+      {/* ==================================
           WEATHER
-      ====================================================== */}
+      ================================== */}
 
-      <div className="weather-section">
-
-        <WeatherCard />
-
-      </div>
+      <WeatherCard />
 
 
-      {/* ======================================================
-          MAP + CRITICAL VILLAGES
-      ====================================================== */}
+      {/* ==================================
+          MAP
+      ================================== */}
 
-      <div className="dashboard-grid">
+      <MapView
+        villages={normalizedRisk}
+        shelters={shelters}
+      />
 
 
-        {/* Map */}
+      {/* ==================================
+          CRITICAL RISK VILLAGES
+      ================================== */}
 
-        <div className="dashboard-map">
+      {criticalVillages.length > 0 && (
 
-          <MapView
-            villages={normalizedVillages}
-            shelters={shelters}
-          />
+        <div className="risk-section">
+
+          <div className="section-heading">
+
+            <h2>
+              Critical Risk Areas
+            </h2>
+
+            <p>
+              Villages requiring immediate attention
+            </p>
+
+          </div>
+
+
+          <div className="risk-cards">
+
+            {criticalVillages.map(
+              (village, index) => (
+
+                <Riskcard
+                  key={
+                    village.village_name ||
+                    village.name ||
+                    index
+                  }
+                  village={village}
+                />
+
+              )
+            )}
+
+          </div>
 
         </div>
 
-
-        {/* Critical Villages */}
-
-        <div className="dashboard-side">
-
-          <h2>Critical Villages</h2>
-
-
-          {criticalVillages.length === 0 ? (
-
-            <p>No critical villages found.</p>
-
-          ) : (
-
-            criticalVillages.map((village) => (
-
-              <RiskCard
-                key={village.village}
-                village={village}
-              />
-
-            ))
-
-          )}
-
-        </div>
-
-      </div>
+      )}
 
     </div>
   );
