@@ -1,0 +1,212 @@
+/* Container Box & Mobile Frame */
+.offline-container {
+  width: 100%;
+  max-width: 390px;
+  height: 100%;
+  max-height: 844px;
+  background-color: #ffffff;
+  border-radius: 36px;
+  border: 8px solid #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .offline-container {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+/* Orange Banner Header with Back Button */
+.offline-banner {
+  background: linear-gradient(180deg, #c2410c 0%, #9a3412 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.banner-back-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.banner-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  margin-right: 24px;
+}
+
+/* Main Content Area */
+.offline-content {
+  flex: 1;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Wifi Status Illustration */
+.status-graphic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+.wifi-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.wifi-icon {
+  color: #475569;
+}
+
+.status-graphic h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.status-graphic p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+/* Available Offline Section */
+.available-section {
+  margin-top: 40px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+/* Grid Layout */
+.offline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.offline-card {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 20px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.offline-card:hover {
+  transform: translateY(-2px);
+}
+
+.offline-card span {
+  font-size: 11px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.3;
+  margin-top: 8px;
+}
+
+/* Card Colors */
+.green-icon { color: #16a34a; }
+.red-icon { color: #dc2626; }
+.orange-icon { color: #ea580c; }
+.dark-icon { color: #334155; }
+
+/* Sync Button */
+.sync-btn {
+  margin-top: auto;
+  width: 100%;
+  background-color: #046c4e;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(4, 108, 78, 0.3);
+  transition: background-color 0.2s;
+}
+
+.sync-btn:hover {
+  background-color: #03543f;
+}
+
+/* Bottom Nav Bar */
+.bottom-nav {
+  height: 80px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ffffff;
+  padding: 0 8px;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  color: #047857;
+  font-weight: 700;
+}
+
+.report-btn {
+  color: #047857;
+  margin-top: -12px;
+}
+
+.report-btn span {
+  font-size: 10px;
+}

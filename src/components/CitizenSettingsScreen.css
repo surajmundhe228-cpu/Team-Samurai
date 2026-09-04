@@ -1,0 +1,157 @@
+.settings-container {
+  width: 100%;
+  max-width: 390px;
+  height: 100%;
+  max-height: 844px;
+  background-color: #ffffff;
+  border-radius: 36px;
+  border: 8px solid #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .settings-container {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+.settings-header {
+  background-color: #064e3b;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.settings-header h2 {
+  font-size: 19px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.settings-content {
+  flex: 1;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  gap: 16px;
+}
+
+/* User Card */
+.profile-card, .guest-card {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.guest-card {
+  cursor: pointer;
+  background-color: #ecfdf5;
+  border: 1px dashed #059669;
+}
+
+.avatar-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+}
+
+.guest-avatar {
+  background-color: #d1fae5;
+}
+
+.profile-details h3, .guest-details h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.role-tag {
+  font-size: 12px;
+  color: #64748b;
+  display: block;
+}
+
+.profile-email, .guest-details p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* Settings Items */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+}
+
+.settings-item:hover {
+  background-color: #fafafa;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.item-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Logout Button */
+.logout-box-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #fee2e2;
+  background-color: #fff;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.logout-box-btn:hover {
+  background-color: #fef2f2;
+}
