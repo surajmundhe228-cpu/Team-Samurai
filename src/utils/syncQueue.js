@@ -67,7 +67,7 @@ export async function syncOfflineReports(apiUrl = "/api/reports") {
       } else {
         failed += 1;
       }
-    } catch (err) {
+    } catch {
       failed += 1;
       console.log("Sync failed, will retry later");
     }

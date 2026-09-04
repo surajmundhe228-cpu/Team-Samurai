@@ -1,16 +1,94 @@
-# React + Vite
+# RELOC8
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Disaster Decision-Support and Relocation Platform
 
-Currently, two official plugins are available:
+RELOC8 is a disaster management and decision-support platform designed to help users understand disaster risks, locate safe shelters, report incidents, and support relocation planning.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The platform combines an interactive map, disaster-related data, shelter information, animal rescue information, incident reporting, and backend decision-support APIs.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Interactive disaster map
+- Village and habitation information
+- Safe shelter locations
+- Shelter capacity and allocation
+- Disaster hazard information
+- Risk information
+- Animal rescue reports
+- Disaster notifications
+- Field incident reporting
+- Relocation planning
+- Citizen and Authority views
+- Offline cache and synchronization support
+- REST APIs using FastAPI
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Technology Stack
+
+### Frontend
+
+- React
+- Vite
+- JavaScript
+- Leaflet / interactive maps
+
+### Backend
+
+- Python
+- FastAPI
+- Uvicorn
+
+### Data
+
+- JSON-based village data
+- JSON-based shelter data
+- JSON-based animal data
+
+### Deployment
+
+- Frontend: Vercel
+- Backend: Render
+
+---
+
+## Project Structure
+
+```text
+RELOC8/
+│
+├── backend/
+│   ├── main.py
+│   ├── shelter_allocator.py
+│   ├── validate_data.py
+│   ├── requirements.txt
+│   └── datab/
+│       ├── villages.json
+│       └── shelters.json
+│
+├── docs/
+│   ├── API.md
+│   └── ARCHITECTURE.md
+│
+├── src/
+│   ├── components/
+│   │   ├── Map.jsx
+│   │   ├── NotificationBell.jsx
+│   │   ├── ReportIncidentModal.jsx
+│   │   └── VillageDetailCard.jsx
+│   │
+│   ├── utils/
+│   │   ├── cache.js
+│   │   └── syncQueue.js
+│   │
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+│
+├── public/
+├── package.json
+├── README.md
+└── .gitignore

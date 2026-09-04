@@ -50,7 +50,7 @@ export async function loadWithCache(key, fetchUrl) {
         saveToCache(key, data);
         return data;
       }
-    } catch (err) {
+    } catch {
       console.log("Network failed, using cache for:", key);
     }
   }

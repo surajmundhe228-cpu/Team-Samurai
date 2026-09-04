@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 function VillageDetailCard({ village, onClose, onRouteClick }) {
   const [xaiData, setXaiData] = useState(null);
@@ -7,6 +7,7 @@ function VillageDetailCard({ village, onClose, onRouteClick }) {
   useEffect(() => {
     if (!village || !village.village) return;
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingXai(true);
     fetch(`http://127.0.0.1:8000/api/xai-risk/${encodeURIComponent(village.village)}`)
       .then((res) => {
