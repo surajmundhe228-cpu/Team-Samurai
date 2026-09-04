@@ -354,8 +354,10 @@ def compute_xai_risk_breakdown(village_name: str):
                 ),
 
                 "reason": (
-                    "Flood hazard indicator contributes "
-                    "40% to the overall risk score."
+                    f"Flood hazard score is {water_level_score:.1f}/100. "
+                    "This factor has the highest weight (40%) because "
+                    "water-related flood conditions strongly influence "
+                    "evacuation risk."
                 )
             },
 
@@ -375,9 +377,10 @@ def compute_xai_risk_breakdown(village_name: str):
                 ),
 
                 "reason": (
-                    f"Population of {int(population)} "
-                    "increases evacuation and resource "
-                    "requirements."
+                    f"Population score is {population_score:.1f}/100 "
+                    f"based on {int(population)} people. "
+                    "Higher population increases evacuation demand "
+                    "and resource requirements."
                 )
             },
 
@@ -397,8 +400,10 @@ def compute_xai_risk_breakdown(village_name: str):
                 ),
 
                 "reason": (
-                    f"Recorded rainfall of {rainfall} mm "
-                    "increases flood-related risk."
+                    f"Rainfall score is {rainfall_score:.1f}/100 "
+                    f"based on {rainfall:.1f} mm rainfall. "
+                    "Higher rainfall can increase flood-related risk "
+                    "and evacuation urgency."
                 )
             }
         ],
