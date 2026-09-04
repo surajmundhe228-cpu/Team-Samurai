@@ -2,12 +2,11 @@ import json
 import os
 from pathlib import Path
 from typing import Optional
-from fastapi import FastAPI, HTTPException
 
-from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
 
 from backend.shelter_allocator import allocate_shelters
 
@@ -64,7 +63,9 @@ FRONTEND_DATA_DIR = BASE_DIR.parent / "src" / "data"
 try:
     with open(DATA_DIR / "villages.json", "r", encoding="utf-8") as f:
         villages_data = json.load(f)
+
     print("Successfully loaded villages.json")
+
 except Exception as e:
     print(f"Warning: Could not load villages.json: {e}")
     villages_data = []
@@ -73,7 +74,9 @@ except Exception as e:
 try:
     with open(DATA_DIR / "shelters.json", "r", encoding="utf-8") as f:
         shelters_data = json.load(f)
+
     print("Successfully loaded shelters.json")
+
 except Exception as e:
     print(f"Warning: Could not load shelters.json: {e}")
     shelters_data = []
@@ -82,21 +85,29 @@ except Exception as e:
 try:
     with open(FRONTEND_DATA_DIR / "animals.json", "r", encoding="utf-8") as f:
         animals_data = json.load(f)
+
     print("Successfully loaded animals.json")
+
 except Exception as e:
     print(f"Warning: Could not load animals.json: {e}")
     animals_data = []
-    
+
+
 try:
     with open(DATA_DIR / "alerts_data.json", "r", encoding="utf-8") as f:
         notifications_data = json.load(f)
+
     print("Successfully loaded alerts_data.json")
+
 except Exception as e:
     print(f"Warning: Could not load alerts_data.json: {e}")
     notifications_data = []
 
 
-# In-memory database for incident reports
+# --------------------------------------------------
+# IN-MEMORY DATABASE FOR INCIDENT REPORTS
+# --------------------------------------------------
+
 reports_db = []
 
 
@@ -149,6 +160,7 @@ def get_animals():
 
 @app.get("/hazards")
 def get_hazards():
+
     hazards = []
 
     v_list = (
@@ -158,6 +170,7 @@ def get_hazards():
     )
 
     for village in v_list:
+
         hazards.append({
             "village": village.get("village"),
             "district": village.get("district"),
@@ -173,6 +186,7 @@ def get_hazards():
 
 @app.get("/risk")
 def get_risk():
+
     v_list = (
         villages_data.get("villages", villages_data)
         if isinstance(villages_data, dict)
@@ -200,58 +214,234 @@ def get_risk():
 
 
 # --------------------------------------------------
-# ENDPOINTS: XAI RISK ANALYSIS (NEW)
+# XAI RISK SCORING
 # --------------------------------------------------
 
 def compute_xai_risk_breakdown(village_name: str):
-    v_list = villages_data.get("villages", villages_data) if isinstance(villages_data, dict) else villages_data
-    village = next((v for v in v_list if v.get("village", "").lower() == village_name.lower()), None)
-    
+
+    v_list = (
+        villages_data.get("villages", villages_data)
+        if isinstance(villages_data, dict)
+        else villages_data
+    )
+
+    village = next(
+        (
+            v for v in v_list
+            if v.get("village", "").lower() == village_name.lower()
+        ),
+        None
+    )
+
     if not village:
         return None
 
-    pop = village.get("population_numeric_for_calc") or village.get("population") or 1000
-    risk_level = (village.get("risk_level") or "Moderate").upper()
-    district = village.get("district", "Unknown")
+    # --------------------------------------------------
+    # EXISTING DATA
+    # --------------------------------------------------
 
-    factors = [
-        {
-            "feature": "Population Density & Scale",
-            "weight": round(min(float(pop) / 5000 * 30, 35), 1),
-            "description": f"Affected population volume ({pop}) scales up evacuation urgency and resource deployment bottlenecks."
-        },
-        {
-            "feature": "Geospatial Vulnerability Index",
-            "weight": 35.0 if risk_level == "CRITICAL" else 20.0,
-            "description": f"Terrain evaluation for {district} district indicates high exposure to water basin overflow channels."
-        },
-        {
-            "feature": "Historical Inundation Factor",
-            "weight": 25.0 if risk_level == "CRITICAL" else 15.0,
-            "description": "Historical disaster frequency logs show repeated seasonal displacement patterns."
-        }
-    ]
+    population = float(
+        village.get("population", 0)
+    )
 
-    total_score = sum(f["weight"] for f in factors)
-    
+    rainfall = float(
+        village.get("rainfall_mm", 0)
+    )
+
+    hazard_score = float(
+        village.get("hazard_score", 0)
+    )
+
+    # --------------------------------------------------
+    # NORMALIZED FACTOR SCORES
+    # All factors are converted to a 0-100 scale.
+    # --------------------------------------------------
+
+    # Water-level / flood hazard indicator
+    # Since the current dataset does not contain
+    # water_level directly, hazard_score is used
+    # as the available flood-risk indicator.
+    water_level_score = max(
+        0,
+        min(100, hazard_score)
+    )
+
+    # Population score
+    # 1000 people = 100 score.
+    population_score = max(
+        0,
+        min(100, population / 10)
+    )
+
+    # Rainfall score
+    # 200 mm rainfall is treated as the 100-point
+    # reference level.
+    rainfall_score = max(
+        0,
+        min(100, (rainfall / 200) * 100)
+    )
+
+    # --------------------------------------------------
+    # WEIGHTED RISK CALCULATION
+    #
+    # Water Level       = 40%
+    # Population Density = 30%
+    # Weather/Rainfall   = 30%
+    # --------------------------------------------------
+
+    water_contribution = water_level_score * 0.40
+
+    population_contribution = population_score * 0.30
+
+    weather_contribution = rainfall_score * 0.30
+
+    total_score = (
+        water_contribution
+        + population_contribution
+        + weather_contribution
+    )
+
+    # --------------------------------------------------
+    # RISK LEVEL
+    # --------------------------------------------------
+
+    if total_score >= 81:
+        risk_level = "CRITICAL"
+
+    elif total_score >= 61:
+        risk_level = "HIGH"
+
+    elif total_score >= 31:
+        risk_level = "MEDIUM"
+
+    else:
+        risk_level = "LOW"
+
+    # --------------------------------------------------
+    # XAI RESPONSE
+    # --------------------------------------------------
+
     return {
         "village": village.get("village"),
-        "district": district,
-        "predicted_risk_score": round(total_score, 1),
+
+        "district": village.get(
+            "district",
+            "Unknown"
+        ),
+
+        "predicted_risk_score": round(
+            total_score,
+            1
+        ),
+
         "risk_level": risk_level,
-        "xai_feature_contributions": factors,
+
+        "xai_feature_contributions": [
+
+            {
+                "feature": "Water Level",
+
+                "weight": 40,
+
+                "score": round(
+                    water_level_score,
+                    1
+                ),
+
+                "contribution": round(
+                    water_contribution,
+                    1
+                ),
+
+                "reason": (
+                    "Flood hazard indicator contributes "
+                    "40% to the overall risk score."
+                )
+            },
+
+            {
+                "feature": "Population Density",
+
+                "weight": 30,
+
+                "score": round(
+                    population_score,
+                    1
+                ),
+
+                "contribution": round(
+                    population_contribution,
+                    1
+                ),
+
+                "reason": (
+                    f"Population of {int(population)} "
+                    "increases evacuation and resource "
+                    "requirements."
+                )
+            },
+
+            {
+                "feature": "Weather Forecast / Rainfall",
+
+                "weight": 30,
+
+                "score": round(
+                    rainfall_score,
+                    1
+                ),
+
+                "contribution": round(
+                    weather_contribution,
+                    1
+                ),
+
+                "reason": (
+                    f"Recorded rainfall of {rainfall} mm "
+                    "increases flood-related risk."
+                )
+            }
+        ],
+
         "model_metadata": {
-            "algorithm": "Weighted Multi-Factor Vulnerability Regressor",
-            "version": "1.0.4-rc"
+
+            "algorithm": (
+                "Weighted Explainable Risk Scoring"
+            ),
+
+            "weights": {
+
+                "water_level": "40%",
+
+                "population_density": "30%",
+
+                "weather_forecast_rainfall": "30%"
+            },
+
+            "version": "2.0.0"
         }
     }
 
+
+# --------------------------------------------------
+# XAI API ENDPOINT
+# --------------------------------------------------
+
 @app.get("/api/xai-risk/{village_name}")
 def get_xai_risk(village_name: str):
-    result = compute_xai_risk_breakdown(village_name)
+
+    result = compute_xai_risk_breakdown(
+        village_name
+    )
+
     if not result:
-        raise HTTPException(status_code=404, detail="Village record not found for XAI processing.")
+        raise HTTPException(
+            status_code=404,
+            detail="Village record not found for XAI processing."
+        )
+
     return result
+
 
 # --------------------------------------------------
 # ENDPOINTS: INCIDENT REPORTS
@@ -259,6 +449,7 @@ def get_xai_risk(village_name: str):
 
 @app.post("/api/reports")
 def submit_report(report: IncidentReport):
+
     report_dict = (
         report.model_dump()
         if hasattr(report, "model_dump")
@@ -266,7 +457,10 @@ def submit_report(report: IncidentReport):
     )
 
     report_dict["id"] = len(reports_db) + 1
-    reports_db.append(report_dict)
+
+    reports_db.append(
+        report_dict
+    )
 
     return {
         "status": "success",
@@ -276,6 +470,7 @@ def submit_report(report: IncidentReport):
 
 @app.get("/api/reports")
 def get_reports():
+
     return {
         "reports": reports_db
     }
@@ -287,6 +482,7 @@ def get_reports():
 
 @app.get("/api/relocation-plan")
 def get_relocation_plan():
+
     plan = allocate_shelters(
         villages_data,
         shelters_data
@@ -300,4 +496,5 @@ def get_relocation_plan():
 
 @app.get("/api/notifications")
 def get_notifications():
+
     return notifications_data
