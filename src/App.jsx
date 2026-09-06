@@ -7,12 +7,13 @@ import OfflineScreen from './components/OfflineScreen';
 import AuthorityLogin from './components/AuthorityLogin';
 import CitizenSettingsScreen from './components/CitizenSettingsScreen';
 import CitizenAuth from './components/CitizenAuth';
-import SheltersScreen from './components/SheltersScreen';
 import MapScreen from './components/MapScreen';
-import AnimalInfoScreen from './components/AnimalInfoScreen';
+import InfoExchangeScreen from './components/InfoExchangeScreen';
+import DonationScreen from './components/DonationScreen';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('welcome');
+  const [pendingDestination, setPendingDestination] = useState(null);
 
   // Authority session persistence
   const [currentAuthority, setCurrentAuthority] = useState(() => {
@@ -36,6 +37,19 @@ export default function App() {
 
   const navigate = (page) => setCurrentPage(page);
 
+  // Protected navigation: prompts CitizenAuth if unauthenticated, keeps offline public
+  const handleProtectedNavigate = (targetPage) => {
+    const publicPages = ['citizenDashboard', 'welcome', 'roleSelection', 'settings', 'offlineScreen'];
+
+    if (!currentCitizen && !publicPages.includes(targetPage)) {
+      setPendingDestination(targetPage);
+      setCurrentPage('citizenAuth');
+      return;
+    }
+
+    setCurrentPage(targetPage);
+  };
+
   const handleRoleSelect = (role) => {
     if (role === 'citizen') {
       navigate('citizenDashboard');
@@ -48,7 +62,7 @@ export default function App() {
     }
   };
 
-  // Authority Handlers
+  // Authority handlers
   const handleAuthorityLoginSuccess = (user) => {
     setCurrentAuthority(user);
     navigate('authorityDashboard');
@@ -61,10 +75,16 @@ export default function App() {
     navigate('roleSelection');
   };
 
-  // Citizen Handlers
+  // Citizen handlers
   const handleCitizenLoginSuccess = (citizen) => {
     setCurrentCitizen(citizen);
-    navigate('citizenDashboard');
+    if (pendingDestination) {
+      const target = pendingDestination;
+      setPendingDestination(null);
+      navigate(target);
+    } else {
+      navigate('citizenDashboard');
+    }
   };
 
   const handleCitizenLogout = () => {
@@ -76,7 +96,7 @@ export default function App() {
 
   return (
     <div>
-      {/* 1. Welcome Screen */}
+      {/* 1. Welcome Page */}
       {currentPage === 'welcome' && (
         <WelcomePage 
           onLogin={() => navigate('roleSelection')} 
@@ -109,61 +129,67 @@ export default function App() {
         />
       )}
 
-      {/* 5. Citizen Dashboard */}
+      {/* 5. Citizen Dashboard with Protected Gate */}
       {currentPage === 'citizenDashboard' && (
         <CitizenDashboard 
           citizenUser={currentCitizen}
           onBack={() => navigate('roleSelection')} 
-          onNavigate={navigate}
+          onNavigate={handleProtectedNavigate}
         />
       )}
 
-      {/* 6. Interactive Risk Map Screen */}
+      {/* 6. Interactive Risk Map */}
       {currentPage === 'map' && (
         <MapScreen 
           onBack={() => navigate('citizenDashboard')} 
         />
       )}
 
-      {/* 7. Safe Shelters Screen */}
-      {currentPage === 'shelters' && (
-        <SheltersScreen 
+      {/* 7. Information Exchange Screen */}
+      {currentPage === 'infoExchange' && (
+        <InfoExchangeScreen 
+          citizenUser={currentCitizen}
           onBack={() => navigate('citizenDashboard')} 
+          onNavigate={handleProtectedNavigate}
         />
       )}
 
-      {/* 8. Livestock & Animal Distress Screen */}
-      {currentPage === 'animalInfo' && (
-        <AnimalInfoScreen 
-          onBack={() => navigate('citizenDashboard')}
-          onNavigateToMap={() => navigate('map')}
+      {/* 8. Donation Screen */}
+      {currentPage === 'donation' && (
+        <DonationScreen 
+          citizenUser={currentCitizen}
+          onBack={() => navigate('citizenDashboard')} 
+          onNavigate={handleProtectedNavigate}
         />
       )}
 
-      {/* 9. Citizen Settings & Profile Screen */}
+      {/* 9. Citizen Settings Screen */}
       {currentPage === 'settings' && (
         <CitizenSettingsScreen 
           citizenUser={currentCitizen}
           onBack={() => navigate('citizenDashboard')}
           onOpenAuth={() => navigate('citizenAuth')}
           onLogout={handleCitizenLogout}
-          onNavigate={navigate}
+          onNavigate={handleProtectedNavigate}
         />
       )}
 
       {/* 10. Citizen Registration & Sign-In */}
       {currentPage === 'citizenAuth' && (
         <CitizenAuth 
-          onBack={() => navigate('settings')}
+          onBack={() => {
+            setPendingDestination(null);
+            navigate('citizenDashboard');
+          }}
           onLoginSuccess={handleCitizenLoginSuccess}
         />
       )}
 
-      {/* 11. Offline Mode Screen */}
+      {/* 11. Offline Center (Publicly accessible) */}
       {currentPage === 'offlineScreen' && (
         <OfflineScreen 
           onBack={() => navigate('citizenDashboard')} 
-          onNavigate={navigate}
+          onNavigate={handleProtectedNavigate}
         />
       )}
     </div>

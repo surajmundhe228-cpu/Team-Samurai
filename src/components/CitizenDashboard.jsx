@@ -1,22 +1,21 @@
-import { useState, useMemo } from 'react';
-import { 
-  Map, 
-  Home, 
-  PawPrint, 
-  AlertTriangle, 
-  MessageSquare, 
-  Download, 
-  User, 
-  PlusCircle, 
-  Menu, 
+import { useState, useMemo, useRef, useEffect } from 'react';
+import {
+  Map,
+  Home,
+  MessageSquare,
+  Download,
+  User,
+  Menu,
   Bell,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  HeartHandshake,
+  Sparkles,
+  X,
+  Send
 } from 'lucide-react';
-import ReportIncidentModal from './ReportIncidentModal';
 import './CitizenDashboard.css';
 
-// Embedded village telemetry to calculate live alerts automatically
 const villagesTelemetry = [
   { village: "Rampur", district: "Supaul", risk_level: "CRITICAL", rainfall_mm: 112.0, river_dist: 1.2 },
   { village: "Bishanpur", district: "Supaul", risk_level: "CRITICAL", rainfall_mm: 108.0, river_dist: 2.5 },
@@ -26,10 +25,28 @@ const villagesTelemetry = [
 ];
 
 export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
-  const [isReportOpen, setIsReportOpen] = useState(false);
+  const isLoggedIn = !!citizenUser;
   const displayName = citizenUser?.name || 'Citizen';
 
-  // Compute the highest priority alert dynamically from the data
+  // AI Assistant Chatbot State
+  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [aiInput, setAiInput] = useState('');
+  const [aiChat, setAiChat] = useState([
+    {
+      id: 1,
+      sender: 'ai',
+      text: `Hello ${displayName}! I'm Reloc8 Assistant. Ask me anything about safe zones, water levels, emergency contacts, or flood survival.`
+    }
+  ]);
+
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    if (isAiOpen) {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [aiChat, isAiOpen]);
+
   const activeCriticalVillages = useMemo(() => {
     return villagesTelemetry.filter(v => v.risk_level === "CRITICAL");
   }, []);
@@ -40,9 +57,35 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
     );
   }, [activeCriticalVillages]);
 
+  const handleSendAi = (e) => {
+    e.preventDefault();
+    if (!aiInput.trim()) return;
+
+    const userQuestion = aiInput.trim();
+    setAiChat(prev => [...prev, { id: Date.now(), sender: 'user', text: userQuestion }]);
+    setAiInput('');
+
+    setTimeout(() => {
+      let reply = "Stay on high ground. Tap the Risk Map on your dashboard to view verified evacuation routes.";
+      const query = userQuestion.toLowerCase();
+
+      if (query.includes('water') || query.includes('flood') || query.includes('rain')) {
+        reply = `Critical rainfall (${highestRainfallVillage.rainfall_mm} mm) detected in ${highestRainfallVillage.village}. Avoid low roads and prepare for relocation.`;
+      } else if (query.includes('contact') || query.includes('help') || query.includes('helpline')) {
+        reply = "Emergency Flood Control Room: 1070 | NDRF/SDRF Helpline: 112 / 1078.";
+      } else if (query.includes('shelter') || query.includes('safe')) {
+        reply = "Designated safe relocation shelters are active near the Government Higher Secondary School.";
+      } else if (query.includes('food') || query.includes('donate')) {
+        reply = "Community relief kitchen tokens are available in the Donation card starting from ₹20.";
+      }
+
+      setAiChat(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: reply }]);
+    }, 400);
+  };
+
   return (
-    <div className="mobile-frame">
-      <div className="dashboard-container">
+    <div className="dashboard-page-wrapper">
+      <div className="dashboard-mobile-frame">
         
         {/* Header Bar */}
         <div className="dashboard-header">
@@ -54,104 +97,54 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
             <Menu size={22} />
           </button>
           <h2 onClick={onBack} style={{ cursor: 'pointer' }}>Reloc8</h2>
-          <button className="icon-btn" title="Alerts & Notifications" onClick={() => onNavigate('map')}>
+          <button className="icon-btn" title="Alerts" onClick={() => onNavigate('map')}>
             <Bell size={22} color="#dc2626" />
           </button>
         </div>
 
-        {/* Dashboard Main Content */}
+        {/* Scrollable Body Content */}
         <div className="dashboard-content">
           
           {/* User Greeting */}
           <div className="user-greeting">
-            <h3>Hello, {displayName} 👋</h3>
-            <p>Stay safe, stay connected.</p>
+            <h3>Hello,{displayName}</h3>
+            <p>
+              {isLoggedIn 
+                ? 'Account verified • Live disaster sync active' 
+                : 'Stay safe, stay connected.'}
+            </p>
           </div>
 
-          {/* ======================================================== */}
-          {/* DYNAMIC TELEMETRY FLOOD ALERT BANNER                     */}
-          {/* ======================================================== */}
+          {/* Red Flood Warning Banner */}
           {activeCriticalVillages.length > 0 && (
-            <div style={{
-              background: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderLeft: '5px solid #dc2626',
-              borderRadius: '12px',
-              padding: '14px',
-              marginBottom: '20px',
-              boxShadow: '0 4px 12px rgba(220, 38, 38, 0.08)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShieldAlert size={20} color="#dc2626" />
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#991b1b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Critical Flood Warning
-                  </span>
+            <div className="warning-banner-card">
+              <div className="warning-banner-top">
+                <div className="warning-banner-left">
+                  <ShieldAlert size={18} color="#dc2626" />
+                  <span className="warning-banner-title">CRITICAL FLOOD WARNING</span>
                 </div>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: '700',
-                  color: '#ffffff',
-                  background: '#dc2626',
-                  padding: '2px 8px',
-                  borderRadius: '10px'
-                }}>
+                <span className="warning-banner-pill">
                   {highestRainfallVillage.rainfall_mm} mm Rain
                 </span>
               </div>
 
-              <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#7f1d1d', lineHeight: '1.4' }}>
+              <p className="warning-banner-desc">
                 Severe water level surge detected in <strong>{highestRainfallVillage.village}</strong> and surrounding habitations ({activeCriticalVillages.map(v => v.village).slice(0, 3).join(', ')}). Immediate high-ground relocation advisory in effect.
               </p>
 
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                <button
-                  onClick={() => onNavigate('map')}
-                  style={{
-                    flex: 1,
-                    background: '#dc2626',
-                    color: '#ffffff',
-                    border: 'none',
-                    padding: '8px 10px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <span>Evacuation Map</span>
-                  <ArrowRight size={14} />
-                </button>
-
-                <button
-                  onClick={() => onNavigate('shelters')}
-                  style={{
-                    background: '#ffffff',
-                    color: '#991b1b',
-                    border: '1px solid #fecaca',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Nearby Shelters
-                </button>
-              </div>
+              <button className="evac-map-action-btn" onClick={() => onNavigate('map')}>
+                <span>Evacuation Map</span>
+                <ArrowRight size={14} />
+              </button>
             </div>
           )}
 
-          {/* Quick Access Menu Grid */}
+          {/* Quick Access Cards */}
           <div className="quick-access-section">
             <h4 className="section-title">Quick Access</h4>
             
             <div className="grid-menu">
-              {/* 1. Risk Map Card */}
+              {/* Row 1, Column 1: Risk Map */}
               <div className="menu-card" onClick={() => onNavigate('map')}>
                 <div className="card-icon green-icon">
                   <Map size={28} />
@@ -159,31 +152,7 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                 <span>Risk Map</span>
               </div>
 
-              {/* 2. Shelters Card */}
-              <div className="menu-card" onClick={() => onNavigate('shelters')}>
-                <div className="card-icon blue-icon">
-                  <Home size={28} />
-                </div>
-                <span>Nearby Shelters</span>
-              </div>
-
-              {/* 3. Animal Info Card */}
-              <div className="menu-card" onClick={() => onNavigate('animalInfo')}>
-                <div className="card-icon purple-icon">
-                  <PawPrint size={28} />
-                </div>
-                <span>Animal Info</span>
-              </div>
-
-              {/* 4. Report Incident Card */}
-              <div className="menu-card" onClick={() => setIsReportOpen(true)}>
-                <div className="card-icon red-icon">
-                  <AlertTriangle size={28} />
-                </div>
-                <span>Report Incident</span>
-              </div>
-
-              {/* 5. Information Exchange Card */}
+              {/* Row 1, Column 2: Information Exchange */}
               <div className="menu-card" onClick={() => onNavigate('infoExchange')}>
                 <div className="card-icon chat-icon">
                   <MessageSquare size={28} />
@@ -191,51 +160,105 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                 <span>Information Exchange</span>
               </div>
 
-              {/* 6. Offline Center Card */}
+              {/* Row 1, Column 3: Offline Center */}
               <div className="menu-card" onClick={() => onNavigate('offlineScreen')}>
                 <div className="card-icon dark-green-icon">
                   <Download size={28} />
                 </div>
                 <span>Offline Center</span>
               </div>
+
+              {/* Row 2, Column 1: Donation (Directly below Risk Map) */}
+              <div 
+                className="menu-card" 
+                onClick={() => onNavigate('donation')}
+                style={{ gridColumnStart: 1 }}
+              >
+                <div className="card-icon orange-icon">
+                  <HeartHandshake size={28} />
+                </div>
+                <span>Donation</span>
+              </div>
             </div>
           </div>
 
         </div>
 
+        {/* Floating AI Button (On Bottom Left) */}
+        <button 
+          className="floating-ai-btn" 
+          onClick={() => setIsAiOpen(true)}
+          title="Ask Reloc8 AI"
+        >
+          <div className="floating-ai-inner">
+            <Sparkles size={22} color="#0ea5e9" />
+          </div>
+        </button>
+
+        {/* AI Pop-up Chat Modal */}
+        {isAiOpen && (
+          <div className="ai-modal-overlay">
+            <div className="ai-modal-card">
+              <div className="ai-modal-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sparkles size={18} color="#38bdf8" />
+                  <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800 }}>Reloc8 AI</h4>
+                </div>
+                <button 
+                  onClick={() => setIsAiOpen(false)}
+                  style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="ai-modal-body">
+                {aiChat.map((msg) => (
+                  <div key={msg.id} className={`ai-bubble ${msg.sender}`}>
+                    {msg.text}
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+
+              <form onSubmit={handleSendAi} className="ai-input-bar">
+                <input
+                  type="text"
+                  placeholder="Ask about water levels, shelter, helpline..."
+                  value={aiInput}
+                  onChange={(e) => setAiInput(e.target.value)}
+                  className="ai-text-input"
+                />
+                <button type="submit" className="ai-send-btn" disabled={!aiInput.trim()}>
+                  <Send size={15} />
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Bottom Navigation */}
         <div className="bottom-nav">
           <div className="nav-item active" onClick={() => onNavigate('citizenDashboard')}>
-            <Home size={20} />
+            <Home size={18} />
             <span>Home</span>
           </div>
 
           <div className="nav-item" onClick={() => onNavigate('map')}>
-            <Map size={20} />
+            <Map size={18} />
             <span>Map</span>
           </div>
 
-          <div className="nav-item report-btn" onClick={() => setIsReportOpen(true)}>
-            <PlusCircle size={36} />
-            <span>Report</span>
-          </div>
-
           <div className="nav-item" onClick={() => onNavigate('infoExchange')}>
-            <MessageSquare size={20} />
+            <MessageSquare size={18} />
             <span>Exchange</span>
           </div>
 
           <div className="nav-item" onClick={() => onNavigate('settings')}>
-            <User size={20} />
+            <User size={18} />
             <span>Profile</span>
           </div>
         </div>
-
-        {/* Incident Reporting Modal */}
-        <ReportIncidentModal 
-          isOpen={isReportOpen} 
-          onClose={() => setIsReportOpen(false)} 
-        />
 
       </div>
     </div>
