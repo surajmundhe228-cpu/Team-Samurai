@@ -1,22 +1,45 @@
 import React from "react";
 
-function StatCard({ title, value, subtitle, icon, type }) {
+function StatCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  type,
+}) {
 
   return (
-    <div className={`stat-card ${type || ""}`}>
+    <div
+      className={`stat-card ${type || ""}`}
+    >
+
+      {/* =========================
+          ICON
+      ========================= */}
 
       <div className="stat-icon">
         {icon}
       </div>
 
+
+      {/* =========================
+          CONTENT
+      ========================= */}
+
       <div className="stat-content">
 
-        <p>{title}</p>
+        <p className="stat-title">
+          {title}
+        </p>
 
-        <h2>{value}</h2>
+        <h2 className="stat-value">
+          {value}
+        </h2>
 
         {subtitle && (
-          <span>{subtitle}</span>
+          <span className="stat-subtitle">
+            {subtitle}
+          </span>
         )}
 
       </div>

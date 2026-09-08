@@ -6,27 +6,21 @@ import Risktable from "../components/Risktable";
 import { calculateRisk } from "../services/api";
 import { getOfflineData } from "../services/offline";
 
-
 function RiskAssessment() {
   const [filter, setFilter] = useState("ALL");
   const [riskVillages, setRiskVillages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-
   // ============================================================
   // LOAD RISK DATA
   // ============================================================
 
   useEffect(() => {
-
     async function loadRiskData() {
-
       try {
-
         setLoading(true);
         setError("");
-
 
         // ------------------------------------------------------
         // TRY BACKEND / API
@@ -35,16 +29,13 @@ function RiskAssessment() {
         let data;
 
         try {
-
           data = await calculateRisk(villages);
 
           console.log(
             "Risk data from backend:",
             data
           );
-
         } catch (apiError) {
-
           console.warn(
             "Risk API unavailable. Trying offline data..."
           );
@@ -57,22 +48,16 @@ function RiskAssessment() {
             getOfflineData("reloc8_risk");
 
           if (cachedData) {
-
             console.log(
               "Using cached offline risk data:",
               cachedData
             );
 
             data = cachedData;
-
           } else {
-
             throw apiError;
-
           }
-
         }
-
 
         // ------------------------------------------------------
         // CHECK BACKEND ERROR
@@ -82,14 +67,11 @@ function RiskAssessment() {
           !Array.isArray(data) &&
           data?.status === "error"
         ) {
-
           throw new Error(
             data.message ||
-            "Risk calculation failed."
+              "Risk calculation failed."
           );
-
         }
-
 
         // ------------------------------------------------------
         // EXTRACT RISK DATA
@@ -97,14 +79,10 @@ function RiskAssessment() {
 
         let riskData = [];
 
-
         // Backend returned array directly
         if (Array.isArray(data)) {
-
           riskData = data;
-
         }
-
 
         // Backend returned risk_assessment
         else if (
@@ -112,38 +90,23 @@ function RiskAssessment() {
             data?.risk_assessment
           )
         ) {
-
           riskData =
             data.risk_assessment;
-
         }
-
 
         // Alternative property
         else if (
-          Array.isArray(
-            data?.results
-          )
+          Array.isArray(data?.results)
         ) {
-
-          riskData =
-            data.results;
-
+          riskData = data.results;
         }
-
 
         // Alternative property
         else if (
-          Array.isArray(
-            data?.villages
-          )
+          Array.isArray(data?.villages)
         ) {
-
-          riskData =
-            data.villages;
-
+          riskData = data.villages;
         }
-
 
         // ------------------------------------------------------
         // NORMALIZE RISK DATA
@@ -152,15 +115,14 @@ function RiskAssessment() {
         const normalizedRiskData =
           riskData.map(
             (village, index) => ({
-
               ...village,
 
               risk_level:
                 String(
                   village?.risk_level ||
-                  village?.priority ||
-                  village?.risk ||
-                  "LOW"
+                    village?.priority ||
+                    village?.risk ||
+                    "LOW"
                 ).toUpperCase(),
 
               village:
@@ -168,16 +130,13 @@ function RiskAssessment() {
                 village?.village_name ||
                 village?.name ||
                 `Village ${index + 1}`,
-
             })
           );
-
 
         console.log(
           "Normalized risk data:",
           normalizedRiskData
         );
-
 
         // ------------------------------------------------------
         // SAVE TO STATE
@@ -186,10 +145,7 @@ function RiskAssessment() {
         setRiskVillages(
           normalizedRiskData
         );
-
-
       } catch (err) {
-
         console.error(
           "Risk API error:",
           err
@@ -197,24 +153,17 @@ function RiskAssessment() {
 
         setError(
           err?.message ||
-          "Unable to calculate flood risk."
+            "Unable to calculate flood risk."
         );
 
         setRiskVillages([]);
-
       } finally {
-
         setLoading(false);
-
       }
-
     }
 
-
     loadRiskData();
-
   }, []);
-
 
   // ============================================================
   // FILTER VILLAGES
@@ -227,36 +176,35 @@ function RiskAssessment() {
           (village) =>
             String(
               village?.risk_level ||
-              ""
+                ""
             ).toUpperCase() === filter
         );
-
 
   // ============================================================
   // LOADING
   // ============================================================
 
   if (loading) {
-
     return (
+      <div className="risk-assessment-page mobile-page-shell">
 
-      <div className="risk-assessment-page">
+        <div className="page-heading risk-page-heading">
+          <div className="page-heading-icon">
+            ⚠️
+          </div>
 
-        <div className="page-heading">
+          <div>
+            <h1>
+              Risk Assessment
+            </h1>
 
-          <h1>
-            Risk Assessment
-          </h1>
-
-          <p>
-            Calculating flood risk...
-          </p>
-
+            <p>
+              Calculating flood risk...
+            </p>
+          </div>
         </div>
 
-
-        <div className="generate-loading">
-
+        <div className="generate-loading risk-loading-card">
           <div className="loading-spinner"></div>
 
           <h2>
@@ -267,40 +215,40 @@ function RiskAssessment() {
             Calculating hazard, vulnerability
             and exposure levels...
           </p>
-
         </div>
 
       </div>
-
     );
-
   }
-
 
   // ============================================================
   // ERROR
   // ============================================================
 
   if (error) {
-
     return (
+      <div className="risk-assessment-page mobile-page-shell">
 
-      <div className="risk-assessment-page">
+        <div className="page-heading risk-page-heading">
+          <div className="page-heading-icon">
+            ⚠️
+          </div>
 
-        <div className="page-heading">
+          <div>
+            <h1>
+              Risk Assessment
+            </h1>
 
-          <h1>
-            Risk Assessment
-          </h1>
-
-          <p>
-            Analyze flood risk across villages
-          </p>
-
+            <p>
+              Analyze flood risk across villages
+            </p>
+          </div>
         </div>
 
-
-        <div className="evacuation-error">
+        <div className="evacuation-error risk-error-card">
+          <div className="risk-error-icon">
+            ⚠️
+          </div>
 
           <strong>
             Unable to calculate risk
@@ -309,12 +257,10 @@ function RiskAssessment() {
           <span>
             {error}
           </span>
-
         </div>
 
-
         <button
-          className="generate-main-btn"
+          className="generate-main-btn risk-retry-btn"
           onClick={() => {
             window.location.reload();
           }}
@@ -323,127 +269,172 @@ function RiskAssessment() {
         </button>
 
       </div>
-
     );
-
   }
-
 
   // ============================================================
   // MAIN UI
   // ============================================================
 
   return (
-
-    <div className="risk-assessment-page">
-
+    <div className="risk-assessment-page mobile-page-shell">
 
       {/* ======================================================
           HEADER
       ====================================================== */}
 
-      <div className="page-heading">
+      <div className="page-heading risk-page-heading">
 
-        <h1>
-          Risk Assessment
-        </h1>
+        <div className="page-heading-icon">
+          ⚠️
+        </div>
 
-        <p>
-          Analyze flood risk across villages
-        </p>
+        <div>
+          <h1>
+            Risk Assessment
+          </h1>
+
+          <p>
+            Analyze flood risk across villages
+          </p>
+        </div>
 
       </div>
 
+      {/* ======================================================
+          RISK SUMMARY
+      ====================================================== */}
+
+      <div className="risk-mobile-summary">
+
+        <div className="risk-summary-card">
+          <span className="risk-summary-icon">
+            📊
+          </span>
+
+          <div>
+            <span className="risk-summary-label">
+              Total Villages
+            </span>
+
+            <strong>
+              {riskVillages.length}
+            </strong>
+          </div>
+        </div>
+
+        <div className="risk-summary-card">
+          <span className="risk-summary-icon">
+            🔎
+          </span>
+
+          <div>
+            <span className="risk-summary-label">
+              Showing
+            </span>
+
+            <strong>
+              {filteredVillages.length}
+            </strong>
+          </div>
+        </div>
+
+      </div>
 
       {/* ======================================================
           FILTER BAR
       ====================================================== */}
 
-      <div className="filter-bar">
+      <div className="filter-section">
 
-        <button
-          className={
-            filter === "ALL"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setFilter("ALL")
-          }
-        >
-          All
-        </button>
+        <div className="filter-section-header">
+          <div>
+            <h3>
+              Risk Level
+            </h3>
 
+            <span>
+              Filter villages by priority
+            </span>
+          </div>
+        </div>
 
-        <button
-          className={
-            filter === "CRITICAL"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setFilter("CRITICAL")
-          }
-        >
-          Critical
-        </button>
+        <div className="filter-bar">
 
+          <button
+            className={
+              filter === "ALL"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setFilter("ALL")
+            }
+          >
+            All
+          </button>
 
-        <button
-          className={
-            filter === "HIGH"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setFilter("HIGH")
-          }
-        >
-          High
-        </button>
+          <button
+            className={
+              filter === "CRITICAL"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setFilter("CRITICAL")
+            }
+          >
+            Critical
+          </button>
 
+          <button
+            className={
+              filter === "HIGH"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setFilter("HIGH")
+            }
+          >
+            High
+          </button>
 
-        <button
-          className={
-            filter === "MEDIUM"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setFilter("MEDIUM")
-          }
-        >
-          Medium
-        </button>
+          <button
+            className={
+              filter === "MEDIUM"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setFilter("MEDIUM")
+            }
+          >
+            Medium
+          </button>
 
+          <button
+            className={
+              filter === "LOW"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setFilter("LOW")
+            }
+          >
+            Low
+          </button>
 
-        <button
-          className={
-            filter === "LOW"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setFilter("LOW")
-          }
-        >
-          Low
-        </button>
+        </div>
 
       </div>
-
 
       {/* ======================================================
           RESULT COUNT
       ====================================================== */}
 
-      <div
-        style={{
-          marginBottom: "15px",
-          color: "#6b7280",
-          fontSize: "14px",
-        }}
-      >
+      <div className="risk-result-count">
 
         Showing{" "}
 
@@ -461,39 +452,43 @@ function RiskAssessment() {
 
       </div>
 
-
       {/* ======================================================
           RISK TABLE
       ====================================================== */}
 
-      {filteredVillages.length === 0 ? (
+      <div className="risk-table-section">
 
-        <div className="empty-state">
+        {filteredVillages.length === 0 ? (
 
-          <h3>
-            No villages found
-          </h3>
+          <div className="empty-state">
 
-          <p>
-            There are no villages matching
-            the selected risk level.
-          </p>
+            <div className="empty-state-icon">
+              🔍
+            </div>
 
-        </div>
+            <h3>
+              No villages found
+            </h3>
 
-      ) : (
+            <p>
+              There are no villages matching
+              the selected risk level.
+            </p>
 
-        <Risktable
-          villages={filteredVillages}
-        />
+          </div>
 
-      )}
+        ) : (
+
+          <Risktable
+            villages={filteredVillages}
+          />
+
+        )}
+
+      </div>
 
     </div>
-
   );
-
 }
-
 
 export default RiskAssessment;

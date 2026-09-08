@@ -1,27 +1,52 @@
 import React from "react";
 
-function Navbar({ darkMode, setDarkMode }) {
+function Navbar() {
 
   return (
     <header className="navbar">
 
-      <div>
-        <h2>Reloc8</h2>
-        <span>Flood & Emergency Management System</span>
+      {/* =========================
+          BRAND
+      ========================= */}
+
+      <div className="navbar-brand">
+
+        <div className="navbar-logo">
+          🌊
+        </div>
+
+        <div className="navbar-title">
+
+          <h2>
+            Reloc8
+          </h2>
+
+          <span>
+            Flood & Emergency Management System
+          </span>
+
+        </div>
+
       </div>
+
+
+      {/* =========================
+          RIGHT SIDE
+      ========================= */}
 
       <div className="navbar-right">
 
-        <div className="status-dot"></div>
+        {/* SYSTEM STATUS */}
 
-        <span>System Online</span>
+        <div className="navbar-status">
 
-        <button
-          className="theme-toggle"
-          onClick={() => setDarkMode((previous) => !previous)}
-        >
-          {darkMode ? "☀️" : "🌙"}
-        </button>
+          <span className="status-dot"></span>
+
+          <span>
+            System Online
+          </span>
+
+        </div>
 
       </div>
 

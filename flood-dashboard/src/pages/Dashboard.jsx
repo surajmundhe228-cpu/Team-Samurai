@@ -12,6 +12,7 @@ import { getDashboardData } from "../services/api";
 
 
 function Dashboard() {
+
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,25 +23,38 @@ function Dashboard() {
   // ========================================
 
   useEffect(() => {
+
     async function loadDashboard() {
+
       try {
+
         setLoading(true);
         setError("");
 
         const data = await getDashboardData();
 
-        console.log("Dashboard data:", data);
+        console.log(
+          "Dashboard data:",
+          data
+        );
 
         if (data?.status === "error") {
+
           throw new Error(
-            data.message || "Unable to load dashboard data."
+            data.message ||
+            "Unable to load dashboard data."
           );
+
         }
 
         setDashboardData(data);
 
       } catch (err) {
-        console.error("Dashboard API error:", err);
+
+        console.error(
+          "Dashboard API error:",
+          err
+        );
 
         setError(
           err?.message ||
@@ -48,11 +62,15 @@ function Dashboard() {
         );
 
       } finally {
+
         setLoading(false);
+
       }
+
     }
 
     loadDashboard();
+
   }, []);
 
 
@@ -61,24 +79,44 @@ function Dashboard() {
   // ========================================
 
   if (loading) {
+
     return (
+
       <div className="dashboard-page">
 
         <div className="page-heading">
-          <h1>Reloc8 Dashboard</h1>
-          <p>
-            Real-time flood risk and evacuation monitoring
-          </p>
+
+          <div>
+            <h1>
+              Reloc8 Dashboard
+            </h1>
+
+            <p>
+              Real-time flood risk and
+              evacuation monitoring
+            </p>
+          </div>
+
         </div>
+
 
         <ConnectionStatus />
 
+
         <div className="loading-state">
-          Loading dashboard data...
+
+          <div className="loading-spinner"></div>
+
+          <span>
+            Loading dashboard data...
+          </span>
+
         </div>
 
       </div>
+
     );
+
   }
 
 
@@ -87,24 +125,56 @@ function Dashboard() {
   // ========================================
 
   if (error && !dashboardData) {
+
     return (
+
       <div className="dashboard-page">
 
         <div className="page-heading">
-          <h1>Reloc8 Dashboard</h1>
-          <p>
-            Real-time flood risk and evacuation monitoring
-          </p>
+
+          <div>
+
+            <h1>
+              Reloc8 Dashboard
+            </h1>
+
+            <p>
+              Real-time flood risk and
+              evacuation monitoring
+            </p>
+
+          </div>
+
         </div>
+
 
         <ConnectionStatus />
 
+
         <div className="error-state">
-          {error}
+
+          <span className="error-icon">
+            ⚠️
+          </span>
+
+          <div>
+
+            <strong>
+              Unable to load dashboard
+            </strong>
+
+            <p>
+              {error}
+            </p>
+
+          </div>
+
         </div>
 
       </div>
+
     );
+
   }
 
 
@@ -126,12 +196,14 @@ function Dashboard() {
 
   const normalizedRisk =
     riskAssessment.map((village) => ({
+
       ...village,
 
       risk_level:
         village.risk_level?.toUpperCase() ||
         village.priority?.toUpperCase() ||
         "LOW",
+
     }));
 
 
@@ -209,115 +281,247 @@ function Dashboard() {
   // ========================================
 
   return (
+
     <div className="dashboard-page">
 
+
       {/* ==================================
-          PAGE HEADING
+          PAGE HEADER
       ================================== */}
 
-      <div className="page-heading">
+      <section className="dashboard-header">
 
-        <h1>
-          Reloc8 Dashboard
-        </h1>
+        <div className="page-heading">
 
-        <p>
-          Real-time flood risk and
-          evacuation monitoring
-        </p>
+          <div>
 
-      </div>
+            <div className="dashboard-title-row">
+
+              <h1>
+                Reloc8 Dashboard
+              </h1>
+
+              <span className="live-badge">
+                <span className="live-dot"></span>
+                LIVE
+              </span>
+
+            </div>
+
+            <p>
+              Real-time flood risk and
+              evacuation monitoring
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <ConnectionStatus />
+
+      </section>
 
 
       {/* ==================================
-          CONNECTION STATUS
-      ================================== */}
-
-      <ConnectionStatus />
-
-
-      {/* ==================================
-          ERROR MESSAGE
+          ERROR
       ================================== */}
 
       {error && (
+
         <div className="error-state">
-          {error}
+
+          <span className="error-icon">
+            ⚠️
+          </span>
+
+          <div>
+
+            <strong>
+              Dashboard update warning
+            </strong>
+
+            <p>
+              {error}
+            </p>
+
+          </div>
+
         </div>
+
       )}
 
 
       {/* ==================================
-          STAT CARDS
+          PRIORITY ALERT
       ================================== */}
 
-      <div className="stats-grid">
+      {criticalVillages.length > 0 && (
 
-        <StatCard
-          icon="🏘️"
-          title="Total Villages"
-          value={totalVillages}
-          subtitle="Monitored locations"
-        />
+        <section className="dashboard-alert">
 
+          <div className="alert-icon">
+            🚨
+          </div>
 
-        <StatCard
-          icon="🚨"
-          title="Critical Risk"
-          value={criticalVillages.length}
-          subtitle="Immediate attention"
-        />
+          <div className="alert-content">
 
+            <strong>
+              Critical Flood Risk Detected
+            </strong>
 
-        <StatCard
-          icon="⚠️"
-          title="High Risk"
-          value={highVillages.length}
-          subtitle="Require monitoring"
-        />
+            <span>
+              {criticalVillages.length} village
+              {criticalVillages.length !== 1
+                ? "s"
+                : ""} require immediate attention.
+            </span>
 
+          </div>
 
-        <StatCard
-          icon="👥"
-          title="Population"
-          value={totalPopulation.toLocaleString()}
-          subtitle="People in monitored areas"
-        />
+          <div className="alert-indicator">
+            CRITICAL
+          </div>
+
+        </section>
+
+      )}
 
 
-        <StatCard
-          icon="🏠"
-          title="Shelters"
-          value={totalShelters}
-          subtitle={`${availableShelterCapacity.toLocaleString()} spaces available`}
-        />
+      {/* ==================================
+          STATISTICS
+      ================================== */}
+
+      <section className="dashboard-section">
+
+        <div className="section-heading dashboard-section-heading">
+
+          <div>
+
+            <h2>
+              Situation Overview
+            </h2>
+
+            <p>
+              Current flood and shelter status
+            </p>
+
+          </div>
+
+        </div>
 
 
-        <StatCard
-          icon="🛏️"
-          title="Occupied"
-          value={occupiedShelterCapacity.toLocaleString()}
-          subtitle={`of ${totalShelterCapacity.toLocaleString()} capacity`}
-        />
+        <div className="stats-grid">
 
-      </div>
+          <StatCard
+            icon="🏘️"
+            title="Total Villages"
+            value={totalVillages}
+            subtitle="Monitored locations"
+          />
+
+
+          <StatCard
+            icon="🚨"
+            title="Critical Risk"
+            value={criticalVillages.length}
+            subtitle="Immediate attention"
+          />
+
+
+          <StatCard
+            icon="⚠️"
+            title="High Risk"
+            value={highVillages.length}
+            subtitle="Require monitoring"
+          />
+
+
+          <StatCard
+            icon="👥"
+            title="Population"
+            value={totalPopulation.toLocaleString()}
+            subtitle="People in monitored areas"
+          />
+
+
+          <StatCard
+            icon="🏠"
+            title="Shelters"
+            value={totalShelters}
+            subtitle={`${availableShelterCapacity.toLocaleString()} spaces available`}
+          />
+
+
+          <StatCard
+            icon="🛏️"
+            title="Occupied"
+            value={occupiedShelterCapacity.toLocaleString()}
+            subtitle={`of ${totalShelterCapacity.toLocaleString()} capacity`}
+          />
+
+        </div>
+
+      </section>
 
 
       {/* ==================================
           WEATHER
       ================================== */}
 
-      <WeatherCard />
+      <section className="dashboard-section">
+
+        <div className="section-heading">
+
+          <div>
+
+            <h2>
+              Weather Conditions
+            </h2>
+
+            <p>
+              Current conditions affecting
+              flood risk
+            </p>
+
+          </div>
+
+        </div>
+
+        <WeatherCard />
+
+      </section>
 
 
       {/* ==================================
           MAP
       ================================== */}
 
-      <MapView
-        villages={normalizedRisk}
-        shelters={shelters}
-      />
+      <section className="dashboard-section">
+
+        <div className="section-heading">
+
+          <div>
+
+            <h2>
+              Flood Risk Map
+            </h2>
+
+            <p>
+              Monitored villages and available
+              relief shelters
+            </p>
+
+          </div>
+
+        </div>
+
+        <MapView
+          villages={normalizedRisk}
+          shelters={shelters}
+        />
+
+      </section>
 
 
       {/* ==================================
@@ -326,17 +530,26 @@ function Dashboard() {
 
       {criticalVillages.length > 0 && (
 
-        <div className="risk-section">
+        <section className="risk-section">
 
           <div className="section-heading">
 
-            <h2>
-              Critical Risk Areas
-            </h2>
+            <div>
 
-            <p>
-              Villages requiring immediate attention
-            </p>
+              <h2>
+                Critical Risk Areas
+              </h2>
+
+              <p>
+                Villages requiring immediate
+                attention
+              </p>
+
+            </div>
+
+            <span className="critical-count">
+              {criticalVillages.length} Critical
+            </span>
 
           </div>
 
@@ -360,12 +573,90 @@ function Dashboard() {
 
           </div>
 
-        </div>
+        </section>
+
+      )}
+
+
+      {/* ==================================
+          HIGH RISK SUMMARY
+      ================================== */}
+
+      {highVillages.length > 0 && (
+
+        <section className="dashboard-section high-risk-summary">
+
+          <div className="section-heading">
+
+            <div>
+
+              <h2>
+                High Risk Areas
+              </h2>
+
+              <p>
+                Villages requiring continued
+                monitoring
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="high-risk-list">
+
+            {highVillages.map(
+              (village, index) => (
+
+                <div
+                  className="high-risk-item"
+                  key={
+                    village.village_name ||
+                    village.name ||
+                    index
+                  }
+                >
+
+                  <div className="high-risk-icon">
+                    ⚠️
+                  </div>
+
+                  <div className="high-risk-info">
+
+                    <strong>
+                      {
+                        village.village_name ||
+                        village.name ||
+                        "Unknown Village"
+                      }
+                    </strong>
+
+                    <span>
+                      High flood risk
+                    </span>
+
+                  </div>
+
+                  <span className="high-risk-badge">
+                    HIGH
+                  </span>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        </section>
 
       )}
 
     </div>
+
   );
+
 }
 
 

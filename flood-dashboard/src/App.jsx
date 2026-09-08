@@ -14,6 +14,7 @@ import RiskAssessment from "./pages/RiskAssessment";
 import Shelters from "./pages/Shelters";
 import EvacuationPlan from "./pages/EvacuationPlan";
 import EmergencyGuide from "./pages/EmergencyGuide";
+import AnimalRescue from "./pages/AnimalRescue";
 
 import Chatbot from "./components/Chatbot";
 
@@ -24,25 +25,9 @@ import OfflineBanner from "./components/OfflineBanner";
 
 function AppContent() {
 
-  const [darkMode, setDarkMode] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
 
   const navigate = useNavigate();
-
-
-  // =========================
-  // DARK MODE
-  // =========================
-
-  useEffect(() => {
-
-    if (darkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-
-  }, [darkMode]);
 
 
   // =========================
@@ -117,10 +102,7 @@ function AppContent() {
 
       <div className="main-area">
 
-        <Navbar
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-        />
+        <Navbar />
 
         <OfflineBanner />
 
@@ -151,6 +133,11 @@ function AppContent() {
             <Route
               path="/emergency"
               element={<EmergencyGuide />}
+            />
+
+            <Route
+              path="/animals"
+              element={<AnimalRescue />}
             />
 
           </Routes>

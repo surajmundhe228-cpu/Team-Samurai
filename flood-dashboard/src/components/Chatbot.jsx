@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const API = "http://127.0.0.1:8000";
+const API =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const Chatbot = () => {
   const [open, setOpen] = useState(false);
@@ -11,8 +12,9 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "Hello! I'm Reloc8 Assistant. Ask me about flood risk, shelters, evacuation or flood safety."
-    }
+      text:
+        "Hello! I'm Reloc8 Assistant. Ask me about flood risk, shelters, evacuation or flood safety.",
+    },
   ]);
 
   const messagesEndRef = useRef(null);
@@ -24,7 +26,7 @@ const Chatbot = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, [messages, isTyping]);
 
@@ -34,11 +36,28 @@ const Chatbot = () => {
   // ==========================================
 
   useEffect(() => {
-
     if (open) {
-      inputRef.current?.focus();
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
+  }, [open]);
 
+
+  // ==========================================
+  // PREVENT BODY SCROLL ON MOBILE
+  // ==========================================
+
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
   }, [open]);
 
 
@@ -47,15 +66,12 @@ const Chatbot = () => {
   // ==========================================
 
   useEffect(() => {
-
     if (!open) return;
 
     const handleKeyDown = (e) => {
-
       if (e.key === "Escape") {
         setOpen(false);
       }
-
     };
 
     window.addEventListener(
@@ -64,14 +80,11 @@ const Chatbot = () => {
     );
 
     return () => {
-
       window.removeEventListener(
         "keydown",
         handleKeyDown
       );
-
     };
-
   }, [open]);
 
 
@@ -80,10 +93,17 @@ const Chatbot = () => {
   // ==========================================
 
   const openChat = () => {
-
     setOpen(true);
     setHasNotification(false);
+  };
 
+
+  // ==========================================
+  // CLOSE CHAT
+  // ==========================================
+
+  const closeChat = () => {
+    setOpen(false);
   };
 
 
@@ -92,7 +112,6 @@ const Chatbot = () => {
   // ==========================================
 
   const getOfflineReply = (text) => {
-
     const q = text.toLowerCase().trim();
 
 
@@ -105,14 +124,12 @@ const Chatbot = () => {
       q.includes("hi") ||
       q.includes("hey")
     ) {
-
       return (
         "Hello! I'm Reloc8 Offline Emergency Assistant. " +
         "I can provide basic flood safety, evacuation, " +
         "emergency contact and preparedness information " +
         "without an internet connection."
       );
-
     }
 
 
@@ -128,14 +145,12 @@ const Chatbot = () => {
       q.includes("police") ||
       q.includes("ambulance")
     ) {
-
       return (
         "For an immediate emergency in India, call 112. " +
         "It is the unified emergency number for police, " +
         "fire, medical and other emergency assistance. " +
         "NDMA Control Room: 011-26701728."
       );
-
     }
 
 
@@ -150,7 +165,6 @@ const Chatbot = () => {
       q.includes("flood emergency") ||
       q === "flood"
     ) {
-
       return (
         "During a flood, move to higher ground immediately. " +
         "Follow official evacuation instructions, avoid " +
@@ -158,7 +172,6 @@ const Chatbot = () => {
         "from electrical wires, keep your emergency kit " +
         "with you and stay with your family or group."
       );
-
     }
 
 
@@ -174,14 +187,12 @@ const Chatbot = () => {
       q.includes("drive through flood") ||
       q.includes("drive through water")
     ) {
-
       return (
         "No. Do not walk or drive through moving floodwater. " +
         "Floodwater can hide deep areas, damaged roads, " +
         "debris, sewage, electrical hazards and strong currents. " +
         "Use a safe evacuation route instead."
       );
-
     }
 
 
@@ -196,14 +207,12 @@ const Chatbot = () => {
       q.includes("safe place") ||
       q.includes("safe location")
     ) {
-
       return (
         "Move to higher ground or a designated safe shelter. " +
         "Stay away from rivers, streams, drainage channels, " +
         "low-lying areas and rapidly rising water. Follow " +
         "the designated evacuation route whenever possible."
       );
-
     }
 
 
@@ -217,7 +226,6 @@ const Chatbot = () => {
       q.includes("evacuating") ||
       q.includes("evacuated")
     ) {
-
       return (
         "If evacuation is ordered, leave as early as possible. " +
         "Take your emergency kit, essential medicines and " +
@@ -225,7 +233,6 @@ const Chatbot = () => {
         "and follow the designated evacuation route to a " +
         "safe shelter or elevated location."
       );
-
     }
 
 
@@ -240,7 +247,6 @@ const Chatbot = () => {
       q.includes("supplies") ||
       q.includes("emergency supplies")
     ) {
-
       return (
         "An emergency kit should include drinking water, " +
         "ready-to-eat food, flashlight, batteries or power bank, " +
@@ -248,7 +254,6 @@ const Chatbot = () => {
         "identification documents, emergency cash, extra clothes " +
         "and hygiene supplies."
       );
-
     }
 
 
@@ -263,14 +268,12 @@ const Chatbot = () => {
       q.includes("pregnant") ||
       q.includes("vulnerable")
     ) {
-
       return (
         "Prioritize children, elderly people, pregnant people " +
         "and anyone requiring additional assistance. Keep them " +
         "with the group and help them reach a safe elevated " +
         "location or designated shelter."
       );
-
     }
 
 
@@ -285,14 +288,12 @@ const Chatbot = () => {
       q.includes("electric wire") ||
       q.includes("fallen wire")
     ) {
-
       return (
         "Treat floodwater as electrically dangerous. Do not " +
         "touch electrical equipment while standing in water. " +
         "Stay away from fallen power lines and damaged electrical " +
         "systems. Do not attempt electrical repairs yourself."
       );
-
     }
 
 
@@ -307,14 +308,12 @@ const Chatbot = () => {
       q.includes("contaminated water") ||
       q.includes("water after flood")
     ) {
-
       return (
         "Do not drink untreated floodwater. Floodwater may contain " +
         "sewage, chemicals and other contaminants. Use drinking " +
         "water from an approved safe source and follow official " +
         "water-safety instructions."
       );
-
     }
 
 
@@ -329,7 +328,6 @@ const Chatbot = () => {
       q.includes("bleeding") ||
       q.includes("hurt")
     ) {
-
       return (
         "For a serious medical emergency, call 112. Keep the " +
         "injured person safe and avoid unnecessary movement if " +
@@ -337,7 +335,6 @@ const Chatbot = () => {
         "apply firm pressure with clean cloth or first-aid " +
         "material while seeking professional medical help."
       );
-
     }
 
 
@@ -351,13 +348,11 @@ const Chatbot = () => {
       q.includes("mobile battery") ||
       q.includes("phone")
     ) {
-
       return (
         "Keep your phone charged and save battery for emergency " +
         "communication. Reduce unnecessary screen usage and keep " +
         "your phone available for important calls and alerts."
       );
-
     }
 
 
@@ -370,7 +365,6 @@ const Chatbot = () => {
       q.includes("meeting point") ||
       q.includes("family safety")
     ) {
-
       return (
         "Keep your family together whenever possible. Choose a " +
         "safe meeting point outside the flood-prone area, keep " +
@@ -378,7 +372,6 @@ const Chatbot = () => {
         "responsibilities for children, elderly people and others " +
         "who need additional assistance."
       );
-
     }
 
 
@@ -391,14 +384,12 @@ const Chatbot = () => {
       q.includes("at shelter") ||
       q.includes("relief shelter")
     ) {
-
       return (
         "At a relief shelter, register with shelter authorities " +
         "when required, use drinking water from approved sources, " +
         "maintain hygiene, keep your family together and follow " +
         "instructions from shelter officials and emergency responders."
       );
-
     }
 
 
@@ -412,14 +403,12 @@ const Chatbot = () => {
       q.includes("return home") ||
       q.includes("return after flood")
     ) {
-
       return (
         "Do not return to a flooded or damaged area until authorities " +
         "confirm that it is safe. Stay away from damaged buildings, " +
         "fallen electrical wires and contaminated water. Follow " +
         "official instructions about drinking water and cleanup."
       );
-
     }
 
 
@@ -432,7 +421,6 @@ const Chatbot = () => {
       q.includes("do not") ||
       q.includes("don't")
     ) {
-
       return (
         "Do not walk or drive through moving floodwater. Do not touch " +
         "electrical equipment while standing in water. Do not approach " +
@@ -440,7 +428,6 @@ const Chatbot = () => {
         "ignore evacuation orders or return to affected areas without " +
         "official clearance."
       );
-
     }
 
 
@@ -452,14 +439,12 @@ const Chatbot = () => {
       q.includes("help") ||
       q.includes("what can you do")
     ) {
-
       return (
         "I'm currently working in Offline Emergency Mode. " +
         "I can answer questions about flood safety, evacuation, " +
         "emergency contacts, emergency kits, floodwater, electrical " +
         "safety, medical emergencies, family safety and shelters."
       );
-
     }
 
 
@@ -474,7 +459,6 @@ const Chatbot = () => {
       "flood safety, evacuation, emergency numbers, shelters, " +
       "floodwater, electrical safety or emergency kits."
     );
-
   };
 
 
@@ -483,33 +467,42 @@ const Chatbot = () => {
   // ==========================================
 
   const askBot = async (text) => {
-
     if (!text.trim() || isTyping) return;
 
-    // Add user message
+    const cleanText = text.trim();
+
     setMessages((prev) => [
       ...prev,
       {
         sender: "user",
-        text: text
-      }
+        text: cleanText,
+      },
     ]);
 
     setMessage("");
     setIsTyping(true);
 
-
     try {
+      // ==========================================
+      // CHECK CONNECTION FIRST
+      // ==========================================
+
+      if (!navigator.onLine) {
+        throw new Error("Browser is offline");
+      }
+
 
       // ==========================================
       // TRY ONLINE BACKEND
       // ==========================================
 
-      const [dashboardResponse, shelterResponse] =
-        await Promise.all([
-          fetch(`${API}/api/dashboard`),
-          fetch(`${API}/api/shelters`)
-        ]);
+      const [
+        dashboardResponse,
+        shelterResponse,
+      ] = await Promise.all([
+        fetch(`${API}/api/dashboard`),
+        fetch(`${API}/api/shelters`),
+      ]);
 
 
       if (!dashboardResponse.ok) {
@@ -544,7 +537,7 @@ const Chatbot = () => {
 
 
       const q =
-        text.toLowerCase().trim();
+        cleanText.toLowerCase();
 
 
       let reply = "";
@@ -560,9 +553,7 @@ const Chatbot = () => {
         q.includes("critical village") ||
         q.includes("critical")
       ) {
-
         if (risks.length > 0) {
-
           const highestRisk =
             [...risks].sort(
               (a, b) =>
@@ -570,19 +561,14 @@ const Chatbot = () => {
                 Number(a.risk_score || 0)
             )[0];
 
-
           reply =
             `${highestRisk.village} has the highest flood risk. ` +
             `Risk score: ${highestRisk.risk_score}. ` +
             `Priority: ${highestRisk.priority || "Critical"}.`;
-
         } else {
-
           reply =
             "No risk assessment data is currently available.";
-
         }
-
       }
 
 
@@ -595,9 +581,7 @@ const Chatbot = () => {
         q.includes("risk level") ||
         q.includes("flood risk")
       ) {
-
         if (risks.length > 0) {
-
           const riskInfo =
             risks
               .map(
@@ -606,17 +590,12 @@ const Chatbot = () => {
               )
               .join(" | ");
 
-
           reply =
             `Current village risk levels: ${riskInfo}`;
-
         } else {
-
           reply =
             "Risk assessment data is not available.";
-
         }
-
       }
 
 
@@ -629,10 +608,8 @@ const Chatbot = () => {
         q.includes("relief centre") ||
         q.includes("relief center")
       ) {
-
         reply =
           `There are ${shelters.length} relief shelters available in the system.`;
-
       }
 
 
@@ -645,7 +622,6 @@ const Chatbot = () => {
         q.includes("available space") ||
         q.includes("empty space")
       ) {
-
         const availableCapacity =
           shelters.reduce(
             (sum, shelter) =>
@@ -655,7 +631,6 @@ const Chatbot = () => {
               ),
             0
           );
-
 
         const totalCapacity =
           shelters.reduce(
@@ -667,12 +642,10 @@ const Chatbot = () => {
             0
           );
 
-
         reply =
           `There are ${availableCapacity.toLocaleString()} ` +
           `available spaces out of a total shelter capacity of ` +
           `${totalCapacity.toLocaleString()}.`;
-
       }
 
 
@@ -685,9 +658,7 @@ const Chatbot = () => {
         q.includes("most space") ||
         q.includes("largest shelter")
       ) {
-
         if (shelters.length > 0) {
-
           const bestShelter =
             [...shelters].sort(
               (a, b) =>
@@ -699,18 +670,13 @@ const Chatbot = () => {
                 )
             )[0];
 
-
           reply =
             `${bestShelter.shelter_name} currently has the most ` +
             `available space: ${bestShelter.available_capacity} people.`;
-
         } else {
-
           reply =
             "Shelter information is not available.";
-
         }
-
       }
 
 
@@ -723,9 +689,7 @@ const Chatbot = () => {
         q.includes("evacuated") ||
         q.includes("evacuate")
       ) {
-
         if (evacuationPlan.length > 0) {
-
           const totalEvacuated =
             evacuationPlan.reduce(
               (sum, item) =>
@@ -739,7 +703,6 @@ const Chatbot = () => {
               0
             );
 
-
           const totalUnassigned =
             evacuationPlan.reduce(
               (sum, item) =>
@@ -752,19 +715,14 @@ const Chatbot = () => {
               0
             );
 
-
           reply =
             `${totalEvacuated.toLocaleString()} people are currently ` +
             `assigned/evacuated according to the evacuation plan. ` +
             `${totalUnassigned.toLocaleString()} people remain unassigned.`;
-
         } else {
-
           reply =
             "No evacuation plan is currently available.";
-
         }
-
       }
 
 
@@ -778,12 +736,10 @@ const Chatbot = () => {
         q.includes("during flood") ||
         q.includes("flood")
       ) {
-
         reply =
           "During a flood, move to higher ground, follow official evacuation instructions, " +
           "avoid walking or driving through floodwater, keep emergency supplies with you, " +
           "and stay updated through official alerts.";
-
       }
 
 
@@ -796,10 +752,8 @@ const Chatbot = () => {
         q.includes("hi") ||
         q.includes("hey")
       ) {
-
         reply =
           "Hello! I can help you with flood risks, shelters, shelter capacity, evacuation plans and flood safety.";
-
       }
 
 
@@ -811,10 +765,8 @@ const Chatbot = () => {
         q.includes("help") ||
         q.includes("what can you do")
       ) {
-
         reply =
           "I can provide information about the highest-risk village, flood risk levels, relief shelters, available shelter capacity, evacuation status and flood safety.";
-
       }
 
 
@@ -823,10 +775,8 @@ const Chatbot = () => {
       // ==========================================
 
       else {
-
         reply =
           "I can help with flood risk, shelters, shelter capacity, evacuation and flood safety. Try asking: 'Which village has the highest risk?'";
-
       }
 
 
@@ -838,12 +788,11 @@ const Chatbot = () => {
         ...prev,
         {
           sender: "bot",
-          text: reply
-        }
+          text: reply,
+        },
       ]);
 
     } catch (error) {
-
       // ==========================================
       // OFFLINE FALLBACK
       // ==========================================
@@ -853,23 +802,30 @@ const Chatbot = () => {
       );
 
       const offlineReply =
-        getOfflineReply(text);
-
+        getOfflineReply(cleanText);
 
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: offlineReply
-        }
+          text: offlineReply,
+        },
       ]);
 
     } finally {
-
       setIsTyping(false);
-
     }
+  };
 
+
+  // ==========================================
+  // QUICK QUESTION HANDLER
+  // ==========================================
+
+  const askQuickQuestion = (question) => {
+    if (isTyping) return;
+
+    askBot(question);
   };
 
 
@@ -881,14 +837,16 @@ const Chatbot = () => {
       ========================= */}
 
       {!open && (
-
         <button
+          type="button"
           className="chatbot-button"
           onClick={openChat}
-          aria-label="Open chatbot"
+          aria-label="Open Reloc8 Assistant"
+          title="Open Reloc8 Assistant"
         >
-
-          🤖
+          <span className="chatbot-button-icon">
+            🤖
+          </span>
 
           {hasNotification && (
             <span
@@ -896,9 +854,7 @@ const Chatbot = () => {
               aria-hidden="true"
             />
           )}
-
         </button>
-
       )}
 
 
@@ -907,9 +863,12 @@ const Chatbot = () => {
       ========================= */}
 
       {open && (
-
-        <div className="chatbot">
-
+        <div
+          className="chatbot"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Reloc8 Assistant"
+        >
 
           {/* =========================
               HEADER
@@ -917,22 +876,33 @@ const Chatbot = () => {
 
           <div className="chatbot-header">
 
-            <div>
+            <div className="chatbot-header-info">
 
-              <strong>
-                Reloc8 Assistant
-              </strong>
+              <div className="chatbot-header-icon">
+                🤖
+              </div>
 
-              <small>
-                AI Emergency Assistant
-              </small>
+              <div className="chatbot-header-text">
+
+                <strong>
+                  Reloc8 Assistant
+                </strong>
+
+                <small>
+                  AI Emergency Assistant
+                </small>
+
+              </div>
 
             </div>
 
 
             <button
-              onClick={() => setOpen(false)}
+              type="button"
+              className="chatbot-close"
+              onClick={closeChat}
               aria-label="Close chatbot"
+              title="Close chatbot"
             >
               ✕
             </button>
@@ -947,32 +917,27 @@ const Chatbot = () => {
           <div className="chatbot-messages">
 
             {messages.map((msg, index) => (
-
               <div
                 key={index}
                 className={`chat-message ${msg.sender}`}
               >
                 {msg.text}
               </div>
-
             ))}
 
 
             {/* TYPING INDICATOR */}
 
             {isTyping && (
-
               <div
                 className="chat-message bot typing-indicator"
                 aria-live="polite"
+                aria-label="Reloc8 Assistant is typing"
               >
-
                 <span></span>
                 <span></span>
                 <span></span>
-
               </div>
-
             )}
 
 
@@ -983,20 +948,14 @@ const Chatbot = () => {
                 QUICK QUESTIONS
             ========================= */}
 
-            <div
-              style={{
-                display: "flex",
-                gap: "6px",
-                flexWrap: "wrap",
-                marginTop: "10px"
-              }}
-            >
+            <div className="chatbot-quick-actions">
 
               <button
+                type="button"
                 className="quick-btn"
                 disabled={isTyping}
                 onClick={() =>
-                  askBot(
+                  askQuickQuestion(
                     "Which village has the highest risk?"
                   )
                 }
@@ -1006,10 +965,11 @@ const Chatbot = () => {
 
 
               <button
+                type="button"
                 className="quick-btn"
                 disabled={isTyping}
                 onClick={() =>
-                  askBot(
+                  askQuickQuestion(
                     "How many shelters are available?"
                   )
                 }
@@ -1019,10 +979,11 @@ const Chatbot = () => {
 
 
               <button
+                type="button"
                 className="quick-btn"
                 disabled={isTyping}
                 onClick={() =>
-                  askBot(
+                  askQuickQuestion(
                     "How much shelter capacity is available?"
                   )
                 }
@@ -1032,10 +993,11 @@ const Chatbot = () => {
 
 
               <button
+                type="button"
                 className="quick-btn"
                 disabled={isTyping}
                 onClick={() =>
-                  askBot(
+                  askQuickQuestion(
                     "What should I do during a flood?"
                   )
                 }
@@ -1045,10 +1007,11 @@ const Chatbot = () => {
 
 
               <button
+                type="button"
                 className="quick-btn"
                 disabled={isTyping}
                 onClick={() =>
-                  askBot(
+                  askQuickQuestion(
                     "What is the evacuation status?"
                   )
                 }
@@ -1077,22 +1040,26 @@ const Chatbot = () => {
                 setMessage(e.target.value)
               }
               onKeyDown={(e) => {
-
-                if (e.key === "Enter") {
+                if (
+                  e.key === "Enter" &&
+                  !e.shiftKey
+                ) {
+                  e.preventDefault();
                   askBot(message);
                 }
-
               }}
             />
 
 
             <button
+              type="button"
               onClick={() => askBot(message)}
               disabled={
                 isTyping ||
                 !message.trim()
               }
               aria-label="Send message"
+              title="Send message"
             >
               ➤
             </button>
@@ -1100,7 +1067,6 @@ const Chatbot = () => {
           </div>
 
         </div>
-
       )}
 
     </>

@@ -5,12 +5,10 @@ import { createEvacuationPlan } from "../services/api";
 import villages from "../data/village";
 import shelters from "../data/shelter";
 
-
 function EvacuationPlan() {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
 
   // ============================================================
   // GENERATE EVACUATION PLAN
@@ -26,8 +24,10 @@ function EvacuationPlan() {
         shelters
       );
 
-      console.log("Evacuation API response:", data);
-
+      console.log(
+        "Evacuation API response:",
+        data
+      );
 
       // --------------------------------------------------------
       // CHECK RESPONSE
@@ -45,10 +45,9 @@ function EvacuationPlan() {
       ) {
         throw new Error(
           data.message ||
-          "Evacuation plan generation failed."
+            "Evacuation plan generation failed."
         );
       }
-
 
       // --------------------------------------------------------
       // EXTRACT EVACUATION PLAN
@@ -56,40 +55,27 @@ function EvacuationPlan() {
 
       let evacuationData = [];
 
-
-      // Backend returned array directly
       if (Array.isArray(data)) {
         evacuationData = data;
-      }
-
-      // Backend returned evacuation_plan
-      else if (
+      } else if (
         Array.isArray(data.evacuation_plan)
       ) {
-        evacuationData = data.evacuation_plan;
-      }
-
-      // Alternative backend property
-      else if (
+        evacuationData =
+          data.evacuation_plan;
+      } else if (
         Array.isArray(data.plans)
       ) {
         evacuationData = data.plans;
-      }
-
-      // Alternative backend property
-      else if (
+      } else if (
         Array.isArray(data.village_plans)
       ) {
-        evacuationData = data.village_plans;
-      }
-
-      // Alternative backend property
-      else if (
+        evacuationData =
+          data.village_plans;
+      } else if (
         Array.isArray(data.result)
       ) {
         evacuationData = data.result;
       }
-
 
       // --------------------------------------------------------
       // NORMALIZE RESPONSE
@@ -99,7 +85,8 @@ function EvacuationPlan() {
         ? {
             status: "success",
             summary: {},
-            evacuation_plan: evacuationData,
+            evacuation_plan:
+              evacuationData,
           }
         : {
             ...data,
@@ -114,15 +101,12 @@ function EvacuationPlan() {
               evacuationData,
           };
 
-
       console.log(
         "Normalized evacuation plan:",
         safePlan
       );
 
-
       setPlan(safePlan);
-
     } catch (err) {
       console.error(
         "Evacuation plan error:",
@@ -131,16 +115,14 @@ function EvacuationPlan() {
 
       setError(
         err?.message ||
-        "Unable to generate evacuation plan."
+          "Unable to generate evacuation plan."
       );
 
       setPlan(null);
-
     } finally {
       setLoading(false);
     }
   };
-
 
   // ============================================================
   // SUMMARY DATA
@@ -148,12 +130,10 @@ function EvacuationPlan() {
 
   const summary = plan?.summary || {};
 
-
   const evacuationPlan =
     Array.isArray(plan?.evacuation_plan)
       ? plan.evacuation_plan
       : [];
-
 
   // ------------------------------------------------------------
   // TOTAL POPULATION
@@ -171,14 +151,11 @@ function EvacuationPlan() {
         )
       : 0;
 
-
-  const totalPopulation =
-    Number(
-      summary.total_population ??
+  const totalPopulation = Number(
+    summary.total_population ??
       summary.population ??
       villagePopulation
-    );
-
+  );
 
   // ------------------------------------------------------------
   // TOTAL EVACUATED
@@ -190,37 +167,32 @@ function EvacuationPlan() {
         sum +
         Number(
           item?.evacuated_population ??
-          item?.evacuated ??
-          item?.assigned_population ??
-          0
+            item?.evacuated ??
+            item?.assigned_population ??
+            0
         ),
       0
     );
 
-
-  const totalEvacuated =
-    Number(
-      summary.total_evacuated ??
+  const totalEvacuated = Number(
+    summary.total_evacuated ??
       summary.evacuated_population ??
       calculatedEvacuated
-    );
-
+  );
 
   // ------------------------------------------------------------
   // TOTAL UNASSIGNED
   // ------------------------------------------------------------
 
-  const totalUnassigned =
-    Number(
-      summary.total_unassigned ??
+  const totalUnassigned = Number(
+    summary.total_unassigned ??
       summary.unassigned_population ??
       Math.max(
         totalPopulation -
-        totalEvacuated,
+          totalEvacuated,
         0
       )
-    );
-
+  );
 
   // ------------------------------------------------------------
   // COMPLETION %
@@ -228,20 +200,17 @@ function EvacuationPlan() {
 
   const calculatedPercentage =
     totalPopulation > 0
-      ? (
-          totalEvacuated /
-          totalPopulation
-        ) * 100
+      ? (totalEvacuated /
+          totalPopulation) *
+        100
       : 0;
-
 
   const completionPercentage =
     Number(
       summary.evacuation_completion_percentage ??
-      summary.completion_percentage ??
-      calculatedPercentage
+        summary.completion_percentage ??
+        calculatedPercentage
     );
-
 
   // ============================================================
   // PRIORITY CLASS
@@ -249,8 +218,7 @@ function EvacuationPlan() {
 
   const getPriorityClass = (priority) => {
     const value =
-      String(priority || "")
-        .toLowerCase();
+      String(priority || "").toLowerCase();
 
     if (
       value.includes("critical") ||
@@ -259,21 +227,16 @@ function EvacuationPlan() {
       return "priority-critical";
     }
 
-    if (
-      value.includes("high")
-    ) {
+    if (value.includes("high")) {
       return "priority-high";
     }
 
-    if (
-      value.includes("medium")
-    ) {
+    if (value.includes("medium")) {
       return "priority-medium";
     }
 
     return "priority-low";
   };
-
 
   // ============================================================
   // STATUS CLASS
@@ -281,8 +244,7 @@ function EvacuationPlan() {
 
   const getStatusClass = (status) => {
     const value =
-      String(status || "")
-        .toLowerCase();
+      String(status || "").toLowerCase();
 
     if (
       value.includes("fully") ||
@@ -301,15 +263,13 @@ function EvacuationPlan() {
     return "status-pending";
   };
 
-
   // ============================================================
   // STATUS ICON
   // ============================================================
 
   const getStatusIcon = (status) => {
     const value =
-      String(status || "")
-        .toLowerCase();
+      String(status || "").toLowerCase();
 
     if (
       value.includes("fully") ||
@@ -328,14 +288,12 @@ function EvacuationPlan() {
     return "○";
   };
 
-
   // ============================================================
   // RENDER
   // ============================================================
 
   return (
-    <div className="evacuation-page">
-
+    <div className="evacuation-page mobile-page-shell">
 
       {/* ======================================================
           HEADER
@@ -343,27 +301,31 @@ function EvacuationPlan() {
 
       <div className="evacuation-header">
 
-        <div className="page-heading">
+        <div className="page-heading evacuation-page-heading">
 
-          <h1>
-            Evacuation Plan
-          </h1>
+          <div className="page-heading-icon evacuation-heading-icon">
+            🚨
+          </div>
 
-          <p>
-            Generate intelligent evacuation
-            plans, shelter assignments and
-            recommended routes.
-          </p>
+          <div>
+            <h1>
+              Evacuation Plan
+            </h1>
+
+            <p>
+              Generate intelligent evacuation
+              plans, shelter assignments and
+              recommended routes.
+            </p>
+          </div>
 
         </div>
-
 
         <button
           className="generate-plan-btn"
           onClick={handleGeneratePlan}
           disabled={loading}
         >
-
           {loading ? (
             <>
               <span className="button-spinner"></span>
@@ -380,32 +342,33 @@ function EvacuationPlan() {
                 : "Generate Evacuation Plan"}
             </>
           )}
-
         </button>
 
       </div>
-
 
       {/* ======================================================
           ERROR
       ====================================================== */}
 
       {error && (
+        <div className="evacuation-error evacuation-page-error">
 
-        <div className="evacuation-error">
+          <div className="evacuation-error-icon">
+            ⚠️
+          </div>
 
-          <strong>
-            Unable to generate plan
-          </strong>
+          <div>
+            <strong>
+              Unable to generate plan
+            </strong>
 
-          <span>
-            {error}
-          </span>
+            <span>
+              {error}
+            </span>
+          </div>
 
         </div>
-
       )}
-
 
       {/* ======================================================
           BEFORE GENERATION
@@ -414,8 +377,7 @@ function EvacuationPlan() {
       {!plan &&
         !loading &&
         !error && (
-
-          <div className="generate-empty">
+          <div className="generate-empty evacuation-empty-card">
 
             <div className="empty-icon">
               🚨
@@ -433,7 +395,6 @@ function EvacuationPlan() {
               evacuation strategy.
             </p>
 
-
             <button
               className="generate-main-btn"
               onClick={handleGeneratePlan}
@@ -441,10 +402,9 @@ function EvacuationPlan() {
               ⚡ Generate Plan
             </button>
 
-
             <div className="generation-features">
 
-              <div>
+              <div className="generation-feature">
                 <span>🧠</span>
 
                 <strong>
@@ -456,8 +416,7 @@ function EvacuationPlan() {
                 </small>
               </div>
 
-
-              <div>
+              <div className="generation-feature">
                 <span>🏠</span>
 
                 <strong>
@@ -469,8 +428,7 @@ function EvacuationPlan() {
                 </small>
               </div>
 
-
-              <div>
+              <div className="generation-feature">
                 <span>🛣️</span>
 
                 <strong>
@@ -485,17 +443,14 @@ function EvacuationPlan() {
             </div>
 
           </div>
-
         )}
-
 
       {/* ======================================================
           LOADING
       ====================================================== */}
 
       {loading && (
-
-        <div className="generate-loading">
+        <div className="generate-loading evacuation-loading-card">
 
           <div className="loading-spinner"></div>
 
@@ -510,16 +465,13 @@ function EvacuationPlan() {
           </p>
 
         </div>
-
       )}
-
 
       {/* ======================================================
           RESULTS
       ====================================================== */}
 
       {plan && !loading && (
-
         <>
 
           {/* ==================================================
@@ -528,7 +480,6 @@ function EvacuationPlan() {
 
           <div className="evacuation-summary">
 
-
             <div className="evac-summary-card population-card">
 
               <div className="summary-icon">
@@ -536,7 +487,6 @@ function EvacuationPlan() {
               </div>
 
               <div>
-
                 <span>
                   Total Population
                 </span>
@@ -548,11 +498,9 @@ function EvacuationPlan() {
                 <small>
                   People in affected villages
                 </small>
-
               </div>
 
             </div>
-
 
             <div className="evac-summary-card evacuated-card">
 
@@ -561,7 +509,6 @@ function EvacuationPlan() {
               </div>
 
               <div>
-
                 <span>
                   Evacuated
                 </span>
@@ -573,11 +520,9 @@ function EvacuationPlan() {
                 <small>
                   Successfully assigned
                 </small>
-
               </div>
 
             </div>
-
 
             <div className="evac-summary-card unassigned-card">
 
@@ -586,7 +531,6 @@ function EvacuationPlan() {
               </div>
 
               <div>
-
                 <span>
                   Unassigned
                 </span>
@@ -598,11 +542,9 @@ function EvacuationPlan() {
                 <small>
                   Require additional capacity
                 </small>
-
               </div>
 
             </div>
-
 
             <div className="evac-summary-card completion-card">
 
@@ -611,7 +553,6 @@ function EvacuationPlan() {
               </div>
 
               <div>
-
                 <span>
                   Completion
                 </span>
@@ -623,13 +564,11 @@ function EvacuationPlan() {
                 <small>
                   Evacuation progress
                 </small>
-
               </div>
 
             </div>
 
           </div>
-
 
           {/* ==================================================
               PROGRESS
@@ -640,7 +579,6 @@ function EvacuationPlan() {
             <div className="progress-header">
 
               <div>
-
                 <h2>
                   Evacuation Progress
                 </h2>
@@ -651,7 +589,6 @@ function EvacuationPlan() {
                   {totalPopulation.toLocaleString()}{" "}
                   people assigned to shelters
                 </p>
-
               </div>
 
               <strong>
@@ -659,7 +596,6 @@ function EvacuationPlan() {
               </strong>
 
             </div>
-
 
             <div className="progress-track">
 
@@ -680,7 +616,6 @@ function EvacuationPlan() {
 
           </div>
 
-
           {/* ==================================================
               PLAN TITLE
           ================================================== */}
@@ -688,7 +623,6 @@ function EvacuationPlan() {
           <div className="plans-title">
 
             <div>
-
               <h2>
                 Village Evacuation Plans
               </h2>
@@ -697,7 +631,6 @@ function EvacuationPlan() {
                 Recommended actions for
                 each village
               </p>
-
             </div>
 
             <span>
@@ -705,7 +638,6 @@ function EvacuationPlan() {
             </span>
 
           </div>
-
 
           {/* ==================================================
               VILLAGE PLANS
@@ -716,6 +648,10 @@ function EvacuationPlan() {
             {evacuationPlan.length === 0 ? (
 
               <div className="empty-state">
+
+                <div className="empty-state-icon">
+                  🚨
+                </div>
 
                 <h3>
                   No evacuation plan available
@@ -740,7 +676,6 @@ function EvacuationPlan() {
                     return null;
                   }
 
-
                   // ------------------------------------------
                   // VILLAGE
                   // ------------------------------------------
@@ -751,11 +686,8 @@ function EvacuationPlan() {
                     item.name ||
                     `Village ${index + 1}`;
 
-
                   const district =
-                    item.district ||
-                    "";
-
+                    item.district || "";
 
                   // ------------------------------------------
                   // POPULATION
@@ -764,10 +696,9 @@ function EvacuationPlan() {
                   const population =
                     Number(
                       item.population ??
-                      item.total_population ??
-                      0
+                        item.total_population ??
+                        0
                     );
-
 
                   // ------------------------------------------
                   // EVACUATED
@@ -776,11 +707,10 @@ function EvacuationPlan() {
                   const evacuated =
                     Number(
                       item.evacuated_population ??
-                      item.evacuated ??
-                      item.assigned_population ??
-                      0
+                        item.evacuated ??
+                        item.assigned_population ??
+                        0
                     );
-
 
                   // ------------------------------------------
                   // REMAINING
@@ -789,14 +719,13 @@ function EvacuationPlan() {
                   const unassigned =
                     Number(
                       item.unassigned_population ??
-                      item.unassigned ??
-                      Math.max(
-                        population -
-                        evacuated,
-                        0
-                      )
+                        item.unassigned ??
+                        Math.max(
+                          population -
+                            evacuated,
+                          0
+                        )
                     );
-
 
                   // ------------------------------------------
                   // PRIORITY
@@ -808,7 +737,6 @@ function EvacuationPlan() {
                     item.risk_priority ||
                     "Unknown";
 
-
                   // ------------------------------------------
                   // RISK SCORE
                   // ------------------------------------------
@@ -819,7 +747,6 @@ function EvacuationPlan() {
                     item.score ??
                     "-";
 
-
                   // ------------------------------------------
                   // STATUS
                   // ------------------------------------------
@@ -827,14 +754,11 @@ function EvacuationPlan() {
                   const status =
                     item.evacuation_status ||
                     item.status ||
-                    (
-                      unassigned === 0
-                        ? "Fully Evacuated"
-                        : evacuated > 0
-                          ? "Partially Evacuated"
-                          : "Not Evacuated"
-                    );
-
+                    (unassigned === 0
+                      ? "Fully Evacuated"
+                      : evacuated > 0
+                        ? "Partially Evacuated"
+                        : "Not Evacuated");
 
                   // ------------------------------------------
                   // SHELTER ASSIGNMENTS
@@ -851,7 +775,6 @@ function EvacuationPlan() {
                         ? item.assignments
                         : [];
 
-
                   // ------------------------------------------
                   // ROUTES
                   // ------------------------------------------
@@ -865,14 +788,11 @@ function EvacuationPlan() {
                         ? item.recommended_routes
                         : [];
 
-
                   return (
-
                     <div
                       className="evacuation-card"
                       key={`${villageName}-${index}`}
                     >
-
 
                       {/* ====================================
                           HEADER
@@ -887,7 +807,6 @@ function EvacuationPlan() {
                           </div>
 
                           <div>
-
                             <h2>
                               {String(villageName)}
                             </h2>
@@ -897,11 +816,9 @@ function EvacuationPlan() {
                                 {String(district)}
                               </p>
                             )}
-
                           </div>
 
                         </div>
-
 
                         <div
                           className={`priority-badge ${getPriorityClass(
@@ -912,7 +829,6 @@ function EvacuationPlan() {
                         </div>
 
                       </div>
-
 
                       {/* ====================================
                           STATS
@@ -932,7 +848,6 @@ function EvacuationPlan() {
 
                         </div>
 
-
                         <div className="village-stat">
 
                           <span>
@@ -945,7 +860,6 @@ function EvacuationPlan() {
 
                         </div>
 
-
                         <div className="village-stat">
 
                           <span>
@@ -957,7 +871,6 @@ function EvacuationPlan() {
                           </strong>
 
                         </div>
-
 
                         <div className="village-stat">
 
@@ -972,7 +885,6 @@ function EvacuationPlan() {
                         </div>
 
                       </div>
-
 
                       {/* ====================================
                           STATUS
@@ -989,7 +901,6 @@ function EvacuationPlan() {
                         </span>
 
                         <div>
-
                           <strong>
                             {String(status)}
                           </strong>
@@ -998,11 +909,9 @@ function EvacuationPlan() {
                             {evacuated.toLocaleString()}{" "}
                             people evacuated
                           </small>
-
                         </div>
 
                       </div>
-
 
                       {/* ====================================
                           SHELTER ASSIGNMENTS
@@ -1022,7 +931,6 @@ function EvacuationPlan() {
 
                         </div>
 
-
                         {assignments.length === 0 ? (
 
                           <div className="no-assignment">
@@ -1041,11 +949,11 @@ function EvacuationPlan() {
 
                                 if (
                                   !assignment ||
-                                  typeof assignment !== "object"
+                                  typeof assignment !==
+                                    "object"
                                 ) {
                                   return null;
                                 }
-
 
                                 const shelterName =
                                   assignment.shelter_name ||
@@ -1054,26 +962,22 @@ function EvacuationPlan() {
                                   assignment.destination ||
                                   "Shelter";
 
-
                                 const assignedPeople =
                                   Number(
                                     assignment.assigned_population ??
-                                    assignment.assigned ??
-                                    assignment.population ??
-                                    assignment.people ??
-                                    assignment.count ??
-                                    0
+                                      assignment.assigned ??
+                                      assignment.population ??
+                                      assignment.people ??
+                                      assignment.count ??
+                                      0
                                   );
-
 
                                 const distance =
                                   assignment.distance_km ??
                                   assignment.distance ??
                                   null;
 
-
                                 return (
-
                                   <div
                                     className="assignment-card"
                                     key={assignmentIndex}
@@ -1082,7 +986,6 @@ function EvacuationPlan() {
                                     <div className="assignment-icon">
                                       🏠
                                     </div>
-
 
                                     <div className="assignment-info">
 
@@ -1097,25 +1000,26 @@ function EvacuationPlan() {
                                         people assigned
                                       </span>
 
-
-                                      {distance !== null &&
-                                        distance !== undefined && (
+                                      {distance !==
+                                        null &&
+                                        distance !==
+                                          undefined && (
                                           <small>
                                             📍{" "}
-                                            {String(distance)}{" "}
+                                            {String(
+                                              distance
+                                            )}{" "}
                                             km away
                                           </small>
                                         )}
 
                                     </div>
 
-
                                     <div className="assignment-count">
                                       {assignedPeople}
                                     </div>
 
                                   </div>
-
                                 );
                               }
                             )}
@@ -1125,7 +1029,6 @@ function EvacuationPlan() {
                         )}
 
                       </div>
-
 
                       {/* ====================================
                           ROUTES
@@ -1147,7 +1050,6 @@ function EvacuationPlan() {
 
                           </div>
 
-
                           <div className="route-list">
 
                             {routes.map(
@@ -1158,11 +1060,11 @@ function EvacuationPlan() {
 
                                 if (
                                   !route ||
-                                  typeof route !== "object"
+                                  typeof route !==
+                                    "object"
                                 ) {
                                   return null;
                                 }
-
 
                                 const shelterName =
                                   route.shelter_name ||
@@ -1171,15 +1073,12 @@ function EvacuationPlan() {
                                   route.name ||
                                   "Shelter";
 
-
                                 const distance =
                                   route.distance_km ??
                                   route.distance ??
                                   null;
 
-
                                 return (
-
                                   <div
                                     className="route-card"
                                     key={routeIndex}
@@ -1189,7 +1088,6 @@ function EvacuationPlan() {
                                       {routeIndex + 1}
                                     </div>
 
-
                                     <div className="route-info">
 
                                       <strong>
@@ -1197,7 +1095,6 @@ function EvacuationPlan() {
                                           shelterName
                                         )}
                                       </strong>
-
 
                                       {route.route_type && (
                                         <small>
@@ -1209,18 +1106,18 @@ function EvacuationPlan() {
 
                                     </div>
 
-
                                     <div className="route-distance">
 
-                                      {distance !== null &&
-                                      distance !== undefined
+                                      {distance !==
+                                        null &&
+                                      distance !==
+                                        undefined
                                         ? `${distance} km`
                                         : "N/A"}
 
                                     </div>
 
                                   </div>
-
                                 );
                               }
                             )}
@@ -1232,22 +1129,18 @@ function EvacuationPlan() {
                       )}
 
                     </div>
-
                   );
                 }
               )
-
             )}
 
           </div>
 
         </>
-
       )}
 
     </div>
   );
 }
-
 
 export default EvacuationPlan;

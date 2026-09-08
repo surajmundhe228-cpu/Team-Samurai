@@ -2,7 +2,7 @@ import React from "react";
 
 function EmergencyGuide() {
   return (
-    <div className="emergency-guide-page">
+    <div className="emergency-guide-page mobile-page-shell">
 
       {/* =========================
           PAGE HEADER

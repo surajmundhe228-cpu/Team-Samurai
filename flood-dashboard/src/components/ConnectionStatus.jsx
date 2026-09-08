@@ -23,15 +23,17 @@ function ConnectionStatus() {
 
   return (
     <div
-      className={
-        online
-          ? "connection-status online"
-          : "connection-status offline"
-      }
+      className={`connection-status ${
+        online ? "online" : "offline"
+      }`}
+      role="status"
+      aria-live="polite"
     >
-      <span>{online ? "🟢" : "🔴"}</span>
+      <span className="connection-status-indicator">
+        {online ? "🟢" : "🔴"}
+      </span>
 
-      <span>
+      <span className="connection-status-text">
         {online ? "System Online" : "Offline Mode"}
       </span>
     </div>

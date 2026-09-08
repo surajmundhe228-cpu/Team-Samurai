@@ -14,14 +14,21 @@ function WeatherCard() {
 
         const data = await getWeather();
 
-        console.log("Weather data from backend:", data);
+        console.log(
+          "Weather data from backend:",
+          data
+        );
 
         setWeather(data);
       } catch (err) {
-        console.error("Weather API error:", err);
+        console.error(
+          "Weather API error:",
+          err
+        );
 
         setError(
-          err?.message || "Weather information unavailable"
+          err?.message ||
+            "Weather information unavailable"
         );
       } finally {
         setLoading(false);
@@ -32,29 +39,52 @@ function WeatherCard() {
   }, []);
 
   return (
-    <div className="weather-card">
+    <section className="weather-card">
 
       {/* Header */}
       <div className="weather-header">
-        <div>
-          <h2>🌤️ Weather</h2>
-          <p>Current weather conditions</p>
+        <div className="weather-title">
+          <div className="weather-title-icon">
+            🌤️
+          </div>
+
+          <div>
+            <h2>Weather</h2>
+            <p>Current weather conditions</p>
+          </div>
         </div>
+
+        <span className="weather-live-badge">
+          <span className="weather-live-dot"></span>
+          LIVE
+        </span>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div className="weather-message">
-          <span>⏳</span>
-          Loading weather...
+        <div className="weather-message weather-loading">
+          <span className="weather-message-icon">
+            ⏳
+          </span>
+
+          <div>
+            <strong>Loading weather</strong>
+            <p>Fetching latest conditions...</p>
+          </div>
         </div>
       )}
 
       {/* Error */}
       {!loading && error && (
-        <div className="weather-message">
-          <span>⚠️</span>
-          {error}
+        <div className="weather-message weather-error">
+          <span className="weather-message-icon">
+            ⚠️
+          </span>
+
+          <div>
+            <strong>Weather unavailable</strong>
+            <p>{error}</p>
+          </div>
         </div>
       )}
 
@@ -65,13 +95,14 @@ function WeatherCard() {
           {/* Main Weather */}
           <div className="weather-main">
 
-            <span className="weather-icon">
+            <div className="weather-main-icon">
               {weather.icon || "☀️"}
-            </span>
+            </div>
 
-            <div>
+            <div className="weather-temperature">
               <h1>
-                {weather.temperature ?? "--"}°C
+                {weather.temperature ?? "--"}
+                <span>°C</span>
               </h1>
 
               <p>
@@ -86,11 +117,12 @@ function WeatherCard() {
 
             {/* Humidity */}
             <div className="weather-detail">
-              <span>💧</span>
+              <div className="weather-detail-icon humidity">
+                💧
+              </div>
 
               <div>
                 <p>Humidity</p>
-
                 <strong>
                   {weather.humidity ?? "--"}%
                 </strong>
@@ -99,11 +131,12 @@ function WeatherCard() {
 
             {/* Wind */}
             <div className="weather-detail">
-              <span>💨</span>
+              <div className="weather-detail-icon wind">
+                💨
+              </div>
 
               <div>
                 <p>Wind</p>
-
                 <strong>
                   {weather.windSpeed ?? "--"} km/h
                 </strong>
@@ -112,11 +145,12 @@ function WeatherCard() {
 
             {/* Rain */}
             <div className="weather-detail">
-              <span>🌧️</span>
+              <div className="weather-detail-icon rain">
+                🌧️
+              </div>
 
               <div>
                 <p>Rain</p>
-
                 <strong>
                   {weather.rainfall ?? "--"} mm
                 </strong>
@@ -125,13 +159,15 @@ function WeatherCard() {
 
             {/* Location */}
             <div className="weather-detail">
-              <span>📍</span>
+              <div className="weather-detail-icon location">
+                📍
+              </div>
 
               <div>
                 <p>Location</p>
-
                 <strong>
-                  {weather.location || "Supaul, Bihar"}
+                  {weather.location ||
+                    "Supaul, Bihar"}
                 </strong>
               </div>
             </div>
@@ -141,14 +177,21 @@ function WeatherCard() {
           {/* Weather Alert */}
           {weather.alert && (
             <div className="weather-alert">
-              🚨 <strong>{weather.alert}</strong>
+              <span className="weather-alert-icon">
+                🚨
+              </span>
+
+              <div>
+                <strong>Weather Alert</strong>
+                <p>{weather.alert}</p>
+              </div>
             </div>
           )}
 
         </div>
       )}
 
-    </div>
+    </section>
   );
 }
 
