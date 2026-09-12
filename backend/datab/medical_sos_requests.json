@@ -1,0 +1,44 @@
+[
+  {
+    "id": "SOS-M001",
+    "requester_name": "Ramesh Yadav",
+    "village": "Rampur",
+    "district": "Supaul",
+    "latitude": 26.175,
+    "longitude": 86.71,
+    "condition": "High fever + dehydration",
+    "urgency": "High",
+    "people_count": 2,
+    "status": "Open",
+    "requested_at": "2008-08-18T09:15:00",
+    "notes": "Near eastern embankment"
+  },
+  {
+    "id": "SOS-M002",
+    "requester_name": "Sunita Devi",
+    "village": "Bishanpur",
+    "district": "Supaul",
+    "latitude": 26.205,
+    "longitude": 86.67,
+    "condition": "Pregnancy related emergency",
+    "urgency": "Critical",
+    "people_count": 1,
+    "status": "Assigned",
+    "requested_at": "2008-08-18T10:40:00",
+    "notes": "Needs ambulance"
+  },
+  {
+    "id": "SOS-M003",
+    "requester_name": "Abdul Rahman",
+    "village": "Jorgama",
+    "district": "Madhepura",
+    "latitude": 25.89,
+    "longitude": 86.91,
+    "condition": "Injury from collapsed wall",
+    "urgency": "High",
+    "people_count": 1,
+    "status": "Open",
+    "requested_at": "2008-08-18T11:05:00",
+    "notes": "Bleeding controlled"
+  }
+]

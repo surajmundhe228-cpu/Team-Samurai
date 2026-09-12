@@ -1,0 +1,80 @@
+{
+  "supported_languages": [
+    "en",
+    "hi",
+    "mr"
+  ],
+  "default_language": "hi",
+  "strings": {
+    "app_title": {
+      "en": "RELOC8 Disaster Support",
+      "hi": "रिलोक8 आपदा सहायता",
+      "mr": "रिलोक8 आपत्ती सहाय्य"
+    },
+    "report_incident": {
+      "en": "Report Incident",
+      "hi": "घटना की रिपोर्ट करें",
+      "mr": "घटनेची तक्रार नोंदवा"
+    },
+    "find_shelter": {
+      "en": "Find Nearest Shelter",
+      "hi": "निकटतम आश्रय खोजें",
+      "mr": "जवळचा निवारा शोधा"
+    },
+    "medical_sos": {
+      "en": "Request Medical Help",
+      "hi": "मेडिकल मदद माँगें",
+      "mr": "वैद्यकीय मदत मागा"
+    },
+    "i_am_safe": {
+      "en": "I am Safe",
+      "hi": "मैं सुरक्षित हूँ",
+      "mr": "मी सुरक्षित आहे"
+    },
+    "need_help": {
+      "en": "Need Help",
+      "hi": "मदद चाहिए",
+      "mr": "मदत हवी"
+    },
+    "emergency_contacts": {
+      "en": "Emergency Contacts",
+      "hi": "आपातकालीन संपर्क",
+      "mr": "आपत्कालीन संपर्क"
+    },
+    "offline_mode": {
+      "en": "You are offline. Data will sync later.",
+      "hi": "आप ऑफ़लाइन हैं। डेटा बाद में सिंक होगा।",
+      "mr": "तुम्ही ऑफलाइन आहात. डेटा नंतर सिंक होईल."
+    }
+  },
+  "voice_alerts": [
+    {
+      "id": "VA-001",
+      "severity": "Critical",
+      "en": "Critical flood warning. Move to the nearest shelter immediately.",
+      "hi": "गंभीर बाढ़ चेतावनी। तुरंत निकटतम आश्रय स्थल पर जाएँ।",
+      "mr": "गंभीर पूर इशारा. ताबडतोब जवळच्या निवाऱ्यात जा."
+    },
+    {
+      "id": "VA-002",
+      "severity": "High",
+      "en": "High risk in your area. Prepare to evacuate.",
+      "hi": "आपके क्षेत्र में उच्च जोखिम। निकासी के लिए तैयार रहें।",
+      "mr": "तुमच्या भागात उच्च धोका. निर्गमनासाठी तयार रहा."
+    },
+    {
+      "id": "VA-003",
+      "severity": "Medical",
+      "en": "Medical help request received. Volunteers are being notified.",
+      "hi": "मेडिकल मदद अनुरोध प्राप्त। स्वयंसेवकों को सूचित किया जा रहा है।",
+      "mr": "वैद्यकीय मदत विनंती मिळाली. स्वयंसेवकांना कळवण्यात येत आहे."
+    },
+    {
+      "id": "VA-004",
+      "severity": "Shelter",
+      "en": "Nearest shelter has limited capacity. Proceed to secondary shelter if directed.",
+      "hi": "निकटतम आश्रय में सीमित जगह है। निर्देश मिलने पर द्वितीय आश्रय जाएँ।",
+      "mr": "जवळच्या निवाऱ्यात मर्यादित जागा आहे. सूचनेनुसार दुसऱ्या निवाऱ्यात जा."
+    }
+  ]
+}
