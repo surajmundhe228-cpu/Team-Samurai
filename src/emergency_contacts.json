@@ -1,0 +1,98 @@
+[
+  {
+    "id": "EC-001",
+    "name": "NDRF Helpline",
+    "number": "011-24363260",
+    "type": "National",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-002",
+    "name": "Disaster Management (State)",
+    "number": "1070",
+    "type": "State",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-003",
+    "name": "District Emergency Supaul",
+    "number": "06474-222100",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-004",
+    "name": "District Emergency Madhepura",
+    "number": "06476-222200",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-005",
+    "name": "Ambulance",
+    "number": "108",
+    "type": "Medical",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-006",
+    "name": "Police",
+    "number": "100",
+    "type": "Police",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-007",
+    "name": "Fire",
+    "number": "101",
+    "type": "Fire",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-008",
+    "name": "Women Helpline",
+    "number": "1091",
+    "type": "Social",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-009",
+    "name": "Child Helpline",
+    "number": "1098",
+    "type": "Social",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-010",
+    "name": "SDRF Bihar",
+    "number": "0612-2217301",
+    "type": "State",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-011",
+    "name": "Supaul Control Room",
+    "number": "+91-94312-40000",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-012",
+    "name": "Madhepura Control Room",
+    "number": "+91-94314-50000",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  }
+]
