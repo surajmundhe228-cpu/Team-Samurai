@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import Map from "./components/Map";
 import ReportIncidentModal from "./components/ReportIncidentModal";
+import FamilyCheckInHub from "./components/FamilyCheckInHub";
 import i18nData from "./data/i18n_voice_support.json";
 
 function App() {
   const [userRole, setUserRole] = useState("Authority");
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-
-  // --------------------------------------------------
-  // MULTILINGUAL SUPPORT
-  // --------------------------------------------------
+  const [isFamilyHubOpen, setIsFamilyHubOpen] = useState(false);
 
   const [language, setLanguage] = useState(
     localStorage.getItem("reloc8_language") ||
@@ -17,9 +15,9 @@ function App() {
       "hi"
   );
 
-  // Load browser voices
   const [voices, setVoices] = useState([]);
 
+  // Load browser speech voices
   useEffect(() => {
     if (!window.speechSynthesis) return;
 
@@ -30,7 +28,10 @@ function App() {
 
     loadVoices();
 
-    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    window.speechSynthesis.addEventListener(
+      "voiceschanged",
+      loadVoices
+    );
 
     return () => {
       window.speechSynthesis.removeEventListener(
@@ -48,31 +49,28 @@ function App() {
   // Change language
   const changeLanguage = (lang) => {
     setLanguage(lang);
+
     localStorage.setItem("reloc8_language", lang);
 
-    // Stop currently playing speech when language changes
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
   };
 
-  // --------------------------------------------------
-  // VOICE SUPPORT
-  // --------------------------------------------------
-
+  // Select best available voice for current language
   const getPreferredVoice = () => {
     if (!voices.length) return null;
 
     const languageMap = {
       en: ["en-IN", "en-US", "en-GB", "en"],
       hi: ["hi-IN", "hi"],
-      mr: ["mr-IN", "mr"],
+      mr: ["mr-IN", "mr"]
     };
 
     const preferredLanguages =
       languageMap[language] || languageMap.en;
 
-    // 1. Exact language match
+    // Exact language match
     for (const lang of preferredLanguages) {
       const exactVoice = voices.find(
         (voice) =>
@@ -84,7 +82,7 @@ function App() {
       }
     }
 
-    // 2. Language prefix match
+    // Prefix match
     const languageCode = preferredLanguages[0].split("-")[0];
 
     const matchingVoice = voices.find((voice) =>
@@ -100,11 +98,10 @@ function App() {
     return null;
   };
 
+  // Voice alert
   const speakAlert = () => {
     if (!window.speechSynthesis) {
-      alert(
-        "Voice support is not available in this browser."
-      );
+      alert("Voice support is not available in this browser.");
       return;
     }
 
@@ -117,7 +114,6 @@ function App() {
 
     const text = alertData[language] || alertData.en;
 
-    // Stop previous speech
     window.speechSynthesis.cancel();
 
     const selectedVoice = getPreferredVoice();
@@ -141,17 +137,12 @@ function App() {
 
     speech.voice = selectedVoice;
     speech.lang = selectedVoice.lang;
-
     speech.rate = 0.9;
     speech.pitch = 1;
     speech.volume = 1;
 
     window.speechSynthesis.speak(speech);
   };
-
-  // --------------------------------------------------
-  // UI
-  // --------------------------------------------------
 
   return (
     <div
@@ -163,10 +154,12 @@ function App() {
         overflow: "hidden",
         backgroundColor: "#0f172a",
         fontFamily:
-          "system-ui, -apple-system, sans-serif",
+          "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
       }}
     >
-      {/* TOP HEADER */}
+      {/* =========================
+          TOP HEADER
+      ========================== */}
       <header
         style={{
           minHeight: "70px",
@@ -176,13 +169,12 @@ function App() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 20px",
-          boxShadow:
-            "0 2px 10px rgba(0,0,0,0.25)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
           zIndex: 1001,
-          gap: "15px",
+          gap: "15px"
         }}
       >
-        {/* LOGO */}
+        {/* Logo / Title */}
         <div>
           <h1
             style={{
@@ -190,7 +182,7 @@ function App() {
               fontSize: "1.4rem",
               fontWeight: "700",
               letterSpacing: "1px",
-              color: "#38bdf8",
+              color: "#38bdf8"
             }}
           >
             RELOC8
@@ -200,24 +192,29 @@ function App() {
             style={{
               margin: 0,
               fontSize: "0.8rem",
-              color: "#94a3b8",
+              color: "#94a3b8"
             }}
           >
-            Disaster Decision-Support Platform
+            {t(
+              "app_subtitle",
+              "Disaster Decision-Support Platform"
+            )}
           </p>
         </div>
 
-        {/* CONTROLS */}
+        {/* =========================
+            CONTROLS
+        ========================== */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "10px",
-            flexWrap: "wrap",
             justifyContent: "flex-end",
+            gap: "8px",
+            flexWrap: "wrap"
           }}
         >
-          {/* LANGUAGE SELECTOR */}
+          {/* Language Selector */}
           <select
             value={language}
             onChange={(e) =>
@@ -227,61 +224,49 @@ function App() {
               padding: "7px 10px",
               backgroundColor: "#0f172a",
               color: "#ffffff",
-              border: "1px solid #334155",
+              border: "1px solid #475569",
               borderRadius: "6px",
               fontSize: "12px",
               fontWeight: "600",
               cursor: "pointer",
+              outline: "none"
             }}
             aria-label="Select language"
           >
-            <option value="en">
-              English
-            </option>
-
-            <option value="hi">
-              हिंदी
-            </option>
-
-            <option value="mr">
-              मराठी
-            </option>
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="mr">मराठी</option>
           </select>
 
-          {/* VOICE BUTTON */}
+          {/* Voice Button */}
           <button
             onClick={speakAlert}
-            title="Play emergency voice alert"
             style={{
               padding: "7px 12px",
-              backgroundColor: "#7c3aed",
+              backgroundColor: "#334155",
               color: "#ffffff",
-              border: "none",
+              border: "1px solid #475569",
               borderRadius: "6px",
               fontSize: "12px",
               fontWeight: "600",
-              cursor: "pointer",
+              cursor: "pointer"
             }}
           >
             🔊 Voice
           </button>
 
-          {/* ROLE SWITCHER */}
+          {/* Role Switcher */}
           <div
             style={{
               display: "flex",
               background: "#0f172a",
               padding: "3px",
               borderRadius: "8px",
-              border:
-                "1px solid #334155",
+              border: "1px solid #334155"
             }}
           >
-            {/* CITIZEN */}
             <button
-              onClick={() =>
-                setUserRole("Citizen")
-              }
+              onClick={() => setUserRole("Citizen")}
               style={{
                 padding: "6px 12px",
                 border: "none",
@@ -296,17 +281,14 @@ function App() {
                 color:
                   userRole === "Citizen"
                     ? "#fff"
-                    : "#94a3b8",
+                    : "#94a3b8"
               }}
             >
-              Citizen View
+              {t("citizen_view", "Citizen View")}
             </button>
 
-            {/* AUTHORITY */}
             <button
-              onClick={() =>
-                setUserRole("Authority")
-              }
+              onClick={() => setUserRole("Authority")}
               style={{
                 padding: "6px 12px",
                 border: "none",
@@ -321,18 +303,33 @@ function App() {
                 color:
                   userRole === "Authority"
                     ? "#fff"
-                    : "#94a3b8",
+                    : "#94a3b8"
               }}
             >
-              Authority View
+              {t("authority_view", "Authority View")}
             </button>
           </div>
 
-          {/* REPORT INCIDENT */}
+          {/* Family Safety */}
           <button
-            onClick={() =>
-              setIsReportModalOpen(true)
-            }
+            onClick={() => setIsFamilyHubOpen(true)}
+            style={{
+              padding: "7px 14px",
+              backgroundColor: "#7c3aed",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "6px",
+              fontSize: "12px",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+          >
+            👨‍👩‍👧 Family Safety
+          </button>
+
+          {/* Report Incident */}
+          <button
+            onClick={() => setIsReportModalOpen(true)}
             style={{
               padding: "7px 14px",
               backgroundColor: "#dc2626",
@@ -341,11 +338,10 @@ function App() {
               borderRadius: "6px",
               fontSize: "12px",
               fontWeight: "600",
-              cursor: "pointer",
+              cursor: "pointer"
             }}
           >
-            +{" "}
-            {t(
+            + {t(
               "report_incident",
               "Report Incident"
             )}
@@ -353,21 +349,35 @@ function App() {
         </div>
       </header>
 
-      {/* MAP */}
+      {/* =========================
+          MAIN MAP
+      ========================== */}
       <main
         style={{
           flex: 1,
-          position: "relative",
+          position: "relative"
         }}
       >
         <Map userRole={userRole} />
       </main>
 
-      {/* INCIDENT MODAL */}
+      {/* =========================
+          REPORT INCIDENT MODAL
+      ========================== */}
       <ReportIncidentModal
         isOpen={isReportModalOpen}
         onClose={() =>
           setIsReportModalOpen(false)
+        }
+      />
+
+      {/* =========================
+          FAMILY SAFETY HUB
+      ========================== */}
+      <FamilyCheckInHub
+        isOpen={isFamilyHubOpen}
+        onClose={() =>
+          setIsFamilyHubOpen(false)
         }
       />
     </div>
