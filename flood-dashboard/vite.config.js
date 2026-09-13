@@ -8,6 +8,7 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: "auto",
 
       manifest: {
         name: "Reloc8 Flood Evacuation System",
@@ -23,6 +24,7 @@ export default defineConfig({
 
       workbox: {
         navigateFallback: "/index.html",
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
       },
     }),
   ],

@@ -3,6 +3,17 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// ========================================
+// REACT APP
+// ========================================
+
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 
 // ========================================
 // SERVICE WORKER
@@ -10,9 +21,8 @@ import "./index.css";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-
     navigator.serviceWorker
-      .register("/sw.js")
+      .register("/service-worker.js")
       .then((registration) => {
         console.log(
           "Reloc8 Service Worker registered:",
@@ -25,19 +35,5 @@ if ("serviceWorker" in navigator) {
           error
         );
       });
-
   });
 }
-
-
-// ========================================
-// REACT APP
-// ========================================
-
-ReactDOM.createRoot(
-  document.getElementById("root")
-).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
