@@ -1,0 +1,221 @@
+[
+  {
+    "id": "HC-001",
+    "name": "Sadar Hospital Supaul",
+    "type": "Hospital",
+    "category": "District Hospital",
+    "district": "Supaul",
+    "village": "Supaul",
+    "latitude": 26.118,
+    "longitude": 86.592,
+    "phone": "+91-6474-222101",
+    "emergency_phone": "108",
+    "beds_available": 42,
+    "operational_24x7": true,
+    "has_blood_bank": true,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Surgery",
+      "Maternity",
+      "ICU"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-002",
+    "name": "Primary Health Centre Triveniganj",
+    "type": "Clinic",
+    "category": "PHC",
+    "district": "Supaul",
+    "village": "Triveniganj",
+    "latitude": 26.182,
+    "longitude": 86.718,
+    "phone": "+91-94312-44101",
+    "emergency_phone": "108",
+    "beds_available": 8,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "First Aid",
+      "OPD",
+      "Delivery"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-003",
+    "name": "Madhepura Medical College Hospital",
+    "type": "Hospital",
+    "category": "Medical College",
+    "district": "Madhepura",
+    "village": "Madhepura",
+    "latitude": 25.925,
+    "longitude": 86.795,
+    "phone": "+91-6476-222201",
+    "emergency_phone": "108",
+    "beds_available": 65,
+    "operational_24x7": true,
+    "has_blood_bank": true,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Trauma",
+      "Surgery",
+      "Blood Bank",
+      "ICU"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-004",
+    "name": "Blood Bank Madhepura",
+    "type": "Blood Bank",
+    "category": "Blood Bank",
+    "district": "Madhepura",
+    "village": "Madhepura",
+    "latitude": 25.922,
+    "longitude": 86.788,
+    "phone": "+91-94314-55101",
+    "emergency_phone": "108",
+    "beds_available": 0,
+    "operational_24x7": true,
+    "has_blood_bank": true,
+    "has_ambulance": false,
+    "services": [
+      "Whole Blood",
+      "Platelets",
+      "Emergency Issue"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-005",
+    "name": "24x7 Jan Aushadhi Chhatapur",
+    "type": "Pharmacy",
+    "category": "Pharmacy",
+    "district": "Supaul",
+    "village": "Chhatapur",
+    "latitude": 26.208,
+    "longitude": 86.682,
+    "phone": "+91-94312-44102",
+    "emergency_phone": "+91-94312-44102",
+    "beds_available": 0,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "Essential Medicines",
+      "ORS"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-006",
+    "name": "PHC Murliganj",
+    "type": "Clinic",
+    "category": "PHC",
+    "district": "Madhepura",
+    "village": "Murliganj",
+    "latitude": 25.885,
+    "longitude": 86.918,
+    "phone": "+91-94314-55102",
+    "emergency_phone": "108",
+    "beds_available": 6,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "First Aid",
+      "OPD"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-007",
+    "name": "Community Health Centre Nirmali",
+    "type": "Clinic",
+    "category": "CHC",
+    "district": "Supaul",
+    "village": "Nirmali",
+    "latitude": 26.295,
+    "longitude": 86.575,
+    "phone": "+91-94312-44103",
+    "emergency_phone": "108",
+    "beds_available": 12,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Maternity",
+      "Stabilization"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-008",
+    "name": "Apollo Pharmacy Madhepura Road",
+    "type": "Pharmacy",
+    "category": "Pharmacy",
+    "district": "Madhepura",
+    "village": "Madhepura",
+    "latitude": 25.918,
+    "longitude": 86.802,
+    "phone": "+91-94314-55103",
+    "emergency_phone": "+91-94314-55103",
+    "beds_available": 0,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "Medicines",
+      "Surgical items"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-009",
+    "name": "Mobile Medical Unit Supaul",
+    "type": "Clinic",
+    "category": "Mobile Unit",
+    "district": "Supaul",
+    "village": "Supaul",
+    "latitude": 26.12,
+    "longitude": 86.6,
+    "phone": "+91-94312-44104",
+    "emergency_phone": "108",
+    "beds_available": 0,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "First Aid",
+      "Outreach"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-010",
+    "name": "Udakishunganj Referral Unit",
+    "type": "Hospital",
+    "category": "Referral",
+    "district": "Madhepura",
+    "village": "Udakishunganj",
+    "latitude": 25.835,
+    "longitude": 86.948,
+    "phone": "+91-94314-55104",
+    "emergency_phone": "108",
+    "beds_available": 15,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Stabilization",
+      "Referral"
+    ],
+    "status": "Operational"
+  }
+]
