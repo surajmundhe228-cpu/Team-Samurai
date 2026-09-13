@@ -217,5 +217,220 @@
       "Referral"
     ],
     "status": "Operational"
+  },
+  {
+    "id": "HC-011",
+    "name": "PHC Basantpur",
+    "type": "Clinic",
+    "category": "PHC",
+    "district": "Supaul",
+    "village": "Basantpur",
+    "latitude": 26.318,
+    "longitude": 86.485,
+    "phone": "+91-94312-44105",
+    "emergency_phone": "108",
+    "beds_available": 5,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "First Aid",
+      "OPD"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-012",
+    "name": "Sub-Divisional Hospital Birpur",
+    "type": "Hospital",
+    "category": "SDH",
+    "district": "Supaul",
+    "village": "Birpur",
+    "latitude": 26.52,
+    "longitude": 87.02,
+    "phone": "+91-94312-44106",
+    "emergency_phone": "108",
+    "beds_available": 28,
+    "operational_24x7": true,
+    "has_blood_bank": true,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Surgery",
+      "Maternity"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-013",
+    "name": "Blood Bank Supaul Sadar",
+    "type": "Blood Bank",
+    "category": "Blood Bank",
+    "district": "Supaul",
+    "village": "Supaul",
+    "latitude": 26.116,
+    "longitude": 86.59,
+    "phone": "+91-94312-44107",
+    "emergency_phone": "108",
+    "beds_available": 0,
+    "operational_24x7": true,
+    "has_blood_bank": true,
+    "has_ambulance": false,
+    "services": [
+      "Whole Blood",
+      "Emergency Issue"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-014",
+    "name": "Jan Aushadhi Kendra Murliganj",
+    "type": "Pharmacy",
+    "category": "Pharmacy",
+    "district": "Madhepura",
+    "village": "Murliganj",
+    "latitude": 25.882,
+    "longitude": 86.922,
+    "phone": "+91-94314-55105",
+    "emergency_phone": "+91-94314-55105",
+    "beds_available": 0,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "Essential Medicines",
+      "ORS",
+      "Antibiotics"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-015",
+    "name": "PHC Alamnagar",
+    "type": "Clinic",
+    "category": "PHC",
+    "district": "Madhepura",
+    "village": "Alamnagar",
+    "latitude": 25.848,
+    "longitude": 86.702,
+    "phone": "+91-94314-55106",
+    "emergency_phone": "108",
+    "beds_available": 4,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "First Aid",
+      "OPD"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-016",
+    "name": "CHC Singheshwar",
+    "type": "Clinic",
+    "category": "CHC",
+    "district": "Madhepura",
+    "village": "Singheshwar",
+    "latitude": 25.978,
+    "longitude": 86.805,
+    "phone": "+91-94314-55107",
+    "emergency_phone": "108",
+    "beds_available": 10,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "Emergency",
+      "Maternity",
+      "Stabilization"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-017",
+    "name": "Red Cross First Aid Post Triveniganj",
+    "type": "Clinic",
+    "category": "First Aid Post",
+    "district": "Supaul",
+    "village": "Triveniganj",
+    "latitude": 26.179,
+    "longitude": 86.715,
+    "phone": "+91-94312-44108",
+    "emergency_phone": "108",
+    "beds_available": 2,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "First Aid",
+      "Trauma Dressing"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-018",
+    "name": "24x7 Medical Store Bihariganj",
+    "type": "Pharmacy",
+    "category": "Pharmacy",
+    "district": "Madhepura",
+    "village": "Bihariganj",
+    "latitude": 25.905,
+    "longitude": 86.995,
+    "phone": "+91-94314-55108",
+    "emergency_phone": "+91-94314-55108",
+    "beds_available": 0,
+    "operational_24x7": true,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "Medicines",
+      "ORS",
+      "Antiseptics"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-019",
+    "name": "PHC Raghopur",
+    "type": "Clinic",
+    "category": "PHC",
+    "district": "Supaul",
+    "village": "Raghopur",
+    "latitude": 26.248,
+    "longitude": 86.552,
+    "phone": "+91-94312-44109",
+    "emergency_phone": "108",
+    "beds_available": 6,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": true,
+    "services": [
+      "First Aid",
+      "OPD",
+      "Delivery"
+    ],
+    "status": "Operational"
+  },
+  {
+    "id": "HC-020",
+    "name": "District Ayurvedic Dispensary Madhepura",
+    "type": "Clinic",
+    "category": "AYUSH",
+    "district": "Madhepura",
+    "village": "Madhepura",
+    "latitude": 25.928,
+    "longitude": 86.785,
+    "phone": "+91-94314-55109",
+    "emergency_phone": "+91-94314-55109",
+    "beds_available": 0,
+    "operational_24x7": false,
+    "has_blood_bank": false,
+    "has_ambulance": false,
+    "services": [
+      "OPD",
+      "Supportive Care"
+    ],
+    "status": "Operational"
   }
 ]

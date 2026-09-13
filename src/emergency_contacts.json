@@ -94,5 +94,69 @@
     "type": "District",
     "priority": 1,
     "available_offline": true
+  },
+  {
+    "id": "EC-013",
+    "name": "Railway Helpline",
+    "number": "139",
+    "type": "Transport",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-014",
+    "name": "LPG Leak / Gas Emergency",
+    "number": "1906",
+    "type": "Utility",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-015",
+    "name": "Flood Control Supaul",
+    "number": "+91-94312-40111",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-016",
+    "name": "Flood Control Madhepura",
+    "number": "+91-94314-50111",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-017",
+    "name": "Animal Husbandry Helpline",
+    "number": "+91-94312-40222",
+    "type": "Livestock",
+    "priority": 2,
+    "available_offline": true
+  },
+  {
+    "id": "EC-018",
+    "name": "Blood Bank Enquiry Bihar",
+    "number": "104",
+    "type": "Medical",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-019",
+    "name": "DM Office Supaul",
+    "number": "06474-222001",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
+  },
+  {
+    "id": "EC-020",
+    "name": "DM Office Madhepura",
+    "number": "06476-222001",
+    "type": "District",
+    "priority": 1,
+    "available_offline": true
   }
 ]
