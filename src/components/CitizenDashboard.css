@@ -389,3 +389,12 @@
   color: #0f4d34;
   font-weight: 800;
 }
+
+.medical-sos-card {
+  border: 1px solid #fecaca;
+}
+
+.medical-sos-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
