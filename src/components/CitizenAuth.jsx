@@ -7,9 +7,11 @@ import {
   ShieldCheck, 
   AlertCircle 
 } from 'lucide-react';
-import './AuthorityLogin.css'; // Reuses auth styling
+import './AuthorityLogin.css';
 
-export default function CitizenAuth({ onBack, onLoginSuccess }) {
+const API_BASE = "http://127.0.0.1:8000/api";
+
+export default function CitizenAuth({ onBack, onLoginSuccess, onNavigate }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,6 +20,7 @@ export default function CitizenAuth({ onBack, onLoginSuccess }) {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (val) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,7 +32,7 @@ export default function CitizenAuth({ onBack, onLoginSuccess }) {
     return strongPasswordRegex.test(val);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
@@ -49,47 +52,64 @@ export default function CitizenAuth({ onBack, onLoginSuccess }) {
       return;
     }
 
-    const storedCitizens = JSON.parse(localStorage.getItem('reloc8_citizens') || '[]');
+    setLoading(true);
 
-    if (isSignUp) {
-      const userExists = storedCitizens.some(
-        (user) => user.email.toLowerCase() === email.toLowerCase()
-      );
-      if (userExists) {
-        setErrorMessage('Email already registered! Please switch to Login.');
-        return;
+    try {
+      if (isSignUp) {
+        // --- 1. CALL BACKEND REGISTRATION ---
+        const response = await fetch(`${API_BASE}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name.trim(),
+            phone_or_email: email.trim().toLowerCase(),
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || 'Registration failed.');
+        }
+
+        sessionStorage.setItem('reloc8_citizen_session', JSON.stringify(data.user));
+        setSuccessMessage('Registration successful! Redirecting...');
+
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(data.user);
+          if (onNavigate) onNavigate('citizenDashboard');
+        }, 700);
+
+      } else {
+        // --- 2. CALL BACKEND LOGIN ---
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone_or_email: email.trim().toLowerCase(),
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || 'Citizen account not found or incorrect password.');
+        }
+
+        sessionStorage.setItem('reloc8_citizen_session', JSON.stringify(data.user));
+        setSuccessMessage('Login successful! Redirecting...');
+
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(data.user);
+          if (onNavigate) onNavigate('citizenDashboard');
+        }, 500);
       }
-
-      const newCitizen = {
-        name: name.trim(),
-        email: email.trim(),
-        password,
-      };
-
-      storedCitizens.push(newCitizen);
-      localStorage.setItem('reloc8_citizens', JSON.stringify(storedCitizens));
-      localStorage.setItem('reloc8_citizen_session', JSON.stringify(newCitizen));
-
-      setSuccessMessage('Registration successful! Redirecting...');
-      setTimeout(() => onLoginSuccess(newCitizen), 700);
-
-    } else {
-      const existingUser = storedCitizens.find(
-        (user) => user.email.toLowerCase() === email.toLowerCase()
-      );
-
-      if (!existingUser) {
-        setErrorMessage('Citizen account not found. Please register first.');
-        return;
-      }
-
-      if (existingUser.password !== password) {
-        setErrorMessage('Incorrect password. Please try again.');
-        return;
-      }
-
-      localStorage.setItem('reloc8_citizen_session', JSON.stringify(existingUser));
-      onLoginSuccess(existingUser);
+    } catch (err) {
+      setErrorMessage(err.message || 'Server connection error. Make sure Python backend is running.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,13 +180,18 @@ export default function CitizenAuth({ onBack, onLoginSuccess }) {
                 type="button" 
                 className="eye-toggle"
                 onClick={() => setShowPassword(!showPassword)}
+                tabIndex="-1"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
 
-            <button type="submit" className="login-btn">
-              {isSignUp ? 'Create Citizen Account' : 'Sign In'}
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading 
+                ? 'Processing...' 
+                : isSignUp 
+                  ? 'Create Citizen Account' 
+                  : 'Sign In'}
             </button>
           </form>
 

@@ -1,0 +1,35 @@
+export function Reloc8Logo({ size = 48, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Background Rounded Squircle */}
+      <rect width="100" height="100" rx="24" fill="#0f4d34" />
+
+      {/* Flood Waterline Wave (Lower Half) */}
+      <path
+        d="M20 70C28 65 34 75 42 70C50 65 56 75 64 70C72 65 78 72 80 70"
+        stroke="#10b981"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+
+      {/* Upward Relocation Path / Arrow forming the '8' curve */}
+      <path
+        d="M36 58C32 50 34 38 42 32C50 26 58 32 62 38C66 44 64 52 56 56C48 60 44 66 50 72C56 78 68 76 72 68"
+        stroke="#ffffff"
+        strokeWidth="6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Safety Beacon / High Ground Point */}
+      <circle cx="50" cy="22" r="5" fill="#f59e0b" />
+    </svg>
+  );
+}

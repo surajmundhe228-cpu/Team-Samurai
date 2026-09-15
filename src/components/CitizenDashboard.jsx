@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Map,
@@ -31,7 +30,8 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
   const isLoggedIn = !!citizenUser;
   const displayName = citizenUser?.name || 'Citizen';
 
-  // AI Assistant Chatbot State
+  // Modal and Assistant States
+  const [isAlertsOpen, setIsAlertsOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isSOSOpen, setIsSOSOpen] = useState(false);
   const [aiInput, setAiInput] = useState('');
@@ -56,6 +56,9 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
   }, []);
 
   const highestRainfallVillage = useMemo(() => {
+    if (!activeCriticalVillages.length) {
+      return { village: "None", rainfall_mm: 0, district: "" };
+    }
     return activeCriticalVillages.reduce((max, curr) =>
       curr.rainfall_mm > max.rainfall_mm ? curr : max,
       activeCriticalVillages[0]
@@ -126,7 +129,7 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
         <div className="dashboard-header">
           <button
             className="icon-btn"
-            onClick={() => onNavigate('settings')}
+            onClick={() => onNavigate && onNavigate('settings')}
             title="Settings Menu"
           >
             <Menu size={22} />
@@ -136,10 +139,11 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
             Reloc8
           </h2>
 
+          {/* Alert Bell Button toggles alerts popup drawer instead of map */}
           <button
             className="icon-btn"
             title="Alerts"
-            onClick={() => onNavigate('map')}
+            onClick={() => setIsAlertsOpen(prev => !prev)}
           >
             <Bell size={22} color="#dc2626" />
           </button>
@@ -151,7 +155,6 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
           {/* User Greeting */}
           <div className="user-greeting">
             <h3>Hello,{displayName}</h3>
-
             <p>
               {isLoggedIn
                 ? 'Account verified • Live disaster sync active'
@@ -162,20 +165,16 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
           {/* Red Flood Warning Banner */}
           {activeCriticalVillages.length > 0 && (
             <div className="warning-banner-card">
-
               <div className="warning-banner-top">
-
                 <div className="warning-banner-left">
                   <ShieldAlert size={18} color="#dc2626" />
                   <span className="warning-banner-title">
                     CRITICAL FLOOD WARNING
                   </span>
                 </div>
-
                 <span className="warning-banner-pill">
                   {highestRainfallVillage.rainfall_mm} mm Rain
                 </span>
-
               </div>
 
               <p className="warning-banner-desc">
@@ -191,70 +190,61 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
               <button
                 className="evac-map-action-btn"
-                onClick={() => onNavigate('map')}
+                onClick={() => onNavigate && onNavigate('map')}
               >
                 <span>Evacuation Map</span>
                 <ArrowRight size={14} />
               </button>
-
             </div>
           )}
 
           {/* Quick Access Cards */}
           <div className="quick-access-section">
-
-            <h4 className="section-title">
-              Quick Access
-            </h4>
+            <h4 className="section-title">Quick Access</h4>
 
             <div className="grid-menu">
-
               {/* Row 1, Column 1: Risk Map */}
               <div
                 className="menu-card"
-                onClick={() => onNavigate('map')}
+                onClick={() => onNavigate && onNavigate('map')}
               >
                 <div className="card-icon green-icon">
                   <Map size={28} />
                 </div>
-
                 <span>Risk Map</span>
               </div>
 
               {/* Row 1, Column 2: Information Exchange */}
               <div
                 className="menu-card"
-                onClick={() => onNavigate('infoExchange')}
+                onClick={() => onNavigate && onNavigate('infoExchange')}
               >
                 <div className="card-icon chat-icon">
                   <MessageSquare size={28} />
                 </div>
-
                 <span>Information Exchange</span>
               </div>
 
               {/* Row 1, Column 3: Offline Center */}
               <div
                 className="menu-card"
-                onClick={() => onNavigate('offlineScreen')}
+                onClick={() => onNavigate && onNavigate('offlineScreen')}
               >
                 <div className="card-icon dark-green-icon">
                   <Download size={28} />
                 </div>
-
                 <span>Offline Center</span>
               </div>
 
               {/* Row 2, Column 1: Donation */}
               <div
                 className="menu-card"
-                onClick={() => onNavigate('donation')}
+                onClick={() => onNavigate && onNavigate('donation')}
                 style={{ gridColumnStart: 1 }}
               >
                 <div className="card-icon orange-icon">
                   <HeartHandshake size={28} />
                 </div>
-
                 <span>Donation</span>
               </div>
 
@@ -266,16 +256,39 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                 <div className="card-icon medical-sos-icon">
                   <HeartPulse size={28} />
                 </div>
-
                 <span>Medical SOS</span>
               </div>
-
             </div>
           </div>
 
         </div>
 
-        {/* Floating AI Button */}
+        {/* Notifications Pop-up Drawer */}
+        {isAlertsOpen && (
+          <div className="ai-modal-overlay" onClick={() => setIsAlertsOpen(false)}>
+            <div className="ai-modal-card" style={{ height: '42%' }} onClick={(e) => e.stopPropagation()}>
+              <div className="ai-modal-header">
+                <h4 style={{ margin: 0 }}>Active Emergency Alerts</h4>
+                <button 
+                  onClick={() => setIsAlertsOpen(false)} 
+                  style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="ai-modal-body">
+                <div style={{ padding: '12px', background: '#fee2e2', borderRadius: '8px', borderLeft: '4px solid #dc2626' }}>
+                  <strong style={{ color: '#991b1b', fontSize: '13px' }}>Red Alert: Supaul & Madhepura</strong>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#7f1d1d' }}>
+                    River levels in Kosi basin exceeding danger thresholds. Avoid low roads, maintain communication devices, and keep safe kits ready.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Floating AI Button (Bottom Left) */}
         <button
           className="floating-ai-btn"
           onClick={() => setIsAiOpen(true)}
@@ -288,32 +301,15 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
         {/* AI Pop-up Chat Modal */}
         {isAiOpen && (
-          <div className="ai-modal-overlay">
-
-            <div className="ai-modal-card">
-
+          <div className="ai-modal-overlay" onClick={() => setIsAiOpen(false)}>
+            <div className="ai-modal-card" onClick={(e) => e.stopPropagation()}>
               <div className="ai-modal-header">
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Sparkles size={18} color="#38bdf8" />
-
-                  <h4
-                    style={{
-                      margin: 0,
-                      fontSize: '14px',
-                      fontWeight: 800
-                    }}
-                  >
+                  <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800 }}>
                     Reloc8 AI
                   </h4>
                 </div>
-
                 <button
                   onClick={() => setIsAiOpen(false)}
                   style={{
@@ -325,11 +321,9 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                 >
                   <X size={20} />
                 </button>
-
               </div>
 
               <div className="ai-modal-body">
-
                 {aiChat.map((msg) => (
                   <div
                     key={msg.id}
@@ -338,16 +332,10 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                     {msg.text}
                   </div>
                 ))}
-
                 <div ref={chatEndRef} />
-
               </div>
 
-              <form
-                onSubmit={handleSendAi}
-                className="ai-input-bar"
-              >
-
+              <form onSubmit={handleSendAi} className="ai-input-bar">
                 <input
                   type="text"
                   placeholder="Ask about water levels, shelter, helpline..."
@@ -355,7 +343,6 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                   onChange={(e) => setAiInput(e.target.value)}
                   className="ai-text-input"
                 />
-
                 <button
                   type="submit"
                   className="ai-send-btn"
@@ -363,11 +350,8 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
                 >
                   <Send size={15} />
                 </button>
-
               </form>
-
             </div>
-
           </div>
         )}
 
@@ -381,10 +365,9 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
         {/* Bottom Navigation */}
         <div className="bottom-nav">
-
           <div
             className="nav-item active"
-            onClick={() => onNavigate('citizenDashboard')}
+            onClick={() => onNavigate && onNavigate('citizenDashboard')}
           >
             <Home size={18} />
             <span>Home</span>
@@ -392,7 +375,7 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
           <div
             className="nav-item"
-            onClick={() => onNavigate('map')}
+            onClick={() => onNavigate && onNavigate('map')}
           >
             <Map size={18} />
             <span>Map</span>
@@ -400,7 +383,7 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
           <div
             className="nav-item"
-            onClick={() => onNavigate('infoExchange')}
+            onClick={() => onNavigate && onNavigate('infoExchange')}
           >
             <MessageSquare size={18} />
             <span>Exchange</span>
@@ -408,12 +391,11 @@ export default function CitizenDashboard({ citizenUser, onBack, onNavigate }) {
 
           <div
             className="nav-item"
-            onClick={() => onNavigate('settings')}
+            onClick={() => onNavigate && onNavigate('settings')}
           >
             <User size={18} />
             <span>Profile</span>
           </div>
-
         </div>
 
       </div>
