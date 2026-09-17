@@ -1,14 +1,69 @@
 import { useEffect, useState } from "react";
+
 import Map from "./components/Map";
 import ReportIncidentModal from "./components/ReportIncidentModal";
 import FamilyCheckInHub from "./components/FamilyCheckInHub";
+
+import WelcomePage from "./components/WelcomePage";
+import RoleSelection from "./components/RoleSelection";
+import CitizenDashboard from "./components/CitizenDashboard";
+import AuthorityDashboard from "./components/AuthorityDashboard";
+import OfflineScreen from "./components/OfflineScreen";
+import AuthorityLogin from "./components/AuthorityLogin";
+import CitizenSettingsScreen from "./components/CitizenSettingsScreen";
+import CitizenAuth from "./components/CitizenAuth";
+import MapScreen from "./components/MapScreen";
+import InfoExchangeScreen from "./components/InfoExchangeScreen";
+import DonationScreen from "./components/DonationScreen";
+
 import i18nData from "./data/i18n_voice_support.json";
 
 function App() {
-  const [userRole, setUserRole] = useState("Authority");
+  /*
+   * Main application navigation.
+   *
+   * Pages:
+   * welcome
+   * roleSelection
+   * citizenAuth
+   * citizenDashboard
+   * authorityLogin
+   * authorityDashboard
+   * map
+   * authorityMap
+   * infoExchange
+   * donation
+   * settings
+   * offlineScreen
+   */
+  const [currentPage, setCurrentPage] = useState("welcome");
+  const [pendingDestination, setPendingDestination] = useState(null);
+
+  // Existing RELOC8 authority session
+  const [currentAuthority, setCurrentAuthority] = useState(() => {
+    try {
+      const saved = localStorage.getItem("reloc8_authority_session");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Citizen session
+  const [currentCitizen, setCurrentCitizen] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("reloc8_citizen_session");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Existing RELOC8 map controls
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isFamilyHubOpen, setIsFamilyHubOpen] = useState(false);
 
+  // Existing multilingual / voice support
   const [language, setLanguage] = useState(
     localStorage.getItem("reloc8_language") ||
       i18nData.default_language ||
@@ -17,7 +72,9 @@ function App() {
 
   const [voices, setVoices] = useState([]);
 
-  // Load browser speech voices
+  /*
+   * Load browser speech voices.
+   */
   useEffect(() => {
     if (!window.speechSynthesis) return;
 
@@ -41,15 +98,18 @@ function App() {
     };
   }, []);
 
-  // Translation helper
+  /*
+   * Translation helper.
+   */
   const t = (key, fallback = key) => {
     return i18nData.strings?.[key]?.[language] || fallback;
   };
 
-  // Change language
+  /*
+   * Change application language.
+   */
   const changeLanguage = (lang) => {
     setLanguage(lang);
-
     localStorage.setItem("reloc8_language", lang);
 
     if (window.speechSynthesis) {
@@ -57,20 +117,21 @@ function App() {
     }
   };
 
-  // Select best available voice for current language
+  /*
+   * Find the best browser voice for the selected language.
+   */
   const getPreferredVoice = () => {
     if (!voices.length) return null;
 
     const languageMap = {
       en: ["en-IN", "en-US", "en-GB", "en"],
       hi: ["hi-IN", "hi"],
-      mr: ["mr-IN", "mr"]
+      mr: ["mr-IN", "mr"],
     };
 
     const preferredLanguages =
       languageMap[language] || languageMap.en;
 
-    // Exact language match
     for (const lang of preferredLanguages) {
       const exactVoice = voices.find(
         (voice) =>
@@ -82,7 +143,6 @@ function App() {
       }
     }
 
-    // Prefix match
     const languageCode = preferredLanguages[0].split("-")[0];
 
     const matchingVoice = voices.find((voice) =>
@@ -91,14 +151,12 @@ function App() {
         .startsWith(languageCode.toLowerCase())
     );
 
-    if (matchingVoice) {
-      return matchingVoice;
-    }
-
-    return null;
+    return matchingVoice || null;
   };
 
-  // Voice alert
+  /*
+   * Existing voice alert functionality.
+   */
   const speakAlert = () => {
     if (!window.speechSynthesis) {
       alert("Voice support is not available in this browser.");
@@ -144,242 +202,425 @@ function App() {
     window.speechSynthesis.speak(speech);
   };
 
+  /*
+   * Generic navigation.
+   */
+  const navigate = (page) => {
+    setCurrentPage(page);
+  };
+
+  /*
+   * Protected citizen navigation.
+   *
+   * Pages that don't require authentication:
+   * - welcome
+   * - roleSelection
+   * - citizenDashboard
+   * - settings
+   * - offlineScreen
+   *
+   * Other citizen services require login.
+   */
+  const handleProtectedNavigate = (targetPage) => {
+  const protectedCitizenPages = [
+    "citizenDashboard",
+    "map",
+    "infoExchange",
+    "donation",
+    "settings",
+    "offlineScreen",
+  ];
+
+  if (
+    protectedCitizenPages.includes(targetPage) &&
+    !currentCitizen
+  ) {
+    setPendingDestination(targetPage);
+    setCurrentPage("citizenAuth");
+    return;
+  }
+
+  setCurrentPage(targetPage);
+};
+  /*
+   * Role selection.
+   */
+  const handleRoleSelect = (role) => {
+    if (role === "citizen") {
+  if (currentCitizen) {
+    navigate("citizenDashboard");
+  } else {
+    navigate("citizenAuth");
+  }
+  return;
+}
+
+    if (role === "authority") {
+      if (currentAuthority) {
+        navigate("authorityDashboard");
+      } else {
+        navigate("authorityLogin");
+      }
+    }
+  };
+
+  /*
+   * Authority login.
+   */
+  const handleAuthorityLoginSuccess = (user) => {
+    setCurrentAuthority(user);
+    navigate("authorityDashboard");
+  };
+
+  /*
+   * Authority logout.
+   */
+  const handleAuthorityLogout = () => {
+    localStorage.removeItem("reloc8_authority_session");
+    setCurrentAuthority(null);
+    alert("Authority logged out successfully.");
+    navigate("roleSelection");
+  };
+
+  /*
+   * Citizen login.
+   */
+  const handleCitizenLoginSuccess = (citizen) => {
+    setCurrentCitizen(citizen);
+
+    if (pendingDestination) {
+      const target = pendingDestination;
+      setPendingDestination(null);
+      navigate(target);
+    } else {
+      navigate("citizenDashboard");
+    }
+  };
+
+  /*
+   * Citizen logout.
+   */
+  const handleCitizenLogout = () => {
+    sessionStorage.removeItem("reloc8_citizen_session");
+    setCurrentCitizen(null);
+    alert("Citizen logged out successfully.");
+    navigate("citizenDashboard");
+  };
+
+  /*
+   * Render.
+   */
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
-        overflow: "hidden",
-        backgroundColor: "#0f172a",
-        fontFamily:
-          "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
       }}
     >
-      {/* =========================
-          TOP HEADER
-      ========================== */}
-      <header
-        style={{
-          minHeight: "70px",
-          backgroundColor: "#1e293b",
-          color: "#ffffff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 20px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
-          zIndex: 1001,
-          gap: "15px"
-        }}
-      >
-        {/* Logo / Title */}
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "1.4rem",
-              fontWeight: "700",
-              letterSpacing: "1px",
-              color: "#38bdf8"
-            }}
-          >
-            RELOC8
-          </h1>
+      {/* =====================================================
+          1. WELCOME
+      ====================================================== */}
+      {currentPage === "welcome" && (
+        <WelcomePage
+          onLogin={() => navigate("roleSelection")}
+          onContinueOffline={() => navigate("offlineScreen")}
+        />
+      )}
 
-          <p
-            style={{
-              margin: 0,
-              fontSize: "0.8rem",
-              color: "#94a3b8"
-            }}
-          >
-            {t(
-              "app_subtitle",
-              "Disaster Decision-Support Platform"
-            )}
-          </p>
-        </div>
+      {/* =====================================================
+          2. ROLE SELECTION
+      ====================================================== */}
+      {currentPage === "roleSelection" && (
+        <RoleSelection
+          onSelectRole={handleRoleSelect}
+          onBack={() => navigate("welcome")}
+        />
+      )}
 
-        {/* =========================
-            CONTROLS
-        ========================== */}
+      {/* =====================================================
+          3. CITIZEN AUTH
+      ====================================================== */}
+      {currentPage === "citizenAuth" && (
+        <CitizenAuth
+          onBack={() => {
+            setPendingDestination(null);
+            navigate("citizenDashboard");
+          }}
+          onLoginSuccess={handleCitizenLoginSuccess}
+          onNavigate={navigate}
+        />
+      )}
+
+      {/* =====================================================
+          4. CITIZEN DASHBOARD
+      ====================================================== */}
+      {currentPage === "citizenDashboard" && (
+        <CitizenDashboard
+          citizenUser={currentCitizen}
+          onBack={() => navigate("roleSelection")}
+          onNavigate={handleProtectedNavigate}
+        />
+      )}
+
+      {/* =====================================================
+          5. CITIZEN RISK MAP
+      ====================================================== */}
+      {currentPage === "map" && (
+        <MapScreen
+          onBack={() => navigate("citizenDashboard")}
+        />
+      )}
+
+      {/* =====================================================
+          6. INFORMATION EXCHANGE
+      ====================================================== */}
+      {currentPage === "infoExchange" && (
+        <InfoExchangeScreen
+          citizenUser={currentCitizen}
+          onBack={() => navigate("citizenDashboard")}
+          onNavigate={handleProtectedNavigate}
+        />
+      )}
+
+      {/* =====================================================
+          7. DONATION
+      ====================================================== */}
+      {currentPage === "donation" && (
+        <DonationScreen
+          citizenUser={currentCitizen}
+          onBack={() => navigate("citizenDashboard")}
+          onNavigate={handleProtectedNavigate}
+        />
+      )}
+
+      {/* =====================================================
+          8. CITIZEN SETTINGS
+      ====================================================== */}
+      {currentPage === "settings" && (
+        <CitizenSettingsScreen
+          citizenUser={currentCitizen}
+          onBack={() => navigate("citizenDashboard")}
+          onOpenAuth={() => navigate("citizenAuth")}
+          onLogout={handleCitizenLogout}
+          onNavigate={handleProtectedNavigate}
+        />
+      )}
+
+      {/* =====================================================
+          9. OFFLINE CENTER
+      ====================================================== */}
+      {currentPage === "offlineScreen" && (
+        <OfflineScreen
+          onBack={() => navigate("citizenDashboard")}
+          onNavigate={handleProtectedNavigate}
+        />
+      )}
+
+      {/* =====================================================
+          10. AUTHORITY LOGIN
+      ====================================================== */}
+      {currentPage === "authorityLogin" && (
+        <AuthorityLogin
+          onBack={() => navigate("roleSelection")}
+          onLoginSuccess={handleAuthorityLoginSuccess}
+        />
+      )}
+
+      {/* =====================================================
+          11. AUTHORITY DASHBOARD
+      ====================================================== */}
+      {currentPage === "authorityDashboard" && (
+        <AuthorityDashboard
+          user={currentAuthority}
+          onBack={() => navigate("roleSelection")}
+          onLogout={handleAuthorityLogout}
+        />
+      )}
+
+      {/* =====================================================
+          12. AUTHORITY OPERATIONS MAP
+          Existing RELOC8 Map.jsx is preserved.
+      ====================================================== */}
+      {currentPage === "authorityMap" && (
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            gap: "8px",
-            flexWrap: "wrap"
+            flexDirection: "column",
+            height: "100vh",
+            width: "100%",
+            overflow: "hidden",
+            backgroundColor: "#0f172a",
+            fontFamily:
+              "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           }}
         >
-          {/* Language Selector */}
-          <select
-            value={language}
-            onChange={(e) =>
-              changeLanguage(e.target.value)
-            }
+          <header
             style={{
-              padding: "7px 10px",
-              backgroundColor: "#0f172a",
+              minHeight: "70px",
+              backgroundColor: "#1e293b",
               color: "#ffffff",
-              border: "1px solid #475569",
-              borderRadius: "6px",
-              fontSize: "12px",
-              fontWeight: "600",
-              cursor: "pointer",
-              outline: "none"
-            }}
-            aria-label="Select language"
-          >
-            <option value="en">English</option>
-            <option value="hi">हिंदी</option>
-            <option value="mr">मराठी</option>
-          </select>
-
-          {/* Voice Button */}
-          <button
-            onClick={speakAlert}
-            style={{
-              padding: "7px 12px",
-              backgroundColor: "#334155",
-              color: "#ffffff",
-              border: "1px solid #475569",
-              borderRadius: "6px",
-              fontSize: "12px",
-              fontWeight: "600",
-              cursor: "pointer"
-            }}
-          >
-            🔊 Voice
-          </button>
-
-          {/* Role Switcher */}
-          <div
-            style={{
               display: "flex",
-              background: "#0f172a",
-              padding: "3px",
-              borderRadius: "8px",
-              border: "1px solid #334155"
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 20px",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+              zIndex: 1001,
+              gap: "15px",
+              flexWrap: "wrap",
             }}
           >
-            <button
-              onClick={() => setUserRole("Citizen")}
+            <div>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: "1.4rem",
+                  fontWeight: "700",
+                  letterSpacing: "1px",
+                  color: "#38bdf8",
+                }}
+              >
+                RELOC8
+              </h1>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.8rem",
+                  color: "#94a3b8",
+                }}
+              >
+                {t(
+                  "app_subtitle",
+                  "Disaster Decision-Support Platform"
+                )}
+              </p>
+            </div>
+
+            <div
               style={{
-                padding: "6px 12px",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "12px",
-                fontWeight: "600",
-                cursor: "pointer",
-                background:
-                  userRole === "Citizen"
-                    ? "#0284c7"
-                    : "transparent",
-                color:
-                  userRole === "Citizen"
-                    ? "#fff"
-                    : "#94a3b8"
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: "8px",
+                flexWrap: "wrap",
               }}
             >
-              {t("citizen_view", "Citizen View")}
-            </button>
+              <select
+                value={language}
+                onChange={(e) =>
+                  changeLanguage(e.target.value)
+                }
+                style={{
+                  padding: "7px 10px",
+                  backgroundColor: "#0f172a",
+                  color: "#ffffff",
+                  border: "1px solid #475569",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                aria-label="Select language"
+              >
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="mr">मराठी</option>
+              </select>
 
-            <button
-              onClick={() => setUserRole("Authority")}
-              style={{
-                padding: "6px 12px",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "12px",
-                fontWeight: "600",
-                cursor: "pointer",
-                background:
-                  userRole === "Authority"
-                    ? "#16a34a"
-                    : "transparent",
-                color:
-                  userRole === "Authority"
-                    ? "#fff"
-                    : "#94a3b8"
-              }}
-            >
-              {t("authority_view", "Authority View")}
-            </button>
-          </div>
+              <button
+                onClick={speakAlert}
+                style={{
+                  padding: "7px 12px",
+                  backgroundColor: "#334155",
+                  color: "#ffffff",
+                  border: "1px solid #475569",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                🔊 Voice
+              </button>
 
-          {/* Family Safety */}
-          <button
-            onClick={() => setIsFamilyHubOpen(true)}
+              <button
+                onClick={() => setIsFamilyHubOpen(true)}
+                style={{
+                  padding: "7px 14px",
+                  backgroundColor: "#7c3aed",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                👨‍👩‍👧 Family Safety
+              </button>
+
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                style={{
+                  padding: "7px 14px",
+                  backgroundColor: "#dc2626",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                + {t(
+                  "report_incident",
+                  "Report Incident"
+                )}
+              </button>
+
+              <button
+                onClick={() => navigate("authorityDashboard")}
+                style={{
+                  padding: "7px 14px",
+                  backgroundColor: "#16a34a",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                ← Dashboard
+              </button>
+            </div>
+          </header>
+
+          <main
             style={{
-              padding: "7px 14px",
-              backgroundColor: "#7c3aed",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "12px",
-              fontWeight: "600",
-              cursor: "pointer"
+              flex: 1,
+              position: "relative",
             }}
           >
-            👨‍👩‍👧 Family Safety
-          </button>
+            <Map />
+          </main>
 
-          {/* Report Incident */}
-          <button
-            onClick={() => setIsReportModalOpen(true)}
-            style={{
-              padding: "7px 14px",
-              backgroundColor: "#dc2626",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "12px",
-              fontWeight: "600",
-              cursor: "pointer"
-            }}
-          >
-            + {t(
-              "report_incident",
-              "Report Incident"
-            )}
-          </button>
+          <ReportIncidentModal
+            isOpen={isReportModalOpen}
+            onClose={() =>
+              setIsReportModalOpen(false)
+            }
+          />
+
+          <FamilyCheckInHub
+            isOpen={isFamilyHubOpen}
+            onClose={() =>
+              setIsFamilyHubOpen(false)
+            }
+          />
         </div>
-      </header>
-
-      {/* =========================
-          MAIN MAP
-      ========================== */}
-      <main
-        style={{
-          flex: 1,
-          position: "relative"
-        }}
-      >
-        <Map userRole={userRole} />
-      </main>
-
-      {/* =========================
-          REPORT INCIDENT MODAL
-      ========================== */}
-      <ReportIncidentModal
-        isOpen={isReportModalOpen}
-        onClose={() =>
-          setIsReportModalOpen(false)
-        }
-      />
-
-      {/* =========================
-          FAMILY SAFETY HUB
-      ========================== */}
-      <FamilyCheckInHub
-        isOpen={isFamilyHubOpen}
-        onClose={() =>
-          setIsFamilyHubOpen(false)
-        }
-      />
+      )}
     </div>
   );
 }

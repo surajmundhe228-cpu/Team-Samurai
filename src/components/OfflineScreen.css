@@ -1,0 +1,247 @@
+/* Page background canvas */
+.offline-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #121c2d;
+  padding: 20px 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Rounded Mobile Phone Frame */
+.offline-mobile-frame {
+  width: 100%;
+  max-width: 390px;
+  height: 844px;
+  background-color: #ffffff;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 4px solid #1e293b;
+}
+
+/* Forest Green Top Header Bar */
+.offline-top-header {
+  background-color: #0f4d34;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.offline-header-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.offline-nav-icon-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.offline-nav-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollable Inner Body */
+.offline-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px 80px 20px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Top Mini Connectivity Ribbon */
+.offline-status-pill {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+/* Circular Wi-Fi Graphic */
+.offline-circle-badge {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid #10b981;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+/* Status Headings */
+.offline-cache-title {
+  margin: 0 0 6px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+}
+
+.offline-cache-desc {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.45;
+  max-width: 260px;
+}
+
+/* Last Synced Blue Badge */
+.offline-synced-badge {
+  background-color: #e0f2fe;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+
+/* Available Offline Section */
+.offline-section-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+/* 2-Card Grid (Map & Guidelines) */
+.offline-cards-grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.offline-action-card {
+  flex: 1;
+  max-width: 140px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.offline-action-card:hover {
+  transform: translateY(-2px);
+  border-color: #0f4d34;
+}
+
+.offline-action-card span {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.offline-icon-box-green {
+  color: #10b981;
+}
+
+.offline-icon-box-orange {
+  color: #ea580c;
+}
+
+/* Sync When Online Button */
+.offline-sync-btn {
+  width: 100%;
+  background-color: #0f4d34;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(15, 77, 52, 0.25);
+  transition: opacity 0.2s ease;
+}
+
+.offline-sync-btn:hover {
+  opacity: 0.94;
+}
+
+/* Bottom Navigation Bar */
+.offline-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 30;
+}
+
+.offline-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+  font-weight: 500;
+}
+
+.offline-bar-item.active {
+  color: #0f4d34;
+  font-weight: 800;
+}

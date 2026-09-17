@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from backend.shelter_allocator import allocate_shelters
 from backend.alert_system import check_threshold, run_threshold_on_villages
+from backend.citizen_auth import router as citizen_auth_router
 
 
 # --------------------------------------------------
@@ -28,13 +29,13 @@ FRONTEND_URL = os.getenv(
 # --------------------------------------------------
 # APP INITIALIZATION
 # --------------------------------------------------
-
 app = FastAPI(
     title="RELOC8 API",
     description="Backend for the RELOC8 disaster risk and relocation system",
     version="1.1.0"
 )
 
+app.include_router(citizen_auth_router)
 
 # --------------------------------------------------
 # CORS CONFIGURATION

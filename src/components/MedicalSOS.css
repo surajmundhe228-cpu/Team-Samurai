@@ -1,0 +1,185 @@
+.sos-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  padding: 20px;
+}
+
+.sos-modal {
+  width: 100%;
+  max-width: 430px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.sos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: #991b1b;
+  color: white;
+}
+
+.sos-title {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.sos-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-title h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.sos-title p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.sos-close {
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.sos-form {
+  padding: 20px;
+}
+
+.sos-emergency-note {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 11px;
+  margin-bottom: 18px;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 12px;
+}
+
+.sos-form label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.sos-form input,
+.sos-form select,
+.sos-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 11px;
+  font-size: 13px;
+  outline: none;
+}
+
+.sos-form input:focus,
+.sos-form select:focus,
+.sos-form textarea:focus {
+  border-color: #dc2626;
+}
+
+.sos-form textarea {
+  resize: vertical;
+}
+
+.send-sos-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #dc2626;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.send-sos-btn:hover {
+  background: #b91c1c;
+}
+
+.sos-success {
+  padding: 35px 25px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-success h3 {
+  margin: 8px 0;
+  color: #166534;
+}
+
+.sos-success p {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.success-info {
+  display: flex;
+  gap: 7px;
+  text-align: left;
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 9px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 11px;
+}
+
+.sos-done-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  border: none;
+  border-radius: 9px;
+  background: #065f46;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}

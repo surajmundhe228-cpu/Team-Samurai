@@ -1,0 +1,371 @@
+.auth-dash-container {
+  width: 100%;
+  max-width: 390px;
+  height: 100%;
+  max-height: 844px;
+  background-color: #ffffff;
+  border-radius: 36px;
+  border: 8px solid #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .auth-dash-container {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+/* Header */
+.auth-dash-header {
+  background-color: #064e3b;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.auth-dash-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.logout-icon {
+  color: #fca5a5 !important;
+}
+
+/* Content Area */
+.auth-dash-content {
+  flex: 1;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Greeting Display */
+.authority-greeting-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.shield-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: #ecfdf5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.authority-greeting-box h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.authority-greeting-box p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+.authority-sos-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.authority-sos-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.authority-sos-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #991b1b;
+  font-size: 16px;
+}
+
+.authority-sos-heading p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.sos-live-badge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.authority-sos-card {
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.authority-sos-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.authority-patient {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #991b1b;
+}
+
+.pending-badge {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 7px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.authority-sos-details {
+  margin-top: 12px;
+}
+
+.authority-sos-details > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #475569;
+  margin: 7px 0;
+}
+
+.authority-sos-details p {
+  margin: 10px 0;
+  padding: 9px;
+  background: #f8fafc;
+  border-radius: 7px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.authority-sos-details small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+}
+
+.authority-sos-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.accept-sos-btn,
+.resolve-sos-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.accept-sos-btn {
+  border: none;
+  background: #065f46;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.resolve-sos-btn {
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+}
+/* ============================= */
+/* MEDICAL SOS AUTHORITY ALERTS */
+/* ============================= */
+
+.authority-sos-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.authority-sos-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.authority-sos-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #991b1b;
+  font-size: 16px;
+}
+
+.authority-sos-heading p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.sos-live-badge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.authority-sos-card {
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.authority-sos-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.authority-patient {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #991b1b;
+}
+
+.pending-badge {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 7px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.authority-sos-details {
+  margin-top: 12px;
+}
+
+.authority-sos-details > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #475569;
+  margin: 7px 0;
+}
+
+.authority-sos-details p {
+  margin: 10px 0;
+  padding: 9px;
+  background: #f8fafc;
+  border-radius: 7px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.authority-sos-details small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+}
+
+.authority-sos-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.accept-sos-btn,
+.resolve-sos-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.accept-sos-btn {
+  border: none;
+  background: #065f46;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.resolve-sos-btn {
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+}
+
+.accept-sos-btn:hover {
+  background: #047857;
+}
+
+.resolve-sos-btn:hover {
+  background: #f8fafc;
+}
