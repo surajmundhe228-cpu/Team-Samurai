@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function ReportIncidentModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -20,7 +19,7 @@ export default function ReportIncidentModal({ isOpen, onClose }) {
 
     setSubmitting(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/reports`, {
+      const response = await fetch(`${BACKEND_URL}/reports`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

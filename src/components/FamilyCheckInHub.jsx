@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import familyData from "../data/family_checkins.json";
 
 const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8000";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 function getStatusStyle(status) {
   switch (status) {
@@ -80,7 +80,7 @@ function FamilyCheckInHub({ isOpen, onClose }) {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/api/notifications`, {
+      const response = await fetch(`${API_URL}/notifications`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

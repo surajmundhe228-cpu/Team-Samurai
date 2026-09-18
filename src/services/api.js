@@ -58,12 +58,21 @@ async function handleResponse(response) {
 export async function getDashboardData() {
   try {
     const response = await fetch(
-      `${API_URL}/api/dashboard`
+      `${API_URL}/villages`
     );
 
-    const data = await handleResponse(response);
+    const villages = await handleResponse(response);
 
-    // Save latest successful data
+    const riskAssessment = Array.isArray(villages)
+      ? villages
+      : villages?.villages || [];
+
+    const data = {
+      total_villages: riskAssessment.length,
+      risk_assessment: riskAssessment,
+    };
+
+    // Save latest successful data for offline use
     saveOfflineData(
       "reloc8_dashboard",
       data
@@ -89,7 +98,6 @@ export async function getDashboardData() {
     throw error;
   }
 }
-
 
 // ================================
 // HEALTH CHECK
@@ -121,7 +129,7 @@ export async function getHealth() {
 export async function getWeather() {
   try {
     const response = await fetch(
-      `${API_URL}/api/weather`
+      `${API_URL}/weather`
     );
 
     const data =
@@ -160,7 +168,7 @@ export async function getWeather() {
 export async function getShelters() {
   try {
     const response = await fetch(
-      `${API_URL}/api/shelters`
+      `${API_URL}/shelters`
     );
 
     const data =
