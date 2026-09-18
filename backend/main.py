@@ -259,6 +259,110 @@ def get_shelters():
     return {
         "shelters": shelters_data
     }
+@app.get("/api/dashboard")
+def get_dashboard():
+    """
+    Dashboard summary for the Authority Operations Center.
+    Uses the existing village and shelter datasets.
+    """
+
+    # villages.json may be either a list or {"villages": [...]}
+    risk_assessment = (
+        villages_data.get("villages", villages_data)
+        if isinstance(villages_data, dict)
+        else villages_data
+    )
+
+    if not isinstance(risk_assessment, list):
+        risk_assessment = []
+
+    # Normalize risk levels for the frontend
+    normalized_risk = []
+
+    for village in risk_assessment:
+        village_copy = dict(village)
+
+        village_copy["risk_level"] = (
+            str(
+                village_copy.get("risk_level")
+                or village_copy.get("priority")
+                or "LOW"
+            ).upper()
+        )
+
+        normalized_risk.append(village_copy)
+
+    return {
+        "status": "success",
+        "total_villages": len(normalized_risk),
+        "risk_assessment": normalized_risk,
+        "total_shelters": len(shelters_data),
+    }
+@app.get("/api/weather")
+def get_weather():
+    """
+    Weather summary for the Authority Dashboard.
+
+    Uses rainfall data already present in the village dataset.
+    This is dataset-based information, not a live weather feed.
+    """
+
+    v_list = (
+        villages_data.get("villages", villages_data)
+        if isinstance(villages_data, dict)
+        else villages_data
+    )
+
+    if not isinstance(v_list, list):
+        v_list = []
+
+    if not v_list:
+        return {
+            "status": "success",
+            "location": "Monitored Area",
+            "rainfall_mm": 0,
+            "temperature": None,
+            "humidity": None,
+            "condition": "No weather data available",
+            "source": "RELOC8 village dataset",
+        }
+
+    rainfall_values = []
+
+    for village in v_list:
+        try:
+            rainfall = float(village.get("rainfall_mm", 0) or 0)
+            rainfall_values.append(rainfall)
+        except (TypeError, ValueError):
+            continue
+
+    average_rainfall = (
+        sum(rainfall_values) / len(rainfall_values)
+        if rainfall_values
+        else 0
+    )
+
+    maximum_rainfall = max(rainfall_values) if rainfall_values else 0
+
+    if maximum_rainfall >= 150:
+        condition = "Very Heavy Rainfall"
+    elif maximum_rainfall >= 100:
+        condition = "Heavy Rainfall"
+    elif maximum_rainfall >= 50:
+        condition = "Moderate Rainfall"
+    else:
+        condition = "Light Rainfall"
+
+    return {
+        "status": "success",
+        "location": "Supaul & Madhepura monitored areas",
+        "rainfall_mm": round(average_rainfall, 1),
+        "maximum_rainfall_mm": round(maximum_rainfall, 1),
+        "temperature": None,
+        "humidity": None,
+        "condition": condition,
+        "source": "RELOC8 village dataset",
+    }
 
 
 @app.get("/animals")
