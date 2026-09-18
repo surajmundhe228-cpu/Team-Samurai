@@ -670,7 +670,247 @@ export default function AuthorityDashboard({
 
         </section>
 
-        {/* =================================================
+                {/* =================================================
+            LIVE SHELTER STATUS
+        ================================================= */}
+        <section className="authority-section" style={{ marginTop: "24px" }}>
+          <div className="authority-section-heading">
+            <div>
+              <h2>
+                <Home size={19} />
+                Live Shelter Status
+              </h2>
+              <p>
+                Individual shelter occupancy, availability and resources
+              </p>
+            </div>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "11px",
+                fontWeight: 800,
+                color: "#15803d",
+                background: "#dcfce7",
+                padding: "6px 10px",
+                borderRadius: "999px"
+              }}
+            >
+              <span
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  background: "#16a34a"
+                }}
+              />
+              LIVE
+            </span>
+          </div>
+
+          {shelterData.length === 0 ? (
+            <div
+              style={{
+                padding: "24px",
+                textAlign: "center",
+                border: "1px solid #e2e8f0",
+                borderRadius: "12px",
+                color: "#64748b",
+                background: "#f8fafc"
+              }}
+            >
+              Shelter data is currently unavailable.
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "14px",
+                marginTop: "14px"
+              }}
+            >
+              {shelterData.map((shelter, index) => {
+                const capacity = Number(shelter.capacity || 0);
+                const occupied = Number(shelter.current_occupancy || 0);
+                const available = Number(shelter.available_capacity || 0);
+                const occupancyPercent =
+                  capacity > 0
+                    ? Math.min(100, Math.round((occupied / capacity) * 100))
+                    : 0;
+
+                const status =
+                  available <= 0
+                    ? "FULL"
+                    : occupancyPercent >= 90
+                      ? "NEARLY FULL"
+                      : "AVAILABLE";
+
+                const statusStyle =
+                  status === "FULL"
+                    ? { background: "#fee2e2", color: "#b91c1c" }
+                    : status === "NEARLY FULL"
+                      ? { background: "#fef3c7", color: "#b45309" }
+                      : { background: "#dcfce7", color: "#15803d" };
+
+                return (
+                  <div
+                    key={`${shelter.shelter_name || "shelter"}-${index}`}
+                    style={{
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "14px",
+                      padding: "16px",
+                      background: "#ffffff",
+                      boxShadow: "0 2px 8px rgba(15, 23, 42, 0.06)"
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: "10px",
+                        alignItems: "flex-start"
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: 800,
+                            color: "#0f172a"
+                          }}
+                        >
+                          {shelter.shelter_name || `Shelter ${index + 1}`}
+                        </div>
+                        <div
+                          style={{
+                            marginTop: "4px",
+                            fontSize: "12px",
+                            color: "#64748b"
+                          }}
+                        >
+                          {shelter.type || "Relief Shelter"}
+                        </div>
+                      </div>
+
+                      <span
+                        style={{
+                          ...statusStyle,
+                          flexShrink: 0,
+                          fontSize: "10px",
+                          fontWeight: 800,
+                          padding: "5px 8px",
+                          borderRadius: "999px"
+                        }}
+                      >
+                        {status}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "8px",
+                        marginTop: "14px"
+                      }}
+                    >
+                      <div style={{ padding: "10px", borderRadius: "10px", background: "#f8fafc" }}>
+                        <div style={{ fontSize: "10px", color: "#64748b" }}>CAPACITY</div>
+                        <strong style={{ fontSize: "16px", color: "#0f172a" }}>
+                          {capacity.toLocaleString()}
+                        </strong>
+                      </div>
+
+                      <div style={{ padding: "10px", borderRadius: "10px", background: "#f8fafc" }}>
+                        <div style={{ fontSize: "10px", color: "#64748b" }}>OCCUPIED</div>
+                        <strong style={{ fontSize: "16px", color: "#0f172a" }}>
+                          {occupied.toLocaleString()}
+                        </strong>
+                      </div>
+
+                      <div style={{ padding: "10px", borderRadius: "10px", background: "#f0fdf4" }}>
+                        <div style={{ fontSize: "10px", color: "#64748b" }}>AVAILABLE</div>
+                        <strong style={{ fontSize: "16px", color: "#15803d" }}>
+                          {available.toLocaleString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: "14px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          color: "#475569",
+                          marginBottom: "6px"
+                        }}
+                      >
+                        <span>Occupancy</span>
+                        <span>{occupancyPercent}%</span>
+                      </div>
+                      <div
+                        style={{
+                          height: "8px",
+                          borderRadius: "999px",
+                          background: "#e2e8f0",
+                          overflow: "hidden"
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${occupancyPercent}%`,
+                            height: "100%",
+                            background:
+                              status === "FULL"
+                                ? "#dc2626"
+                                : status === "NEARLY FULL"
+                                  ? "#f59e0b"
+                                  : "#16a34a",
+                            borderRadius: "999px"
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: "14px",
+                        paddingTop: "12px",
+                        borderTop: "1px solid #e2e8f0",
+                        fontSize: "11px",
+                        color: "#475569",
+                        lineHeight: 1.6
+                      }}
+                    >
+                      <div>
+                        <strong>Facilities:</strong>{" "}
+                        {shelter.facilities || "Not specified"}
+                      </div>
+                      <div style={{ marginTop: "4px" }}>
+                        <strong>Medical:</strong>{" "}
+                        {Number(shelter.medical_supplies?.food_packets || 0).toLocaleString()} food packets ·{" "}
+                        {Number(shelter.medical_supplies?.water_liters || 0).toLocaleString()} L water ·{" "}
+                        {Number(shelter.medical_supplies?.first_aid_kits || 0).toLocaleString()} first-aid kits
+                      </div>
+                      <div style={{ marginTop: "4px" }}>
+                        <strong>Livestock:</strong>{" "}
+                        {Number(shelter.livestock?.current_occupancy || 0).toLocaleString()} /{" "}
+                        {Number(shelter.livestock?.capacity || 0).toLocaleString()} ·{" "}
+                        {shelter.livestock?.status || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+{/* =================================================
             CRITICAL RISK AREAS
         ================================================= */}
 
