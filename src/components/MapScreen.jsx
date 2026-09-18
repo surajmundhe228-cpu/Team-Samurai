@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ArrowLeft, Filter, ChevronDown } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './CitizenDashboard.css';
+import { getShelters } from '../services/api';
 
 const MAP_DATA = {
   habitations: [
@@ -14,12 +15,7 @@ const MAP_DATA = {
     { id: 'h6', name: 'Pipra', district: 'Supaul', lat: 26.05, lng: 86.68, rainfall: 82.0, status: 'WARNING' },
     { id: 'h7', name: 'Singheshwar', district: 'Madhepura', lat: 26.01, lng: 86.81, rainfall: 78.0, status: 'WARNING' },
   ],
-  shelters: [
-    { id: 's1', name: 'Rampur Govt High School Shelter', district: 'Supaul', lat: 26.13, lng: 86.62, capacity: '450 people', status: 'Active' },
-    { id: 's2', name: 'Supaul Stadium Relief Hub', district: 'Supaul', lat: 26.11, lng: 86.59, capacity: '1200 people', status: 'Active' },
-    { id: 's3', name: 'Madhepura College Evacuation Center', district: 'Madhepura', lat: 25.93, lng: 86.80, capacity: '800 people', status: 'Active' },
-    { id: 's4', name: 'Pratapganj Panchayat Bhawan', district: 'Supaul', lat: 26.30, lng: 86.83, capacity: '350 people', status: 'Active' },
-  ],
+  shelters: [],
   animals: [
     { id: 'a1', name: 'Supaul Animal Rescue Pen', district: 'Supaul', lat: 26.10, lng: 86.61, capacity: '180 Cattle', status: 'Open' },
     { id: 'a2', name: 'Madhepura Veterinary Camp', district: 'Madhepura', lat: 25.91, lng: 86.78, capacity: '220 Cattle', status: 'Open' },
@@ -38,6 +34,35 @@ export default function MapScreen({ onBack }) {
   const [showShelters, setShowShelters] = useState(true);
   const [showAnimals, setShowAnimals] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [shelters, setShelters] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadShelters = async () => {
+      try {
+        const data = await getShelters();
+        const liveShelters = Array.isArray(data)
+          ? data
+          : data?.shelters || [];
+
+        if (mounted && Array.isArray(liveShelters)) {
+          setShelters(liveShelters);
+        }
+      } catch (error) {
+        console.warn(
+          'Live shelter data unavailable. Using no shelter markers.',
+          error
+        );
+      }
+    };
+
+    loadShelters();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredHabitations = useMemo(() => {
     if (selectedDistrict === 'All') return MAP_DATA.habitations;
@@ -45,9 +70,9 @@ export default function MapScreen({ onBack }) {
   }, [selectedDistrict]);
 
   const filteredShelters = useMemo(() => {
-    if (selectedDistrict === 'All') return MAP_DATA.shelters;
-    return MAP_DATA.shelters.filter(s => s.district === selectedDistrict);
-  }, [selectedDistrict]);
+    if (selectedDistrict === 'All') return shelters;
+    return shelters.filter(s => s.district === selectedDistrict);
+  }, [selectedDistrict, shelters]);
 
   const filteredAnimals = useMemo(() => {
     if (selectedDistrict === 'All') return MAP_DATA.animals;
@@ -230,10 +255,26 @@ export default function MapScreen({ onBack }) {
             ))}
 
             {/* Shelters Pins */}
-            {showShelters && filteredShelters.map((item) => (
+            {showShelters && filteredShelters.map((item, index) => {
+              const latitude = Number(item.latitude ?? item.lat);
+              const longitude = Number(item.longitude ?? item.lng);
+              const shelterName = item.shelter_name ?? item.name ?? `Shelter ${index + 1}`;
+              const district = item.district ?? 'Unknown';
+              const totalCapacity = Number(item.capacity ?? 0);
+              const availableCapacity = Number(item.available_capacity ?? 0);
+              const capacityText =
+                item.capacity != null
+                  ? `${totalCapacity.toLocaleString()} people`
+                  : 'N/A';
+
+              if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+                return null;
+              }
+
+              return (
               <CircleMarker
-                key={item.id}
-                center={[item.lat, item.lng]}
+                key={item.id ?? item.shelter_id ?? `shelter-${index}`}
+                center={[latitude, longitude]}
                 radius={8}
                 pathOptions={{
                   color: '#059669',
@@ -244,16 +285,19 @@ export default function MapScreen({ onBack }) {
               >
                 <Popup>
                   <div style={{ fontSize: '12px', minWidth: '130px' }}>
-                    <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '4px' }}>{item.name}</div>
-                    <div>District: <strong>{item.district}</strong></div>
-                    <div>Capacity: <strong>{item.capacity}</strong></div>
+                    <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '4px' }}>{shelterName}</div>
+                    <div>District: <strong>{district}</strong></div>
+                    <div>Capacity: <strong>{capacityText}</strong></div>
+                    <div>Available: <strong>{Number.isFinite(availableCapacity) ? availableCapacity.toLocaleString() : 'N/A'}</strong></div>
+                    <div>Status: <strong>{item.status ?? 'Active'}</strong></div>
                     <div style={{ marginTop: '6px', fontWeight: 800, color: '#059669' }}>
                       SAFE RELOCATION SHELTER
                     </div>
                   </div>
                 </Popup>
               </CircleMarker>
-            ))}
+              );
+            })}
 
             {/* Animals Pins */}
             {showAnimals && filteredAnimals.map((item) => (
