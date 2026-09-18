@@ -1,371 +1,1155 @@
-.auth-dash-container {
+/* =========================================================
+   RELOC8 AUTHORITY OPERATIONS CENTER
+========================================================= */
+
+.authority-page {
+  min-height: 100vh;
   width: 100%;
-  max-width: 390px;
-  height: 100%;
-  max-height: 844px;
-  background-color: #ffffff;
-  border-radius: 36px;
-  border: 8px solid #1e293b;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
+  background: #f1f5f9;
+  color: #0f172a;
+  overflow-x: hidden;
   box-sizing: border-box;
-  overflow: hidden;
-  position: relative;
 }
 
-@media (max-width: 480px) {
-  .auth-dash-container {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 0;
-    border: none;
-  }
+.authority-page *,
+.authority-page *::before,
+.authority-page *::after {
+  box-sizing: border-box;
 }
 
-/* Header */
-.auth-dash-header {
-  background-color: #064e3b;
-  padding: 16px 20px;
+/* =========================================================
+   HEADER
+========================================================= */
+
+.authority-header {
+  width: 100%;
+  min-height: 76px;
+  padding: 14px 32px;
+  background: #064e3b;
+  color: #ffffff;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.15);
 }
 
-.auth-dash-header h2 {
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
-.header-actions {
+.authority-brand {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.icon-btn {
-  background: transparent;
-  border: none;
+.authority-brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.authority-brand h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.authority-brand span {
+  display: block;
+  margin-top: 2px;
+
+  font-size: 11px;
+  color: #d1fae5;
+  font-weight: 500;
+}
+
+.authority-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.authority-officer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 4px;
+}
+
+.authority-officer span {
+  font-size: 10px;
+  color: #a7f3d0;
+}
+
+.authority-officer strong {
+  font-size: 13px;
   color: #ffffff;
+}
+
+.authority-icon-btn {
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0;
+  position: relative;
 }
 
-.logout-icon {
-  color: #fca5a5 !important;
+.authority-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 
-/* Content Area */
-.auth-dash-content {
-  flex: 1;
-  padding: 24px 20px;
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 5px;
+
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 800;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* Greeting Display */
-.authority-greeting-box {
+.authority-logout-btn {
+  min-height: 40px;
+  padding: 0 14px;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 7px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
 }
 
-.shield-icon-wrapper {
-  width: 80px;
-  height: 80px;
-  background-color: #ecfdf5;
+.authority-logout-btn:hover {
+  background: rgba(220, 38, 38, 0.85);
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.authority-content {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
+}
+
+/* =========================================================
+   WELCOME / TOP AREA
+========================================================= */
+
+.authority-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.authority-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.authority-title-row h2 {
+  margin: 0;
+
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 850;
+  color: #0f172a;
+}
+
+.authority-welcome p {
+  margin: 7px 0 0;
+
+  color: #64748b;
+  font-size: 14px;
+}
+
+.authority-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 5px 9px;
+  border-radius: 999px;
+
+  background: #dcfce7;
+  color: #15803d;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.authority-live span {
+  width: 7px;
+  height: 7px;
+
   border-radius: 50%;
+  background: #22c55e;
+
+  animation: authority-pulse 1.5s infinite;
+}
+
+@keyframes authority-pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.authority-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refresh-dashboard-btn {
+  min-height: 38px;
+  padding: 0 13px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #334155;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.refresh-dashboard-btn:hover {
+  background: #f8fafc;
+}
+
+.refresh-dashboard-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.refresh-spin {
+  animation: refresh-spin 1s linear infinite;
+}
+
+@keyframes refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   CONNECTION STATUS
+========================================================= */
+
+.authority-actions .connection-status {
+  min-height: 38px;
+}
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.authority-warning {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px;
+
+  background: #fffbeb;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  color: #92400e;
+}
+
+.authority-warning p {
+  margin: 4px 0 0;
+  color: #a16207;
+  font-size: 12px;
+}
+
+/* =========================================================
+   CRITICAL ALERT
+========================================================= */
+
+.authority-critical-alert {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+
+  border: 1px solid #fecaca;
+  border-left: 5px solid #dc2626;
+  border-radius: 13px;
+
+  background: #fef2f2;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.critical-alert-icon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 11px;
+  background: #fee2e2;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
+
+  font-size: 21px;
 }
 
-.authority-greeting-box h3 {
-  font-size: 22px;
+.authority-critical-alert strong {
+  display: block;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.authority-critical-alert p {
+  margin: 3px 0 0;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.authority-critical-alert > span {
+  margin-left: auto;
+
+  padding: 6px 9px;
+  border-radius: 7px;
+
+  background: #dc2626;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.authority-section {
+  margin-bottom: 28px;
+
+  padding: 22px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow: 0 3px 15px rgba(15, 23, 42, 0.045);
+}
+
+.authority-section-heading {
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.authority-section-heading h2 {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 18px;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 6px 0;
 }
 
-.authority-greeting-box p {
-  font-size: 14px;
+.authority-section-heading p {
+  margin: 5px 0 0;
+
   color: #64748b;
-  margin: 0;
-}
-.authority-sos-section {
-  margin-top: 20px;
-  width: 100%;
+  font-size: 12px;
 }
 
-.authority-sos-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.authority-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 13px;
 }
 
-.authority-sos-heading h3 {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 0;
-  color: #991b1b;
-  font-size: 16px;
-}
+/* =========================================================
+   SOS
+========================================================= */
 
-.authority-sos-heading p {
-  margin: 4px 0 0;
-  font-size: 11px;
-  color: #64748b;
+.sos-live-badge,
+.sos-clear-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 850;
 }
 
 .sos-live-badge {
-  padding: 4px 8px;
-  border-radius: 20px;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.sos-clear-badge {
   background: #dcfce7;
   color: #15803d;
-  font-size: 9px;
-  font-weight: 800;
+}
+
+.authority-sos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
 }
 
 .authority-sos-card {
-  background: #ffffff;
+  padding: 16px;
+
   border: 1px solid #fecaca;
   border-left: 4px solid #dc2626;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+
+  background: #ffffff;
+
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
 }
 
-.authority-sos-card-top {
+.sos-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
-.authority-patient {
+.sos-patient {
   display: flex;
   align-items: center;
   gap: 7px;
+
   color: #991b1b;
 }
 
-.pending-badge {
-  font-size: 9px;
-  font-weight: 800;
-  padding: 4px 7px;
-  border-radius: 10px;
+.sos-status {
+  padding: 4px 8px;
+  border-radius: 999px;
+
   background: #fef3c7;
   color: #92400e;
+
+  font-size: 9px;
+  font-weight: 850;
 }
 
-.authority-sos-details {
-  margin-top: 12px;
+.sos-details {
+  margin-top: 13px;
 }
 
-.authority-sos-details > div {
+.sos-details > div {
+  margin: 7px 0;
+
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+
   color: #475569;
-  margin: 7px 0;
+  font-size: 11px;
 }
 
-.authority-sos-details p {
+.sos-details p {
   margin: 10px 0;
   padding: 9px;
+
+  border-radius: 8px;
   background: #f8fafc;
-  border-radius: 7px;
-  font-size: 11px;
+
   color: #475569;
+  font-size: 11px;
 }
 
-.authority-sos-details small {
+.sos-details small {
   display: flex;
   align-items: center;
   gap: 5px;
+
   color: #94a3b8;
 }
 
-.authority-sos-actions {
+.sos-actions {
+  margin-top: 14px;
+
   display: flex;
   gap: 8px;
-  margin-top: 14px;
 }
 
 .accept-sos-btn,
 .resolve-sos-btn {
   flex: 1;
-  padding: 9px;
-  border-radius: 7px;
-  cursor: pointer;
+
+  min-height: 36px;
+
+  border-radius: 8px;
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .accept-sos-btn {
   border: none;
   background: #065f46;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-}
-
-.resolve-sos-btn {
-  border: 1px solid #cbd5e1;
-  background: white;
-  color: #475569;
-}
-/* ============================= */
-/* MEDICAL SOS AUTHORITY ALERTS */
-/* ============================= */
-
-.authority-sos-section {
-  margin-top: 20px;
-  width: 100%;
-}
-
-.authority-sos-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.authority-sos-heading h3 {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 0;
-  color: #991b1b;
-  font-size: 16px;
-}
-
-.authority-sos-heading p {
-  margin: 4px 0 0;
-  font-size: 11px;
-  color: #64748b;
-}
-
-.sos-live-badge {
-  padding: 4px 8px;
-  border-radius: 20px;
-  background: #dcfce7;
-  color: #15803d;
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.authority-sos-card {
-  background: #ffffff;
-  border: 1px solid #fecaca;
-  border-left: 4px solid #dc2626;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-}
-
-.authority-sos-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.authority-patient {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #991b1b;
-}
-
-.pending-badge {
-  font-size: 9px;
-  font-weight: 800;
-  padding: 4px 7px;
-  border-radius: 10px;
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.authority-sos-details {
-  margin-top: 12px;
-}
-
-.authority-sos-details > div {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  color: #475569;
-  margin: 7px 0;
-}
-
-.authority-sos-details p {
-  margin: 10px 0;
-  padding: 9px;
-  background: #f8fafc;
-  border-radius: 7px;
-  font-size: 11px;
-  color: #475569;
-}
-
-.authority-sos-details small {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #94a3b8;
-}
-
-.authority-sos-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.accept-sos-btn,
-.resolve-sos-btn {
-  flex: 1;
-  padding: 9px;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.accept-sos-btn {
-  border: none;
-  background: #065f46;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-}
-
-.resolve-sos-btn {
-  border: 1px solid #cbd5e1;
-  background: white;
-  color: #475569;
+  color: #ffffff;
 }
 
 .accept-sos-btn:hover {
   background: #047857;
 }
 
+.resolve-sos-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+}
+
 .resolve-sos-btn:hover {
   background: #f8fafc;
+}
+
+.sos-empty {
+  min-height: 125px;
+  padding: 22px;
+
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  gap: 5px;
+
+  color: #64748b;
+}
+
+.sos-empty svg {
+  color: #16a34a;
+  margin-bottom: 3px;
+}
+
+.sos-empty strong {
+  color: #334155;
+  font-size: 13px;
+}
+
+.sos-empty span {
+  font-size: 11px;
+}
+
+/* =========================================================
+   MAP
+========================================================= */
+
+.authority-map-wrapper {
+  width: 100%;
+  min-height: 500px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+/*
+   Leaflet maps need an explicit height.
+   This targets common map containers inside
+   AuthorityMapView without affecting other maps.
+*/
+
+.authority-map-wrapper .leaflet-container {
+  width: 100%;
+  min-height: 500px;
+}
+
+/* =========================================================
+   RISK CARDS
+========================================================= */
+
+.risk-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+/* =========================================================
+   HIGH RISK LIST
+========================================================= */
+
+.high-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.high-risk-item {
+  min-height: 64px;
+  padding: 10px 13px;
+
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 10px;
+
+  background: #fffbeb;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.high-risk-icon {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 9px;
+  background: #fef3c7;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.high-risk-info {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.high-risk-info strong {
+  color: #78350f;
+  font-size: 13px;
+}
+
+.high-risk-info span {
+  color: #a16207;
+  font-size: 10px;
+}
+
+.high-risk-badge {
+  padding: 5px 8px;
+
+  border-radius: 6px;
+  background: #f59e0b;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.critical-count {
+  padding: 6px 9px;
+
+  border-radius: 7px;
+  background: #fee2e2;
+  color: #b91c1c;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+/* =========================================================
+   OPERATIONS
+========================================================= */
+
+.authority-operation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.operation-card {
+  padding: 17px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.operation-card svg {
+  color: #047857;
+}
+
+.operation-card strong {
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.operation-card span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .authority-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .risk-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .authority-header {
+    padding: 12px 18px;
+  }
+
+  .authority-content {
+    padding: 20px 18px 45px;
+  }
+
+  .authority-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .authority-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .authority-sos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .authority-operation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .authority-brand span {
+    display: none;
+  }
+
+  .authority-officer {
+    display: none;
+  }
+
+  .authority-logout-btn {
+    padding: 0 10px;
+  }
+
+  .authority-logout-btn span {
+    display: none;
+  }
+
+  .authority-title-row h2 {
+    font-size: 23px;
+  }
+
+  .authority-section {
+    padding: 16px;
+    border-radius: 13px;
+  }
+
+  .authority-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .authority-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .risk-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .authority-critical-alert {
+    align-items: flex-start;
+  }
+
+  .authority-critical-alert > span {
+    display: none;
+  }
+
+  .authority-map-wrapper,
+  .authority-map-wrapper .leaflet-container {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 380px) {
+  .authority-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .authority-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .authority-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .authority-brand h1 {
+    font-size: 18px;
+  }
+
+  .authority-logout-btn {
+    font-size: 10px;
+  }
+}
+/* =========================================================
+   WEATHER CARD
+   ========================================================= */
+
+.weather-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.weather-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-title-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.weather-title h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.weather-title p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.weather-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.weather-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+/* Main weather area */
+
+.weather-content {
+  width: 100%;
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px 0 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.weather-main-icon {
+  font-size: 52px;
+  line-height: 1;
+}
+
+.weather-temperature {
+  text-align: left;
+}
+
+.weather-temperature h1 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.weather-temperature h1 span {
+  font-size: 20px;
+  margin-left: 2px;
+  font-weight: 600;
+}
+
+.weather-temperature p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* Details */
+
+.weather-details {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.weather-detail {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.weather-detail-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.weather-detail-icon.humidity {
+  background: #dbeafe;
+}
+
+.weather-detail-icon.wind {
+  background: #ede9fe;
+}
+
+.weather-detail-icon.rain {
+  background: #e0f2fe;
+}
+
+.weather-detail-icon.location {
+  background: #fee2e2;
+}
+
+.weather-detail p {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.weather-detail strong {
+  display: block;
+  font-size: 13px;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+/* Rainfall alert */
+
+.weather-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+}
+
+.weather-alert-icon {
+  font-size: 22px;
+}
+
+.weather-alert strong {
+  display: block;
+  font-size: 13px;
+  color: #9a3412;
+}
+
+.weather-alert p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #c2410c;
+}
+
+/* Loading / Error */
+
+.weather-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: left;
+}
+
+.weather-message-icon {
+  font-size: 24px;
+}
+
+.weather-message strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.weather-message p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  .weather-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .weather-card {
+    padding: 18px;
+  }
+
+  .weather-header {
+    align-items: flex-start;
+  }
+
+  .weather-main {
+    justify-content: flex-start;
+  }
+
+  .weather-temperature h1 {
+    font-size: 34px;
+  }
+
+  .weather-details {
+    grid-template-columns: 1fr;
+  }
+
+  .weather-detail {
+    width: 100%;
+  }
 }

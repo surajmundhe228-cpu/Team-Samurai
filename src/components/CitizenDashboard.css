@@ -398,3 +398,28 @@
   background: #fee2e2;
   color: #dc2626;
 }
+/* =========================================================
+   FAMILY SAFETY
+========================================================= */
+
+.family-safety-card {
+  cursor: pointer;
+}
+
+.family-safety-icon {
+  background: #f3e8ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+/* Slight interaction feedback */
+.family-safety-card:hover {
+  transform: translateY(-2px);
+}
+
+.family-safety-card:active {
+  transform: translateY(0);
+}
