@@ -19,13 +19,12 @@ import {
 
 import "./AuthorityDashboard.css";
 
-import shelters from "../data/shelters.json";
 import StatCard from "./StatCard";
 import Riskcard from "./Riskcard";
 import AuthorityMapView from "./AuthorityMapView";
 import WeatherCard from "./WeatherCard";
 import ConnectionStatus from "./ConnectionStatus";
-import { getDashboardData } from "../services/api";
+import { getDashboardData, getShelters } from "../services/api";
 
 export default function AuthorityDashboard({
   user,
@@ -38,6 +37,7 @@ export default function AuthorityDashboard({
 
   const [sosAlerts, setSosAlerts] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
+  const [shelterData, setShelterData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -59,6 +59,22 @@ export default function AuthorityDashboard({
       }
 
       setDashboardData(data);
+
+      try {
+        const sheltersResponse = await getShelters();
+
+        const liveShelters = Array.isArray(sheltersResponse)
+          ? sheltersResponse
+          : sheltersResponse?.shelters || [];
+
+        setShelterData(liveShelters);
+      } catch (shelterError) {
+        console.warn(
+          "Live shelter data unavailable.",
+          shelterError
+        );
+        setShelterData([]);
+      }
     } catch (err) {
       console.error("Dashboard API error:", err);
 
@@ -176,10 +192,6 @@ export default function AuthorityDashboard({
   // =====================================================
   // SHELTER STATISTICS
   // =====================================================
-
-  const shelterData = Array.isArray(shelters)
-    ? shelters
-    : [];
 
   const totalShelters =
     shelterData.length;

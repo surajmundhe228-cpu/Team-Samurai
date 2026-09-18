@@ -5,15 +5,14 @@
 // Local development:
 // http://127.0.0.1:8000
 //
-// Render production:
-// Set VITE_API_URL in Render Environment Variables
+// Production:
+// VITE_API_BASE_URL=https://reloc8-backend.onrender.com/api
 
 const API_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, "") ||
   "http://127.0.0.1:8000";
 
 console.log("API URL:", API_URL);
-
 
 // ================================
 // OFFLINE STORAGE
@@ -23,7 +22,6 @@ import {
   saveOfflineData,
   getOfflineData,
 } from "./offline";
-
 
 // ================================
 // RESPONSE HANDLER
@@ -50,7 +48,6 @@ async function handleResponse(response) {
   return data;
 }
 
-
 // ================================
 // DASHBOARD
 // ================================
@@ -61,18 +58,24 @@ export async function getDashboardData() {
       `${API_URL}/villages`
     );
 
-    const villages = await handleResponse(response);
+    const villages =
+      await handleResponse(response);
 
-    const riskAssessment = Array.isArray(villages)
-      ? villages
-      : villages?.villages || [];
+    const riskAssessment =
+      Array.isArray(villages)
+        ? villages
+        : villages?.villages || [];
 
     const data = {
-      total_villages: riskAssessment.length,
-      risk_assessment: riskAssessment,
+      total_villages:
+        riskAssessment.length,
+
+      risk_assessment:
+        riskAssessment,
     };
 
-    // Save latest successful data for offline use
+    // Save latest successful data
+    // for offline use
     saveOfflineData(
       "reloc8_dashboard",
       data
@@ -81,20 +84,19 @@ export async function getDashboardData() {
     return data;
 
   } catch (error) {
-
     console.warn(
       "Backend unavailable. Using offline dashboard data."
     );
 
-    // Get saved dashboard data
     const cached =
-      getOfflineData("reloc8_dashboard");
+      getOfflineData(
+        "reloc8_dashboard"
+      );
 
     if (cached) {
       return cached;
     }
 
-    // No cached data available
     throw error;
   }
 }
@@ -109,10 +111,11 @@ export async function getHealth() {
       `${API_URL}/health`
     );
 
-    return await handleResponse(response);
+    return await handleResponse(
+      response
+    );
 
   } catch (error) {
-
     console.warn(
       "Backend health check failed."
     );
@@ -121,15 +124,16 @@ export async function getHealth() {
   }
 }
 
-
 // ================================
 // WEATHER
 // ================================
 
 export async function getWeather() {
   try {
+    // Backend weather endpoint:
+    // /api/weather
     const response = await fetch(
-      `${API_URL}/weather`
+      `${API_URL}/api/weather`
     );
 
     const data =
@@ -144,13 +148,14 @@ export async function getWeather() {
     return data;
 
   } catch (error) {
-
     console.warn(
       "Weather unavailable. Using cached weather."
     );
 
     const cached =
-      getOfflineData("reloc8_weather");
+      getOfflineData(
+        "reloc8_weather"
+      );
 
     if (cached) {
       return cached;
@@ -160,13 +165,14 @@ export async function getWeather() {
   }
 }
 
-
 // ================================
 // SHELTERS
 // ================================
 
 export async function getShelters() {
   try {
+    // Backend shelter endpoint:
+    // /shelters
     const response = await fetch(
       `${API_URL}/shelters`
     );
@@ -183,13 +189,14 @@ export async function getShelters() {
     return data;
 
   } catch (error) {
-
     console.warn(
       "Shelters unavailable. Using cached shelter data."
     );
 
     const cached =
-      getOfflineData("reloc8_shelters");
+      getOfflineData(
+        "reloc8_shelters"
+      );
 
     if (cached) {
       return cached;
@@ -199,13 +206,13 @@ export async function getShelters() {
   }
 }
 
-
 // ================================
 // RISK ASSESSMENT
 // ================================
 
-export async function calculateRisk(villages) {
-
+export async function calculateRisk(
+  villages
+) {
   if (!Array.isArray(villages)) {
     throw new Error(
       "Risk calculation requires a village array."
@@ -213,14 +220,14 @@ export async function calculateRisk(villages) {
   }
 
   try {
-
     const response = await fetch(
       `${API_URL}/risk`,
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
 
         body: JSON.stringify({
@@ -241,13 +248,14 @@ export async function calculateRisk(villages) {
     return data;
 
   } catch (error) {
-
     console.warn(
       "Risk API unavailable. Using cached risk data."
     );
 
     const cached =
-      getOfflineData("reloc8_risk");
+      getOfflineData(
+        "reloc8_risk"
+      );
 
     if (cached) {
       return cached;
@@ -257,7 +265,6 @@ export async function calculateRisk(villages) {
   }
 }
 
-
 // ================================
 // EVACUATION PLAN
 // ================================
@@ -266,7 +273,6 @@ export async function createEvacuationPlan(
   villages,
   shelters
 ) {
-
   if (!Array.isArray(villages)) {
     throw new Error(
       "Evacuation plan requires a village array."
@@ -280,14 +286,14 @@ export async function createEvacuationPlan(
   }
 
   try {
-
     const response = await fetch(
       `${API_URL}/evacuation-plan`,
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
 
         body: JSON.stringify({
@@ -300,7 +306,7 @@ export async function createEvacuationPlan(
     const data =
       await handleResponse(response);
 
-    // Save latest successful evacuation plan
+    // Save latest successful plan
     saveOfflineData(
       "reloc8_evacuation_plan",
       data
@@ -309,7 +315,6 @@ export async function createEvacuationPlan(
     return data;
 
   } catch (error) {
-
     console.warn(
       "Evacuation API unavailable. Using cached plan."
     );
@@ -326,7 +331,6 @@ export async function createEvacuationPlan(
     throw error;
   }
 }
-
 
 // ================================
 // DEFAULT API OBJECT

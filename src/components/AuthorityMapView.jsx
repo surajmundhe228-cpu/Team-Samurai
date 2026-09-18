@@ -18,6 +18,7 @@ import villagesData from "../data/villages.json";
 import sheltersData from "../data/shelters.json";
 import animalsData from "../data/animals.json";
 
+import { getShelters } from "../services/api";
 import VillageDetailCard from "./VillageDetailCard";
 
 /* =========================================================
@@ -349,15 +350,54 @@ function Map() {
   ] = useState(false);
 
   /* =======================================================
+     LIVE SHELTER DATA
+  ======================================================= */
+
+  const [shelters, setShelters] = useState(
+    Array.isArray(sheltersData)
+      ? sheltersData
+      : []
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadShelters = async () => {
+      try {
+        const data = await getShelters();
+
+        const liveShelters = Array.isArray(data)
+          ? data
+          : data?.shelters || [];
+
+        if (
+          mounted &&
+          Array.isArray(liveShelters) &&
+          liveShelters.length > 0
+        ) {
+          setShelters(liveShelters);
+        }
+      } catch (error) {
+        console.warn(
+          "Live shelter data unavailable. Using local shelter data.",
+          error
+        );
+      }
+    };
+
+    loadShelters();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  /* =======================================================
      SAFE DATA
   ======================================================= */
 
   const villages = Array.isArray(villagesData)
     ? villagesData
-    : [];
-
-  const shelters = Array.isArray(sheltersData)
-    ? sheltersData
     : [];
 
   const animals = Array.isArray(animalsData)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -15,7 +15,18 @@ import animalsData from "../data/animals.json";
 import VillageDetailCard from "./VillageDetailCard";
 import healthcareData from "../data/healthcare_facilities.json";
 
-// Haversine formula for precise distance calculation in kilometers
+// =========================================================
+// API CONFIGURATION
+// =========================================================
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:8000/api";
+
+// =========================================================
+// HAVERSINE DISTANCE
+// =========================================================
+
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (
     lat1 == null ||
@@ -26,7 +37,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     return "0.0";
   }
 
-  const R = 6371; // Earth radius in km
+  const R = 6371;
 
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -38,36 +49,48 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c =
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
 
   return (R * c).toFixed(1);
 };
 
-// Custom Symbols / DivIcons Definitions
+// =========================================================
+// MAP ICONS
+// =========================================================
+
 const shelterIcon = L.divIcon({
   className: "custom-shelter-marker",
-  html: '<div style="background: #16a34a; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
+  html:
+    '<div style="background:#16a34a;color:white;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
   iconSize: [28, 28],
   iconAnchor: [14, 14],
 });
 
 const crowdedShelterIcon = L.divIcon({
   className: "custom-shelter-marker",
-  html: '<div style="background: #9333ea; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
+  html:
+    '<div style="background:#9333ea;color:white;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏠</div>',
   iconSize: [28, 28],
   iconAnchor: [14, 14],
 });
 
 const animalIcon = L.divIcon({
   className: "custom-animal-marker",
-  html: '<div style="background: #fbbf24; color: #78350f; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 12px; border: 1.5px solid #78350f; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🐾</div>',
+  html:
+    '<div style="background:#fbbf24;color:#78350f;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:12px;border:1.5px solid #78350f;box-shadow:0 2px 4px rgba(0,0,0,0.2);">🐾</div>',
   iconSize: [24, 24],
   iconAnchor: [12, 12],
 });
 
 const criticalVillageIcon = L.divIcon({
   className: "custom-village-marker",
-  html: '<div style="background: #dc2626; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2.5px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">📍</div>',
+  html:
+    '<div style="background:#dc2626;color:white;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;border:2.5px solid white;box-shadow:0 3px 6px rgba(0,0,0,0.3);">📍</div>',
   iconSize: [30, 30],
   iconAnchor: [15, 15],
 });
@@ -79,53 +102,141 @@ const highVillageIcon = L.divIcon({
   iconAnchor: [15, 15],
 });
 
-// Hospital Icon
 const hospitalIcon = L.divIcon({
   className: "custom-hospital-marker",
-  html: '<div style="background: #2563eb; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🏥</div>',
+  html:
+    '<div style="background:#2563eb;color:white;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏥</div>',
   iconSize: [28, 28],
   iconAnchor: [14, 14],
 });
 
+// =========================================================
+// MAP
+// =========================================================
+
 function Map() {
-  const [selectedVillage, setSelectedVillage] = useState(null);
-  const [activeRoute, setActiveRoute] = useState(null);
+  const [selectedVillage, setSelectedVillage] =
+    useState(null);
 
-  // Filters State
-  const [selectedDistrict, setSelectedDistrict] = useState("All");
-  const [showVillages, setShowVillages] = useState(true);
-  const [showShelters, setShowShelters] = useState(true);
-  const [showAnimals, setShowAnimals] = useState(true);
-  const [showHospitals, setShowHospitals] = useState(true);
-  const [showCrowdsourcedAlerts, setShowCrowdsourcedAlerts] = useState(true);
+  const [activeRoute, setActiveRoute] =
+    useState(null);
 
-  // ================================
+  const [selectedDistrict, setSelectedDistrict] =
+    useState("All");
+
+  const [showVillages, setShowVillages] =
+    useState(true);
+
+  const [showShelters, setShowShelters] =
+    useState(true);
+
+  const [showAnimals, setShowAnimals] =
+    useState(true);
+
+  const [showHospitals, setShowHospitals] =
+    useState(true);
+
+  const [showCrowdsourcedAlerts, setShowCrowdsourcedAlerts] =
+    useState(true);
+
+  // =======================================================
+  // LIVE SHELTER DATA
+  // =======================================================
+
+  const [liveShelters, setLiveShelters] =
+    useState(
+      Array.isArray(sheltersData)
+        ? sheltersData
+        : []
+    );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadShelters = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/shelters`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Shelter API returned ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        const shelters = Array.isArray(data)
+          ? data
+          : data?.shelters || [];
+
+        if (
+          !cancelled &&
+          Array.isArray(shelters) &&
+          shelters.length > 0
+        ) {
+          setLiveShelters(shelters);
+        }
+      } catch (error) {
+        console.warn(
+          "Live shelter data unavailable. Using local shelter data.",
+          error
+        );
+      }
+    };
+
+    loadShelters();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // =========================================================
   // NEAREST HOSPITAL ROUTE
-  // ================================
+  // =========================================================
+
   const handleHospitalRoute = () => {
     if (!selectedVillage) return;
 
-    const villageLat = Number(selectedVillage.latitude);
-    const villageLng = Number(selectedVillage.longitude);
+    const villageLat =
+      Number(selectedVillage.latitude);
 
-    if (!Number.isFinite(villageLat) || !Number.isFinite(villageLng)) {
+    const villageLng =
+      Number(selectedVillage.longitude);
+
+    if (
+      !Number.isFinite(villageLat) ||
+      !Number.isFinite(villageLng)
+    ) {
       alert("Invalid village coordinate data.");
       return;
     }
 
-    if (!healthcareData || healthcareData.length === 0) {
+    if (
+      !healthcareData ||
+      healthcareData.length === 0
+    ) {
       alert("No healthcare facilities found.");
       return;
     }
 
-    const validHospitals = healthcareData.filter((hospital) => {
-      const lat = Number(hospital.latitude);
-      const lng = Number(hospital.longitude);
-      return Number.isFinite(lat) && Number.isFinite(lng);
-    });
+    const validHospitals =
+      healthcareData.filter((hospital) => {
+        const lat = Number(hospital.latitude);
+        const lng = Number(hospital.longitude);
+
+        return (
+          Number.isFinite(lat) &&
+          Number.isFinite(lng)
+        );
+      });
 
     if (validHospitals.length === 0) {
-      alert("No hospitals with valid coordinates found.");
+      alert(
+        "No hospitals with valid coordinates found."
+      );
       return;
     }
 
@@ -149,7 +260,9 @@ function Map() {
     });
 
     if (!nearestHospital) {
-      alert("Could not find nearest hospital.");
+      alert(
+        "Could not find nearest hospital."
+      );
       return;
     }
 
@@ -161,12 +274,17 @@ function Map() {
 
     setActiveRoute({
       type: "hospital",
-      fromVillage: selectedVillage.village,
+      fromVillage:
+        selectedVillage.village,
       toShelter: hospitalName,
       vLat: villageLat,
       vLng: villageLng,
-      sLat: Number(nearestHospital.latitude),
-      sLng: Number(nearestHospital.longitude),
+      sLat: Number(
+        nearestHospital.latitude
+      ),
+      sLng: Number(
+        nearestHospital.longitude
+      ),
       coords: [
         [villageLat, villageLng],
         [
@@ -177,28 +295,59 @@ function Map() {
     });
   };
 
+  // =========================================================
+  // VILLAGE CLICK
+  // =========================================================
+
   const handleVillageClick = (village) => {
     setSelectedVillage(village);
   };
 
+  // =========================================================
+  // SHELTER ALLOCATION
+  // =========================================================
+
   const handleAllocateShelter = () => {
     if (!selectedVillage) return;
 
-    const suitableShelters = sheltersData.filter(
-      (s) =>
-        s.available_capacity >=
-        (selectedVillage.population_numeric_for_calc ||
-          selectedVillage.population ||
-          0)
-    );
+    const shelters =
+      Array.isArray(liveShelters)
+        ? liveShelters
+        : [];
+
+    if (shelters.length === 0) {
+      alert("No shelters available.");
+      return;
+    }
+
+    const population =
+      Number(
+        selectedVillage.population_numeric_for_calc ||
+        selectedVillage.population ||
+        0
+      );
+
+    const suitableShelters =
+      shelters.filter(
+        (shelter) =>
+          Number(
+            shelter.available_capacity || 0
+          ) >= population
+      );
 
     const matchedShelter =
       suitableShelters.length > 0
         ? suitableShelters[0]
-        : sheltersData.reduce((prev, curr) =>
-            prev.available_capacity > curr.available_capacity
-              ? prev
-              : curr
+        : shelters.reduce(
+            (prev, curr) =>
+              Number(
+                prev.available_capacity || 0
+              ) >
+              Number(
+                curr.available_capacity || 0
+              )
+                ? prev
+                : curr
           );
 
     if (
@@ -207,62 +356,113 @@ function Map() {
       selectedVillage.latitude == null ||
       selectedVillage.longitude == null
     ) {
-      alert("Invalid coordinate data for routing.");
+      alert(
+        "Invalid coordinate data for routing."
+      );
       return;
     }
 
     setActiveRoute({
-      fromVillage: selectedVillage.village,
-      toShelter: matchedShelter.shelter_name,
-      vLat: selectedVillage.latitude,
-      vLng: selectedVillage.longitude,
-      sLat: matchedShelter.latitude,
-      sLng: matchedShelter.longitude,
+      fromVillage:
+        selectedVillage.village,
+
+      toShelter:
+        matchedShelter.shelter_name,
+
+      vLat:
+        selectedVillage.latitude,
+
+      vLng:
+        selectedVillage.longitude,
+
+      sLat:
+        matchedShelter.latitude,
+
+      sLng:
+        matchedShelter.longitude,
+
       coords: [
-        [selectedVillage.latitude, selectedVillage.longitude],
-        [matchedShelter.latitude, matchedShelter.longitude],
+        [
+          selectedVillage.latitude,
+          selectedVillage.longitude,
+        ],
+        [
+          matchedShelter.latitude,
+          matchedShelter.longitude,
+        ],
       ],
     });
   };
 
-  // Filtered data based on District dropdown
-  const filteredVillages = villagesData.filter(
-    (v) =>
-      selectedDistrict === "All" || v.district === selectedDistrict
-  );
+  // =========================================================
+  // FILTERED DATA
+  // =========================================================
 
-  const filteredShelters = sheltersData.filter(
-    (s) =>
-      selectedDistrict === "All" ||
-      s.shelter_name?.includes(selectedDistrict)
-  );
-
-  const filteredAnimals = animalsData.filter((a) => {
-    if (selectedDistrict === "All") return true;
-
-    const matchedVill = villagesData.find(
-      (v) => v.village === a.village
+  const filteredVillages =
+    villagesData.filter(
+      (village) =>
+        selectedDistrict === "All" ||
+        village.district === selectedDistrict
     );
 
-    return matchedVill
-      ? matchedVill.district === selectedDistrict
-      : true;
-  });
+  const filteredShelters =
+    liveShelters.filter((shelter) => {
+      if (selectedDistrict === "All") {
+        return true;
+      }
 
-  // Filter hospitals based on district
-  const filteredHospitals = healthcareData.filter((h) => {
-    if (selectedDistrict === "All") return true;
+      return (
+        shelter.shelter_name?.includes(
+          selectedDistrict
+        ) ||
+        shelter.district === selectedDistrict
+      );
+    });
 
-    if (h.district) {
-      return h.district === selectedDistrict;
-    }
+  const filteredAnimals =
+    animalsData.filter((animal) => {
+      if (selectedDistrict === "All") {
+        return true;
+      }
 
-    if (h.name) {
-      return h.name.includes(selectedDistrict);
-    }
+      const matchedVillage =
+        villagesData.find(
+          (village) =>
+            village.village ===
+            animal.village
+        );
 
-    return true;
-  });
+      return matchedVillage
+        ? matchedVillage.district ===
+            selectedDistrict
+        : true;
+    });
+
+  const filteredHospitals =
+    healthcareData.filter((hospital) => {
+      if (selectedDistrict === "All") {
+        return true;
+      }
+
+      if (hospital.district) {
+        return (
+          hospital.district ===
+          selectedDistrict
+        );
+      }
+
+      if (hospital.name) {
+        return hospital.name.includes(
+          selectedDistrict
+        );
+      }
+
+      return true;
+    });
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
     <div
@@ -272,18 +472,22 @@ function Map() {
         position: "relative",
       }}
     >
-      {/* Floating Filter Panel */}
+      {/* FILTER PANEL */}
+
       <div
         style={{
           position: "absolute",
           top: "16px",
           left: "60px",
           zIndex: 1000,
-          background: "rgba(255, 255, 255, 0.95)",
+          background:
+            "rgba(255, 255, 255, 0.95)",
           padding: "12px 16px",
           borderRadius: "10px",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-          fontFamily: "system-ui, sans-serif",
+          boxShadow:
+            "0 4px 16px rgba(0,0,0,0.15)",
+          fontFamily:
+            "system-ui, sans-serif",
           fontSize: "13px",
           display: "flex",
           flexDirection: "column",
@@ -305,25 +509,39 @@ function Map() {
 
           <select
             value={selectedDistrict}
-            onChange={(e) => setSelectedDistrict(e.target.value)}
+            onChange={(event) =>
+              setSelectedDistrict(
+                event.target.value
+              )
+            }
             style={{
               width: "100%",
               marginTop: "4px",
               padding: "4px 8px",
               borderRadius: "6px",
-              border: "1px solid #cbd5e1",
+              border:
+                "1px solid #cbd5e1",
               fontSize: "12px",
             }}
           >
-            <option value="All">All Districts</option>
-            <option value="Supaul">Supaul</option>
-            <option value="Madhepura">Madhepura</option>
+            <option value="All">
+              All Districts
+            </option>
+
+            <option value="Supaul">
+              Supaul
+            </option>
+
+            <option value="Madhepura">
+              Madhepura
+            </option>
           </select>
         </div>
 
         <div
           style={{
-            borderTop: "1px solid #e2e8f0",
+            borderTop:
+              "1px solid #e2e8f0",
             paddingTop: "6px",
             display: "flex",
             flexDirection: "column",
@@ -341,9 +559,15 @@ function Map() {
             <input
               type="checkbox"
               checked={showVillages}
-              onChange={(e) => setShowVillages(e.target.checked)}
+              onChange={(event) =>
+                setShowVillages(
+                  event.target.checked
+                )
+              }
             />
-            Habitations ({filteredVillages.length})
+
+            Habitations (
+            {filteredVillages.length})
           </label>
 
           <label
@@ -357,9 +581,15 @@ function Map() {
             <input
               type="checkbox"
               checked={showShelters}
-              onChange={(e) => setShowShelters(e.target.checked)}
+              onChange={(event) =>
+                setShowShelters(
+                  event.target.checked
+                )
+              }
             />
-            Safe Shelters ({filteredShelters.length})
+
+            Safe Shelters (
+            {filteredShelters.length})
           </label>
 
           <label
@@ -373,9 +603,15 @@ function Map() {
             <input
               type="checkbox"
               checked={showAnimals}
-              onChange={(e) => setShowAnimals(e.target.checked)}
+              onChange={(event) =>
+                setShowAnimals(
+                  event.target.checked
+                )
+              }
             />
-            Animal Reports 🐾 ({filteredAnimals.length})
+
+            Animal Reports 🐾 (
+            {filteredAnimals.length})
           </label>
 
           <label
@@ -389,38 +625,55 @@ function Map() {
             <input
               type="checkbox"
               checked={showHospitals}
-              onChange={(e) => setShowHospitals(e.target.checked)}
+              onChange={(event) =>
+                setShowHospitals(
+                  event.target.checked
+                )
+              }
             />
-            Healthcare 🏥 ({filteredHospitals.length})
+
+            Healthcare 🏥 (
+            {filteredHospitals.length})
           </label>
         </div>
       </div>
 
-      {/* Village Details Side Panel */}
+      {/* VILLAGE DETAILS */}
+
       {selectedVillage && (
         <VillageDetailCard
           village={selectedVillage}
-          onClose={() => setSelectedVillage(null)}
-          onRouteClick={handleAllocateShelter}
-          onHospitalRouteClick={handleHospitalRoute}
+          onClose={() =>
+            setSelectedVillage(null)
+          }
+          onRouteClick={
+            handleAllocateShelter
+          }
+          onHospitalRouteClick={
+            handleHospitalRoute
+          }
         />
       )}
 
-      {/* Map Legend */}
+      {/* MAP LEGEND */}
+
       <div
         style={{
           position: "absolute",
           top: "250px",
           left: "60px",
           zIndex: 1000,
-          background: "rgba(255, 255, 255, 0.95)",
+          background:
+            "rgba(255, 255, 255, 0.95)",
           padding: "10px 14px",
           borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+          boxShadow:
+            "0 2px 10px rgba(0,0,0,0.15)",
           fontSize: "12px",
           lineHeight: "1.6",
           color: "#1e293b",
-          fontFamily: "system-ui, sans-serif",
+          fontFamily:
+            "system-ui, sans-serif",
           minWidth: "170px",
         }}
       >
@@ -447,7 +700,8 @@ function Map() {
               borderRadius: "50%",
               background: "#dc2626",
             }}
-          ></span>
+          />
+
           Critical Habitation (📍)
         </div>
 
@@ -465,7 +719,8 @@ function Map() {
               borderRadius: "50%",
               background: "#ea580c",
             }}
-          ></span>
+          />
+
           High Risk Habitation (📍)
         </div>
 
@@ -483,7 +738,8 @@ function Map() {
               borderRadius: "50%",
               background: "#16a34a",
             }}
-          ></span>
+          />
+
           Shelter (🏠)
         </div>
 
@@ -501,7 +757,8 @@ function Map() {
               borderRadius: "50%",
               background: "#fbbf24",
             }}
-          ></span>
+          />
+
           Animal Rescue Report (🐾)
         </div>
 
@@ -519,147 +776,166 @@ function Map() {
               borderRadius: "50%",
               background: "#2563eb",
             }}
-          ></span>
+          />
+
           Healthcare Facility (🏥)
         </div>
       </div>
 
+      {/* ACTIVE ROUTE */}
+
       {activeRoute && (
-  <div
-    style={{
-      position: "absolute",
-      bottom: "24px",
-      left: "20px",
-      zIndex: 1000,
-      background: "#0f172a",
-      color: "#fff",
-      padding: "14px 18px",
-      borderRadius: "10px",
-      boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-      fontSize: "13px",
-      fontFamily: "system-ui, sans-serif",
-      minWidth: "320px",
-    }}
-  >
-    <div
-      style={{
-        fontSize: "11px",
-        color:
-          activeRoute.type === "hospital"
-            ? "#60a5fa"
-            : "#4ade80",
-        textTransform: "uppercase",
-        letterSpacing: "0.5px",
-        marginBottom: "4px",
-      }}
-    >
-      {activeRoute.type === "hospital"
-        ? "Nearest Healthcare Route:"
-        : "Recommended Evacuation Corridor:"}
-    </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: "24px",
+            left: "20px",
+            zIndex: 1000,
+            background: "#0f172a",
+            color: "#fff",
+            padding: "14px 18px",
+            borderRadius: "10px",
+            boxShadow:
+              "0 10px 25px rgba(0,0,0,0.3)",
+            fontSize: "13px",
+            fontFamily:
+              "system-ui, sans-serif",
+            minWidth: "320px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "11px",
+              color:
+                activeRoute.type ===
+                "hospital"
+                  ? "#60a5fa"
+                  : "#4ade80",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              marginBottom: "4px",
+            }}
+          >
+            {activeRoute.type ===
+            "hospital"
+              ? "Nearest Healthcare Route:"
+              : "Recommended Evacuation Corridor:"}
+          </div>
 
-    <div
-      style={{
-        fontSize: "15px",
-        fontWeight: "600",
-        marginBottom: "8px",
-      }}
-    >
-      {activeRoute.fromVillage}
+          <div
+            style={{
+              fontSize: "15px",
+              fontWeight: "600",
+              marginBottom: "8px",
+            }}
+          >
+            {activeRoute.fromVillage}
 
-      <span
-        style={{
-          color:
-            activeRoute.type === "hospital"
-              ? "#60a5fa"
-              : "#38bdf8",
-          margin: "0 6px",
-        }}
-      >
-        &rarr;
-      </span>
+            <span
+              style={{
+                color:
+                  activeRoute.type ===
+                  "hospital"
+                    ? "#60a5fa"
+                    : "#38bdf8",
+                margin: "0 6px",
+              }}
+            >
+              &rarr;
+            </span>
 
-      <span
-        style={{
-          color:
-            activeRoute.type === "hospital"
-              ? "#60a5fa"
-              : "#4ade80",
-        }}
-      >
-        {activeRoute.toShelter}
-      </span>
-    </div>
+            <span
+              style={{
+                color:
+                  activeRoute.type ===
+                  "hospital"
+                    ? "#60a5fa"
+                    : "#4ade80",
+              }}
+            >
+              {activeRoute.toShelter}
+            </span>
+          </div>
 
-    <div
-      style={{
-        display: "flex",
-        gap: "14px",
-        fontSize: "12px",
-        color: "#cbd5e1",
-        borderTop: "1px solid #334155",
-        paddingTop: "8px",
-        flexWrap: "wrap",
-      }}
-    >
-      <span>
-        📏 Distance:{" "}
-        <strong>
-          {calculateDistance(
-            activeRoute.vLat,
-            activeRoute.vLng,
-            activeRoute.sLat,
-            activeRoute.sLng
-          )}{" "}
-          km
-        </strong>
-      </span>
+          <div
+            style={{
+              display: "flex",
+              gap: "14px",
+              fontSize: "12px",
+              color: "#cbd5e1",
+              borderTop:
+                "1px solid #334155",
+              paddingTop: "8px",
+              flexWrap: "wrap",
+            }}
+          >
+            <span>
+              📏 Distance:{" "}
+              <strong>
+                {calculateDistance(
+                  activeRoute.vLat,
+                  activeRoute.vLng,
+                  activeRoute.sLat,
+                  activeRoute.sLng
+                )}{" "}
+                km
+              </strong>
+            </span>
 
-      <span>
-        ⏱️ Est. Time:{" "}
-        <strong>
-          ~
-          {(
-            Number(
-              calculateDistance(
-                activeRoute.vLat,
-                activeRoute.vLng,
-                activeRoute.sLat,
-                activeRoute.sLng
-              )
-            ) * 3
-          ).toFixed(0)}{" "}
-          mins
-        </strong>
-      </span>
+            <span>
+              ⏱️ Est. Time:{" "}
+              <strong>
+                ~
+                {(
+                  Number(
+                    calculateDistance(
+                      activeRoute.vLat,
+                      activeRoute.vLng,
+                      activeRoute.sLat,
+                      activeRoute.sLng
+                    )
+                  ) * 3
+                ).toFixed(0)}{" "}
+                mins
+              </strong>
+            </span>
 
-      <span>
-        🟢 Route:{" "}
-        <strong style={{ color: "#4ade80" }}>
-          Clear
-        </strong>
-      </span>
-    </div>
+            <span>
+              🟢 Route:{" "}
+              <strong
+                style={{
+                  color: "#4ade80",
+                }}
+              >
+                Clear
+              </strong>
+            </span>
+          </div>
 
-    <button
-      onClick={() => setActiveRoute(null)}
-      style={{
-        position: "absolute",
-        top: "12px",
-        right: "12px",
-        background: "#334155",
-        color: "#fff",
-        border: "none",
-        padding: "3px 8px",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontSize: "11px",
-      }}
-    >
-      Clear
-    </button>
-  </div>
-)}
+          <button
+            onClick={() =>
+              setActiveRoute(null)
+            }
+            style={{
+              position: "absolute",
+              top: "12px",
+              right: "12px",
+              background: "#334155",
+              color: "#fff",
+              border: "none",
+              padding: "3px 8px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "11px",
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      {/* MAP */}
+
       <MapContainer
         center={[26.05, 86.70]}
         zoom={10}
@@ -673,172 +949,270 @@ function Map() {
           url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
 
-        {/* Active Route */}
-        {activeRoute && activeRoute.coords && (
-          <Polyline
-            positions={activeRoute.coords}
-            pathOptions={{
-              color: "#2563eb",
-              weight: 5,
-              dashArray: "8, 8",
-            }}
-          />
-        )}
+        {/* ACTIVE ROUTE */}
 
-        {/* Shelters Layer */}
+        {activeRoute &&
+          activeRoute.coords && (
+            <Polyline
+              positions={
+                activeRoute.coords
+              }
+              pathOptions={{
+                color: "#2563eb",
+                weight: 5,
+                dashArray: "8, 8",
+              }}
+            />
+          )}
+
+        {/* SHELTERS */}
+
         {showShelters &&
-          filteredShelters.map((s, i) => {
-            if (
-              s.latitude == null ||
-              s.longitude == null ||
-              isNaN(s.latitude) ||
-              isNaN(s.longitude)
-            ) {
-              return null;
-            }
+          filteredShelters.map(
+            (shelter, index) => {
+              if (
+                shelter.latitude == null ||
+                shelter.longitude == null ||
+                isNaN(
+                  Number(
+                    shelter.latitude
+                  )
+                ) ||
+                isNaN(
+                  Number(
+                    shelter.longitude
+                  )
+                )
+              ) {
+                return null;
+              }
 
-            const isCrowded = s.available_capacity < 50;
-            const chosenIcon = isCrowded
-              ? crowdedShelterIcon
-              : shelterIcon;
+              const isCrowded =
+                Number(
+                  shelter.available_capacity ||
+                    0
+                ) < 50;
 
-            return (
-              <Marker
-                key={`s-${i}`}
-                position={[s.latitude, s.longitude]}
-                icon={chosenIcon}
-              >
-                <Tooltip
-                  direction="top"
-                  offset={[0, -8]}
-                  opacity={0.9}
+              const chosenIcon =
+                isCrowded
+                  ? crowdedShelterIcon
+                  : shelterIcon;
+
+              return (
+                <Marker
+                  key={`shelter-${index}`}
+                  position={[
+                    Number(
+                      shelter.latitude
+                    ),
+                    Number(
+                      shelter.longitude
+                    ),
+                  ]}
+                  icon={chosenIcon}
                 >
-                  <span>
-                    🏠 {s.shelter_name} (Space:{" "}
-                    {s.available_capacity})
-                  </span>
-                </Tooltip>
-              </Marker>
-            );
-          })}
+                  <Tooltip
+                    direction="top"
+                    offset={[0, -8]}
+                    opacity={0.9}
+                  >
+                    <span>
+                      🏠{" "}
+                      {shelter.shelter_name ||
+                        "Shelter"}{" "}
+                      (Space:{" "}
+                      {shelter.available_capacity ??
+                        "N/A"}
+                      )
+                    </span>
+                  </Tooltip>
+                </Marker>
+              );
+            }
+          )}
 
-        {/* Animals Layer */}
+        {/* ANIMALS */}
+
         {showAnimals &&
-          filteredAnimals.map((a, i) => {
-            if (
-              a.latitude == null ||
-              a.longitude == null ||
-              isNaN(a.latitude) ||
-              isNaN(a.longitude)
-            ) {
-              return null;
-            }
+          filteredAnimals.map(
+            (animal, index) => {
+              if (
+                animal.latitude == null ||
+                animal.longitude == null ||
+                isNaN(
+                  Number(animal.latitude)
+                ) ||
+                isNaN(
+                  Number(animal.longitude)
+                )
+              ) {
+                return null;
+              }
 
-            return (
-              <Marker
-                key={`a-${i}`}
-                position={[a.latitude, a.longitude]}
-                icon={animalIcon}
-              >
-                <Tooltip
-                  direction="top"
-                  offset={[0, -6]}
-                  opacity={0.9}
+              return (
+                <Marker
+                  key={`animal-${index}`}
+                  position={[
+                    Number(
+                      animal.latitude
+                    ),
+                    Number(
+                      animal.longitude
+                    ),
+                  ]}
+                  icon={animalIcon}
                 >
-                  <span>
-                    🐾 {a.animal_type} (
-                    {a.estimated_affected || a.count})
-                  </span>
-                </Tooltip>
-              </Marker>
-            );
-          })}
+                  <Tooltip
+                    direction="top"
+                    offset={[0, -6]}
+                    opacity={0.9}
+                  >
+                    <span>
+                      🐾{" "}
+                      {animal.animal_type} (
+                      {animal.estimated_affected ||
+                        animal.count}
+                      )
+                    </span>
+                  </Tooltip>
+                </Marker>
+              );
+            }
+          )}
 
-        {/* Habitations Layer */}
+        {/* VILLAGES */}
+
         {showVillages &&
-          filteredVillages.map((v, i) => {
-            if (
-              v.latitude == null ||
-              v.longitude == null ||
-              isNaN(v.latitude) ||
-              isNaN(v.longitude)
-            ) {
-              return null;
-            }
+          filteredVillages.map(
+            (village, index) => {
+              if (
+                village.latitude == null ||
+                village.longitude == null ||
+                isNaN(
+                  Number(village.latitude)
+                ) ||
+                isNaN(
+                  Number(village.longitude)
+                )
+              ) {
+                return null;
+              }
 
-            const risk = (v.risk_level || "").toUpperCase();
-            const isCritical = risk === "CRITICAL";
+              const risk =
+                (
+                  village.risk_level ||
+                  ""
+                ).toUpperCase();
 
-            const chosenIcon = isCritical
-              ? criticalVillageIcon
-              : highVillageIcon;
+              const isCritical =
+                risk === "CRITICAL";
 
-            return (
-              <Marker
-                key={`v-${i}`}
-                position={[v.latitude, v.longitude]}
-                icon={chosenIcon}
-                eventHandlers={{
-                  click: () => handleVillageClick(v),
-                }}
-              >
-                <Tooltip
-                  direction="top"
-                  offset={[0, -8]}
-                  opacity={0.95}
+              const chosenIcon =
+                isCritical
+                  ? criticalVillageIcon
+                  : highVillageIcon;
+
+              return (
+                <Marker
+                  key={`village-${index}`}
+                  position={[
+                    Number(
+                      village.latitude
+                    ),
+                    Number(
+                      village.longitude
+                    ),
+                  ]}
+                  icon={chosenIcon}
+                  eventHandlers={{
+                    click: () =>
+                      handleVillageClick(
+                        village
+                      ),
+                  }}
                 >
-                  <span>
-                    📍 {v.village} ({v.risk_level}) - Pop:{" "}
-                    {v.population_range || v.population}
-                  </span>
-                </Tooltip>
-              </Marker>
-            );
-          })}
+                  <Tooltip
+                    direction="top"
+                    offset={[0, -8]}
+                    opacity={0.95}
+                  >
+                    <span>
+                      📍{" "}
+                      {village.village} (
+                      {village.risk_level}) -
+                      Pop:{" "}
+                      {village.population_range ||
+                        village.population}
+                    </span>
+                  </Tooltip>
+                </Marker>
+              );
+            }
+          )}
 
-       {/* Hospitals Layer */}
-{showHospitals &&
-  filteredHospitals.map((h, i) => {
-    if (
-      h.latitude == null ||
-      h.longitude == null ||
-      isNaN(Number(h.latitude)) ||
-      isNaN(Number(h.longitude))
-    ) {
-      return null;
-    }
+        {/* HOSPITALS */}
 
-    return (
-      <Marker
-        key={`h-${i}`}
-        position={[
-          Number(h.latitude),
-          Number(h.longitude),
-        ]}
-        icon={hospitalIcon}
-      >
-        <Tooltip
-          direction="top"
-          offset={[0, -8]}
-          opacity={0.9}
-        >
-          <span>
-            🏥{" "}
-            {h.name ||
-              h.hospital_name ||
-              h.facility_name ||
-              "Hospital"}
-            {h.category
-              ? ` (${h.category})`
-              : ""}
-            {h.beds_available != null
-              ? ` - Beds: ${h.beds_available}`
-              : ""}
-          </span>
-        </Tooltip>
-      </Marker>
-    );
-  })}
+        {showHospitals &&
+          filteredHospitals.map(
+            (hospital, index) => {
+              if (
+                hospital.latitude ==
+                  null ||
+                hospital.longitude ==
+                  null ||
+                !Number.isFinite(
+                  Number(
+                    hospital.latitude
+                  )
+                ) ||
+                !Number.isFinite(
+                  Number(
+                    hospital.longitude
+                  )
+                )
+              ) {
+                return null;
+              }
+
+              return (
+                <Marker
+                  key={`hospital-${index}`}
+                  position={[
+                    Number(
+                      hospital.latitude
+                    ),
+                    Number(
+                      hospital.longitude
+                    ),
+                  ]}
+                  icon={hospitalIcon}
+                >
+                  <Tooltip
+                    direction="top"
+                    offset={[0, -8]}
+                    opacity={0.9}
+                  >
+                    <span>
+                      🏥{" "}
+                      {hospital.name ||
+                        hospital.hospital_name ||
+                        hospital.facility_name ||
+                        "Hospital"}
+
+                      {hospital.category
+                        ? ` (${hospital.category})`
+                        : ""}
+
+                      {hospital.beds_available !=
+                      null
+                        ? ` - Beds: ${hospital.beds_available}`
+                        : ""}
+                    </span>
+                  </Tooltip>
+                </Marker>
+              );
+            }
+          )}
       </MapContainer>
     </div>
   );
