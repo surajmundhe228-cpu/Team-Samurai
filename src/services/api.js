@@ -1,4 +1,5 @@
-﻿// ================================
+﻿```js
+// ================================
 // API CONFIGURATION
 // ================================
 
@@ -6,7 +7,7 @@
 // http://127.0.0.1:8000
 //
 // Production:
-// VITE_API_BASE_URL=https://reloc8-backend.onrender.com/api
+// VITE_API_BASE_URL=https://team-samurai-2xyn.onrender.com/api
 
 const API_URL =
   import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, "") ||
@@ -265,84 +266,7 @@ export async function calculateRisk(
   }
 }
 
-// ================================
-// EVACUATION PLAN
-// ================================
-
-export async function createEvacuationPlan(
-  villages,
-  shelters
-) {
-  if (!Array.isArray(villages)) {
-    throw new Error(
-      "Evacuation plan requires a village array."
-    );
-  }
-
-  if (!Array.isArray(shelters)) {
-    throw new Error(
-      "Evacuation plan requires a shelter array."
-    );
-  }
-
-  try {
-    const response = await fetch(
-      `${API_URL}/evacuation-plan`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify({
-          villages: villages,
-          shelters: shelters,
-        }),
-      }
-    );
-
-    const data =
-      await handleResponse(response);
-
-    // Save latest successful plan
-    saveOfflineData(
-      "reloc8_evacuation_plan",
-      data
-    );
-
-    return data;
-
-  } catch (error) {
-    console.warn(
-      "Evacuation API unavailable. Using cached plan."
-    );
-
-    const cached =
-      getOfflineData(
-        "reloc8_evacuation_plan"
-      );
-
-    if (cached) {
-      return cached;
-    }
-
-    throw error;
-  }
-}
-
-// ================================
-// DEFAULT API OBJECT
-// ================================
-
-const api = {
-  getDashboardData,
-  getHealth,
-  getWeather,
-  getShelters,
-  calculateRisk,
-  createEvacuationPlan,
-};
+// ==================
+```
 
 export default api;
