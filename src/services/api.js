@@ -266,7 +266,3 @@ export async function calculateRisk(
   }
 }
 
-// ==================
-```
-
-export default api;
