@@ -1,16 +1,46 @@
-# React + Vite
+# RELO8 – Disaster Relocation & Emergency Support System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+RELO8 is a disaster management platform designed to support citizens and authorities during disaster situations.
 
-Currently, two official plugins are available:
+It combines an interactive map, risk information, shelters, emergency services, citizen reporting, and authority communication in a single platform.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Key Features
 
-## React Compiler
+- Citizen and Authority login
+- Interactive GIS-based map
+- Village and disaster-risk information
+- Shelter information
+- Animal information and reporting
+- Medical SOS
+- Citizen–Authority information exchange
+- Donation and resource allocation
+- Offline access
+- Emergency and disaster-related information
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Technology Stack
 
-## Expanding the ESLint configuration
+### Frontend
+- React
+- Vite
+- Leaflet
+- React-Leaflet
+- Lucide React
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Backend
+- Python
+- FastAPI
+- JSON-based data storage
+
+## Project Structure
+
+```text
+RELO8/
+├── src/
+│   ├── components/
+│   ├── data/
+│   └── services/
+├── backend/
+├── public/
+├── package.json
+├── vite.config.js
+└── README.md
